@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Menú Lateral con Submenús (Acordeón)</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .sidebar {
+      background-color: #f8f9fa;
+      height: 100vh;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul .nav-link {
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    .sidebar ul .nav-link.active {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3 sidebar">
+        <div class="header">
+          <h3>On-Boarding</h3>
+        </div>
+        <ul class="nav flex-column accordion" id="sidebarAccordion">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="collapse" href="#collapseMenu1" onclick="showMenu('menu1')">Menu 1</a>
+            <div id="collapseMenu1" class="collapse show">
+              <ul class="nav flex-column ml-3">
+                <li class="nav-item">
+                  <a class="nav-link" href="#" onclick="showDescription('submenu1')">Submenu 1</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#" onclick="showDescription('submenu2')">Submenu 2</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#" onclick="showDescription('submenu3')">Submenu 3</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#collapseMenu2" onclick="showMenu('menu2')">Menu 2</a>
+            <div id="collapseMenu2" class="collapse">
+              <ul class="nav flex-column ml-3">
+                <li class="nav-item">
+                  <a class="nav-link" href="#" onclick="showDescription('submenu4')">Submenu 4</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#" onclick="showDescription('submenu5')">Submenu 5</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#collapseMenu3" onclick="showMenu('menu3')">Menu 3</a>
+            <div id="collapseMenu3" class="collapse">
+              <ul class="nav flex-column ml-3">
+                <li class="nav-item">
+                  <a class="nav-link" href="#" onclick="showDescription('submenu6')">Submenu 6</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#" onclick="showDescription('submenu7')">Submenu 7</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-9 content">
+        <h2 id="descriptionTitle">Descripción</h2>
+        <p id="descriptionText">Seleccione un menú y submenú para ver su descripción.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    function showMenu(menu) {
+      // Remover clase 'show' de todos los submenús
+      var submenus = document.querySelectorAll('.collapse');
+      submenus.forEach(function (submenu) {
+        submenu.classList.remove('show');
+      });
+
+      // Mostrar el submenú correspondiente al menú seleccionado
+      var selectedSubmenu = document.querySelector('#collapse' + menu);
+      selectedSubmenu.classList.add('show');
+    }
+
+    function showDescription(submenu) {
+      var title = '';
+      var content = '';
+
+      switch (submenu) {
+        case 'submenu1':
+          title = 'Submenu 1';
+          content = `
+        <h3>Contenido del Submenu 1</h3>
+        <p>Aquí puedes incluir texto descriptivo sobre el Submenu 1.</p>
+        <h4>Subtítulo 1</h4>
+        <p>Este es un subtítulo que proporciona más información sobre el Submenu 1.</p>
+        <h4>Subtítulo 2</h4>
+        <ul>
+          <li>Viñeta 1</li>
+          <li>Viñeta 2</li>
+          <li>Viñeta 3</li>
+        </ul>
+        <h4>Subtítulo 3</h4>
+        <img width="560" height="315" src="https://e7.pngegg.com/pngimages/139/493/png-clipart-document-management-system-enterprise-content-management-records-management-others-gadget-electronics.png" alt="Descripción de la imagen">
+        <h4>Subtítulo 4</h4>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/NSrgDeWVYuc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      `;
+          break;
+        case 'submenu2':
+          title = 'Submenu 2';
+          content = 'Descripción del Submenú 2';
+          break;
+        case 'submenu3':
+          title = 'Submenu 3';
+          content = 'Descripción del Submenú 3';
+          break;
+        case 'submenu4':
+          title = 'Submenu 4';
+          content = 'Descripción del Submenú 4';
+          break;
+        case 'submenu5':
+          title = 'Submenu 5';
+          content = 'Descripción del Submenú 5';s
+          break;
+        case 'submenu6':
+          title = 'Submenu 6';
+          content = 'Descripción del Submenú 6';
+          break;
+        case 'submenu7':
+          title = 'Submenu 7';
+          content = 'Descripción del Submenú 7';
+          break;
+        default:
+          title = 'Descripción';
+          content = 'Seleccione un menú y submenú para ver su descripción.';
+      }
+
+      document.getElementById('descriptionTitle').innerHTML = title;
+      document.getElementById('descriptionText').innerHTML = content;
+
+      // Remover clase 'active' de todos los enlaces
+      var links = document.querySelectorAll('.nav-link');
+      links.forEach(function (link) {
+        link.classList.remove('active');
+      });
+
+      // Agregar clase 'active' al enlace seleccionado
+      var selectedLink = document.querySelector('[onclick="showDescription(\'' + submenu + '\')"]');
+      selectedLink.classList.add('active');
+    }
+  </script>
+</body>
+</html>

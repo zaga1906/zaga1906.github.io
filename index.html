@@ -5,6 +5,10 @@
   <title>Menú Lateral con Submenús (Acordeón)</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
+    .swal2-styled.swal2-confirm.swalBtnColor {
+        background-color: #007bff;
+    }
+
     .sidebar {
       background-color: #f8f9fa;
       height: 100vh;
@@ -90,7 +94,7 @@
         </ul>
       </div>
       <div class="col-md-9 content">
-        <h2 id="descriptionTitle">Descripción</h2>
+        <h2 id="descriptionTitle">Formulacion de proyectos formativos.</h2>
         <p id="descriptionText">Seleccione un menú y submenú para ver su descripción.</p>
       </div>
     </div>
@@ -99,6 +103,8 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script>
     function showMenu(menu) {
       // Remover clase 'show' de todos los submenús
@@ -150,7 +156,7 @@
           break;
         case 'submenu5':
           title = 'Submenu 5';
-          content = 'Descripción del Submenú 5';s
+          content = 'Descripción del Submenú 5';
           break;
         case 'submenu6':
           title = 'Submenu 6';
@@ -177,6 +183,16 @@
       // Agregar clase 'active' al enlace seleccionado
       var selectedLink = document.querySelector('[onclick="showDescription(\'' + submenu + '\')"]');
       selectedLink.classList.add('active');
+
+      // Mostrar alerta
+      Swal.fire({
+        customClass: {
+            confirmButton: 'swalBtnColor'
+        },
+        title: 'Felicitaciones!!!',
+        text:'Comenzaras con el tema: ' + submenu,
+        icon: 'success'
+        });
     }
   </script>
 </body>

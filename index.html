@@ -45,28 +45,28 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-3 sidebar">
-        <div class="header">
-          <h3>On-Boarding</h3>
+        <div class="header" onclick="showElementsHome(true);">
+          <h3>HOME</h3>
         </div>
         <ul class="nav flex-column accordion" id="sidebarAccordion">
           <li class="nav-item">
-            <a class="nav-link active" data-toggle="collapse" href="#collapseMenu1" onclick="showMenu('menu1')">Menu 1</a>
+            <a class="nav-link active" data-toggle="collapse" href="#collapseMenu1" onclick="showMenu('menu1')">ORGANIZACIÓN DOCUMENTAL</a>
             <div id="collapseMenu1" class="collapse show">
               <ul class="nav flex-column ml-3">
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu1')">Submenu 1</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu1')"> - Primer paso para que puedas organizar el archivo de gestión, Clasificación Documental</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu2')">Submenu 2</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu2')"> - Segundo paso para que puedas organizar el archivo de gestión, La Ordenación Documental</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu3')">Submenu 3</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu3')"> - Tercer paso para la organización de un archivo de gestión, Descripción Documental</a>
                 </li>
               </ul>
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#collapseMenu2" onclick="showMenu('menu2')">Menu 2</a>
+            <a class="nav-link" data-toggle="collapse" href="#collapseMenu2" onclick="showMenu('menu2')">VALORACIÓN DOCUMENTAL</a>
             <div id="collapseMenu2" class="collapse">
               <ul class="nav flex-column ml-3">
                 <li class="nav-item">
@@ -79,7 +79,7 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#collapseMenu3" onclick="showMenu('menu3')">Menu 3</a>
+            <a class="nav-link" data-toggle="collapse" href="#collapseMenu3" onclick="showMenu('menu3')">TRANSFERENCIAS PRIMARIAS Y SECUNDARIAS</a>
             <div id="collapseMenu3" class="collapse">
               <ul class="nav flex-column ml-3">
                 <li class="nav-item">
@@ -94,8 +94,11 @@
         </ul>
       </div>
       <div class="col-md-9 content">
-        <h2 id="descriptionTitle">Formulacion de proyectos formativos.</h2>
-        <p id="descriptionText">Seleccione un menú y submenú para ver su descripción.</p>
+        <h2 style="text-align: center; margin-bottom: 20px;" id="descriptionTitle">EL ARCHIVERO </h2>
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImage"  width="360" height="360" src="file:///Users/edparra/Downloads/WhatsApp Image 2023-06-08 at 5.42.23 PM.jpeg" alt="Descripción de la imagen">
+        <h3 style="text-align: center; margin-bottom: 20px;"  id="descriptionText">Programa interactivo que explicara el paso a paso de los procesos de organización de los archivos de gestión para adelantar el proceso de transferencia documental.</h3>
+        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoHomeOne"><iframe width="860" height="615" src="https://www.youtube.com/embed/NSrgDeWVYuc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoHomeTwo"><iframe width="860" height="615" src="https://www.youtube.com/embed/NSrgDeWVYuc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
       </div>
     </div>
   </div>
@@ -106,6 +109,43 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
+    // Variable para mantener el registro de los números clicados
+    const numerosClicados = {
+      1: false,
+      2: false,
+      3: false,
+      4: false,
+      5: false,
+      6: false,
+      7: false,
+    };
+
+    // Función para validar el orden al dar click en un número
+    function validarNumero(cadena) {
+
+      const numero = parseInt(cadena.match(/\d+/)[0], 10);
+
+      // Si el número ya está en true, se permite volver a dar click
+      if (numerosClicados[numero]) {
+        //alert(`¡Has vuelto a dar click en el número ${numero}!`);
+        return true;
+      }
+
+      // Verificar si el número anterior está en false (no se ha clicado)
+      const numeroAnterior = numero - 1;
+      if (numeroAnterior >= 1 && !numerosClicados[numeroAnterior]) {
+        //alert(`¡Debes dar click en el número ${numeroAnterior} antes de ${numero}!`);
+        return false;
+      }
+
+      // Marcar el número actual como clicado (true)
+      numerosClicados[numero] = true;
+      //alert(`¡Has dado click en el número ${numero}!`);
+      return true;
+    }
+
+
+    
     function showMenu(menu) {
       // Remover clase 'show' de todos los submenús
       var submenus = document.querySelectorAll('.collapse');
@@ -116,14 +156,46 @@
       // Mostrar el submenú correspondiente al menú seleccionado
       var selectedSubmenu = document.querySelector('#collapse' + menu);
       selectedSubmenu.classList.add('show');
+
     }
 
-    function showDescription(submenu) {
-      var title = '';
+    function showElementsHome(snShow){
+      if (snShow){
+        // Mostrar
+         document.getElementById('descriptionImage').style.display = 'block';
+         document.getElementById('descriptionVideoHomeOne').style.display = 'block';
+         document.getElementById('descriptionVideoHomeTwo').style.display = 'block';
+         document.getElementById('descriptionTitle').innerHTML = `<h2 style="text-align: center; margin-bottom: 20px;">EL ARCHIVERO </h2>`;
+         document.getElementById('descriptionText').innerHTML = `<h3 style="text-align: center; margin-bottom: 20px;">Programa interactivo que explicara el paso a paso de los procesos de organización de los archivos de gestión para adelantar el proceso de transferencia documental.</h3>`;
+      } else {
+        // Ocultar
+         document.getElementById('descriptionImage').style.display = 'none';
+         document.getElementById('descriptionVideoHomeOne').style.display = 'none';
+         document.getElementById('descriptionVideoHomeTwo').style.display = 'none';         
+      }     
+    }
+
+    function showDescription(submenu, task) {
+
+      if(!validarNumero(submenu)){
+         // Mostrar alerta
+      Swal.fire({
+        customClass: {
+            confirmButton: 'swalBtnColor'
+        },
+        title: 'Advertencia!!!',
+        text: 'No debes saltearte, el orden del curso.',
+        icon: 'warning'
+        });
+
+      } else {
+        var title = '';
       var content = '';
+      var task = '';
 
       switch (submenu) {
         case 'submenu1':
+          task = 'Primer paso para que puedas organizar el archivo de gestión, Clasificación Documental.';
           title = 'Submenu 1';
           content = `
         <h3>Contenido del Submenu 1</h3>
@@ -143,26 +215,32 @@
       `;
           break;
         case 'submenu2':
+          task = 'Segundo paso para que puedas organizar el archivo de gestión, La Ordenación Documental.';
           title = 'Submenu 2';
           content = 'Descripción del Submenú 2';
           break;
         case 'submenu3':
+          task = 'Tercer paso para la organización de un archivo de gestión, Descripción Documental.';
           title = 'Submenu 3';
           content = 'Descripción del Submenú 3';
           break;
         case 'submenu4':
+          task = 'submenu4';
           title = 'Submenu 4';
           content = 'Descripción del Submenú 4';
           break;
         case 'submenu5':
+          task = 'submenu5';
           title = 'Submenu 5';
           content = 'Descripción del Submenú 5';
           break;
         case 'submenu6':
+          task = 'submenu6';
           title = 'Submenu 6';
           content = 'Descripción del Submenú 6';
           break;
         case 'submenu7':
+          task = 'submenu7';
           title = 'Submenu 7';
           content = 'Descripción del Submenú 7';
           break;
@@ -173,6 +251,7 @@
 
       document.getElementById('descriptionTitle').innerHTML = title;
       document.getElementById('descriptionText').innerHTML = content;
+      showElementsHome(false);      
 
       // Remover clase 'active' de todos los enlaces
       var links = document.querySelectorAll('.nav-link');
@@ -190,9 +269,10 @@
             confirmButton: 'swalBtnColor'
         },
         title: 'Felicitaciones!!!',
-        text:'Comenzaras con el tema: ' + submenu,
+        text:'Comenzaras con el tema: ' + task,
         icon: 'success'
         });
+      }      
     }
   </script>
 </body>

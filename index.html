@@ -92,11 +92,8 @@ a:active {
             <div id="collapseMenu2" class="collapse">
               <ul class="nav flex-column ml-3">
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu4')">Submenu 4</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu5')">Submenu 5</a>
-                </li>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu4')">¿Que es la valoración documental?</a>
+                </li>               
               </ul>
             </div>
           </li>
@@ -105,10 +102,13 @@ a:active {
             <div id="collapseMenu3" class="collapse">
               <ul class="nav flex-column ml-3">
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu6')">Submenu 6</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu5')">¿Que es una transferencia primaria?</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu7')">Submenu 7</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu6')">¿Que es una transferencia secundaria?</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#" onclick="showDescription('submenu7')">¿Como se hacen las transferencias documentales?</a>
                 </li>
               </ul>
             </div>
@@ -222,38 +222,58 @@ a:active {
           content = `
         <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu1"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/clasificaco%CC%81n%20documental_page-0001.jpg?raw=true" alt="Descripción de la imagen">
         <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu1"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/Principios%20archivisticos_page-0001.jpg?raw=true" alt="Descripción de la imagen">
-        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoSubmenu1"><iframe width="710" height="465" src="https://www.youtube.com/embed/NSrgDeWVYuc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <h3 style="text-align: center; margin-bottom: 20px;">Si quieres tener más conocimiento acerca de la clasificación documental observa este video.</h3>
+        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoSubmenu1"><iframe width="710" height="465" src="https://www.youtube.com/embed/UT5yF0QBmhA?start=7" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
       `;
           break;
         case 'submenu2':
           task = 'Segundo paso para que puedas organizar el archivo de gestión, La Ordenación Documental.';
-          title = 'Submenu 2';
-          content = 'Descripción del Submenú 2';
+          title = 'ORDENACIÓN DOCUMENTAL SEGUNDO PASO';
+          content = `
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu2"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/ordenacio%CC%81n%20documental_page-0001.jpg?raw=true" alt="Descripción de la imagen">
+      `;
           break;
         case 'submenu3':
           task = 'Tercer paso para la organización de un archivo de gestión, Descripción Documental.';
-          title = 'Submenu 3';
-          content = 'Descripción del Submenú 3';
+          title = 'DESCRIPCIÓN DOCUMENTAL TERCER PASO';
+          content = `
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/descripcion%20documental-1_page-0001.jpg?raw=true" alt="Descripción de la imagen">
+        <h3 style="text-align: center; margin-bottom: 20px;">Tambien hacen parte de la descripción documental las tablas de retención.</h3>
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/tablas%20de%20retencion%20documental_page-0001.jpg?raw=true" alt="Descripción de la imagen">
+        <h3 style="text-align: center; margin-bottom: 20px;">Las tablas de retencion contribuyen un poco mas con el ciclo vital de los documento ya que en este instrumento se evidencia el paso de los documentos por los tres archivos (gestion, central, historio).</h3>        
+      `;
           break;
         case 'submenu4':
-          task = 'submenu4';
-          title = 'Submenu 4';
-          content = 'Descripción del Submenú 4';
+          task = '¿Que es la valoración documental?';
+          title = '¿QUE ES LA VALORACIÓN DOCUMENTAL?';
+          content = `
+        <h3 style="text-align: center; margin-bottom: 20px;">La valoración documental es el proceso de evaluar y determinar el valor de los documentos en función de su utilidad y relevancia para una organización. Se decide qué documentos deben conservarse y cuáles pueden ser eliminados. Se realiza mediante el análisis de una tabla de retención documental que establece los plazos de conservación. El objetivo es asegurar una gestión eficiente de los documentos, preservando los valiosos y eliminando los irrelevantes.</h3>
+        <h3 style="text-align: center; margin-bottom: 20px;">NOTA : RECUERDA QUE A PARTIR DEL CICLO VITAL DEL DOCUMENTO SE LE DA EL VALOR YA SEA DE TIPO PRIMARIO O SECUNDARIO A LOS DOCUMENTOS. TE VOY A MOSTRAR QUE ES CICLO DE VIDA DOCUMENTAL.</h3>
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/ciclo%20vital%20del%20documento_page-0001.jpg?raw=true" alt="Descripción de la imagen">
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/nota%20importante_page-0001.jpg?raw=true" alt="Descripción de la imagen">
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="565" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/PROCESO%20TRANSFERENCIA%20O%20ELIMINACION_page-0001.jpg?raw=true" alt="Descripción de la imagen">
+      `;
           break;
         case 'submenu5':
-          task = 'submenu5';
-          title = 'Submenu 5';
-          content = 'Descripción del Submenú 5';
+          task = '¿Que es una transferencia primaria?';
+          title = '¿QUE ES UNA TRANSFERENCIA PRIMARIA?';
+          content = `
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/TRANSFERENCIAS%20PRIMARIAS%20(1)_page-0001.jpg?raw=true" alt="Descripción de la imagen">        
+      `;
           break;
         case 'submenu6':
-          task = 'submenu6';
-          title = 'Submenu 6';
-          content = 'Descripción del Submenú 6';
+          task = '¿Que es una transferencia secundaria?';
+          title = '¿QUE ES UNA TRANSFERENCIA SECUNDARIA?';
+          content = `
+          <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/TRANSFERENCIAS%20SECUNDARIAS_page-0001.jpg?raw=true" alt="Descripción de la imagen">
+        `;
           break;
         case 'submenu7':
-          task = 'submenu7';
-          title = 'Submenu 7';
-          content = 'Descripción del Submenú 7';
+          task = '¿Como se hacen las transferencias documentales?';
+          title = '¿COMO SE HACEN LAS TRANSFERENCIAS DOCUMENTALES?';
+          content = `
+          <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoSubmenu1"><iframe width="710" height="465" src="https://www.youtube.com/embed/CrDWSXqcP98?start=7" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        `;
           break;
         default:
           title = 'Descripción';

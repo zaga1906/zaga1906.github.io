@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     .swal2-styled.swal2-confirm.swalBtnColor {
-        background-color: #000000;
+        background-color: #0075b2;
     }
 
     .sidebar {
@@ -25,7 +25,7 @@
     }
 
     .sidebar ul .nav-link.active {
-      background-color: #000000;
+      background-color: #0075b2;
       color: #fff;
     }
 
@@ -35,7 +35,7 @@
 
     .header {
       text-align: center;
-      background-color: #000000;
+      background-color: #0075b2;
       color: #fff;
       padding: 10px;
     }
@@ -76,13 +76,13 @@ a:active {
             <div id="collapseMenu1" class="collapse show">
               <ul class="nav flex-column ml-3">
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu1')"> - Primer paso para que puedas organizar el archivo de gestión, Clasificación Documental</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu1')"> Clasificación Documental</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu2')"> - Segundo paso para que puedas organizar el archivo de gestión, La Ordenación Documental</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu2')"> Ordenación Documental</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu3')"> - Tercer paso para la organización de un archivo de gestión, Descripción Documental</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu3')"> Descripción Documental</a>
                 </li>
               </ul>
             </div>
@@ -92,7 +92,7 @@ a:active {
             <div id="collapseMenu2" class="collapse">
               <ul class="nav flex-column ml-3">
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu4')">¿Que es la valoración documental?</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu4')">¿Que es?</a>
                 </li>               
               </ul>
             </div>
@@ -102,25 +102,33 @@ a:active {
             <div id="collapseMenu3" class="collapse">
               <ul class="nav flex-column ml-3">
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu5')">¿Que es una transferencia primaria?</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu5')">¿Que son?</a>
                 </li>
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#collapseMenu4" onclick="showMenu('menu4')">EVALUACION DE CONOCIMIENTO</a>
+            <div id="collapseMenu4" class="collapse">
+              <ul class="nav flex-column ml-3">
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu6')">¿Que es una transferencia secundaria?</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu7')">¿Como se hacen las transferencias documentales?</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu6')">Hora de evaluar lo aprendido!!!</a>
                 </li>
               </ul>
             </div>
           </li>
         </ul>
       </div>
+
+      
+
       <div class="col-md-9 content">
         <h2 style="text-align: center; margin-bottom: 20px;" id="descriptionTitle">EL ARCHIVERO </h2>
         <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImage"  width="360" height="360" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-06-08%20at%205.42.23%20PM.jpeg?raw=true" alt="Descripción de la imagen">
         <h3 style="text-align: center; margin-bottom: 20px;"  id="descriptionText">Programa interactivo que explicara el paso a paso de los procesos de organización de los archivos de gestión para adelantar el proceso de transferencia documental.</h3>
-        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoHomeOne"><iframe width="710" height="465" src="https://www.youtube.com/embed/NSrgDeWVYuc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
-        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoHomeTwo"><iframe width="710" height="465" src="https://www.youtube.com/embed/NSrgDeWVYuc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <h3 style="text-align: center; margin-bottom: 20px;" id="descriptionVideoIntroductorio">VIDEO INTRODUCTORIO</h3>
+        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoHomeOne"><iframe width="710" height="465" src="https://www.youtube.com/embed/kxiDfSDSXUs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoHomeTwo"><iframe width="710" height="465" src="https://www.youtube.com/embed/CrDWSXqcP98" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
       </div>
     </div>
   </div>
@@ -187,12 +195,14 @@ a:active {
          document.getElementById('descriptionImage').style.display = 'block';
          document.getElementById('descriptionVideoHomeOne').style.display = 'block';
          document.getElementById('descriptionVideoHomeTwo').style.display = 'block';
+         document.getElementById('descriptionVideoIntroductorio').style.display = 'block';
          document.getElementById('descriptionTitle').innerHTML = `<h2 style="text-align: center; margin-bottom: 20px;">EL ARCHIVERO </h2>`;
          document.getElementById('descriptionText').innerHTML = `<h3 style="text-align: center; margin-bottom: 20px;">Programa interactivo que explicara el paso a paso de los procesos de organización de los archivos de gestión para adelantar el proceso de transferencia documental.</h3>`;
       } else {
         // Ocultar
          document.getElementById('descriptionImage').style.display = 'none';
          document.getElementById('descriptionVideoHomeOne').style.display = 'none';
+         document.getElementById('descriptionVideoIntroductorio').style.display = 'none'; 
          document.getElementById('descriptionVideoHomeTwo').style.display = 'none';         
       }     
     }
@@ -217,55 +227,60 @@ a:active {
 
       switch (submenu) {
         case 'submenu1':
-          task = 'Primer paso para que puedas organizar el archivo de gestión, Clasificación Documental.';
+          task = 'Clasificación Documental.';
           title = 'ORGANIZACIÓN DOCUMENTAL PRIMER PASO';
           content = `
-        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu1"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/clasificaco%CC%81n%20documental_page-0001.jpg?raw=true" alt="Descripción de la imagen">
-        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu1"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/Principios%20archivisticos_page-0001.jpg?raw=true" alt="Descripción de la imagen">
-        <h3 style="text-align: center; margin-bottom: 20px;">Si quieres tener más conocimiento acerca de la clasificación documental observa este video.</h3>
-        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoSubmenu1"><iframe width="710" height="465" src="https://www.youtube.com/embed/UT5yF0QBmhA?start=7" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu1"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.23.44%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu1"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.26.32%20PM.jpeg?raw=true" alt="Descripción de la imagen">       
       `;
           break;
         case 'submenu2':
-          task = 'Segundo paso para que puedas organizar el archivo de gestión, La Ordenación Documental.';
-          title = 'ORDENACIÓN DOCUMENTAL SEGUNDO PASO';
+          task = 'Ordenación Documental.';
+          title = 'ORGANIZACIÓN DOCUMENTAL SEGUNDO PASO';
           content = `
-        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu2"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/ordenacio%CC%81n%20documental_page-0001.jpg?raw=true" alt="Descripción de la imagen">
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu2"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.30.23%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu2"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.33.06%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoSubmenu1"><iframe width="710" height="465" src="https://www.youtube.com/embed/UT5yF0QBmhA?start" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
       `;
           break;
         case 'submenu3':
-          task = 'Tercer paso para la organización de un archivo de gestión, Descripción Documental.';
-          title = 'DESCRIPCIÓN DOCUMENTAL TERCER PASO';
+          task = 'Descripción Documental.';
+          title = 'ORGANIZACIÓN DOCUMENTAL TERCER PASO';
           content = `
-        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/descripcion%20documental-1_page-0001.jpg?raw=true" alt="Descripción de la imagen">
-        <h3 style="text-align: center; margin-bottom: 20px;">Tambien hacen parte de la descripción documental las tablas de retención.</h3>
-        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/tablas%20de%20retencion%20documental_page-0001.jpg?raw=true" alt="Descripción de la imagen">
-        <h3 style="text-align: center; margin-bottom: 20px;">Las tablas de retencion contribuyen un poco mas con el ciclo vital de los documento ya que en este instrumento se evidencia el paso de los documentos por los tres archivos (gestion, central, historio).</h3>        
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.33.45%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.34.16%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+        <h3 style="text-align: center; margin-bottom: 20px;">TAMBIEN HACEN PARTE DE LA DESCRIPCION DOCUMENTAL</h3>
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.35.44%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoSubmenu1"><iframe width="710" height="465" src="https://www.youtube.com/embed/Hngq8WlvhIc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>        
       `;
           break;
         case 'submenu4':
           task = '¿Que es la valoración documental?';
-          title = '¿QUE ES LA VALORACIÓN DOCUMENTAL?';
+          title = '¿QUE ES?';
           content = `
-        <h3 style="text-align: center; margin-bottom: 20px;">La valoración documental es el proceso de evaluar y determinar el valor de los documentos en función de su utilidad y relevancia para una organización. Se decide qué documentos deben conservarse y cuáles pueden ser eliminados. Se realiza mediante el análisis de una tabla de retención documental que establece los plazos de conservación. El objetivo es asegurar una gestión eficiente de los documentos, preservando los valiosos y eliminando los irrelevantes.</h3>
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.36.20%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.36.42%20PM.jpeg?raw=true" alt="Descripción de la imagen">
         <h3 style="text-align: center; margin-bottom: 20px;">NOTA : RECUERDA QUE A PARTIR DEL CICLO VITAL DEL DOCUMENTO SE LE DA EL VALOR YA SEA DE TIPO PRIMARIO O SECUNDARIO A LOS DOCUMENTOS. TE VOY A MOSTRAR QUE ES CICLO DE VIDA DOCUMENTAL.</h3>
-        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/ciclo%20vital%20del%20documento_page-0001.jpg?raw=true" alt="Descripción de la imagen">
-        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/nota%20importante_page-0001.jpg?raw=true" alt="Descripción de la imagen">
-        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="565" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/PROCESO%20TRANSFERENCIA%20O%20ELIMINACION_page-0001.jpg?raw=true" alt="Descripción de la imagen">
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.37.05%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+        <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoSubmenu1"><iframe width="710" height="465" src="https://www.youtube.com/embed/AwcH-IUG8NU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>        
       `;
           break;
         case 'submenu5':
-          task = '¿Que es una transferencia primaria?';
-          title = '¿QUE ES UNA TRANSFERENCIA PRIMARIA?';
+          task = '¿Que son las transferencias primarias y secundarias?';
+          title = '¿QUE SON LAS TRANSFERENCIAS PRIMARIAS Y SECUNDARIAS?';
           content = `
-        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/TRANSFERENCIAS%20PRIMARIAS%20(1)_page-0001.jpg?raw=true" alt="Descripción de la imagen">        
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.37.24%20PM.jpeg?raw=true" alt="Descripción de la imagen">        
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.37.42%20PM.jpeg?raw=true" alt="Descripción de la imagen">
       `;
           break;
         case 'submenu6':
-          task = '¿Que es una transferencia secundaria?';
-          title = '¿QUE ES UNA TRANSFERENCIA SECUNDARIA?';
+          task = 'Hora de evaluar lo aprendido!!!';
+          title = 'ES HORA DE EVALUAR LO APRENDIDO!!!';
           content = `
-          <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/TRANSFERENCIAS%20SECUNDARIAS_page-0001.jpg?raw=true" alt="Descripción de la imagen">
+          <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.38.22%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+          <h3 style="text-align: center; margin-bottom: 20px; text-decoration: underline;">
+            <a href="https://forms.gle/Guncn3BAB8xSptbQ8" target="_blank">CLICK AQUI, PARA CONTINUAR CON LA EVALUACION!!!</a>
+          </h3>
         `;
           break;
         case 'submenu7':

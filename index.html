@@ -37,7 +37,23 @@
       text-align: center;
       background-color: #0075b2;
       color: #fff;
-      padding: 10px;
+      padding: 15px;
+    }
+
+    /* Agrega estilos para el ProgressBar */
+    #progress-container {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      background-color: #0075b2;
+      height: 10px;
+    }
+
+    #progress-bar {
+      height: 100%;
+      width: 0;
+      background-color: #33cc33;
     }
 
     /* Enlace sin visitar (por defecto) */
@@ -68,45 +84,45 @@ a:active {
     <div class="row">
       <div class="col-md-3 sidebar">
         <div class="header" onclick="showElementsHome(true);">
-          <h3>HOME</h3>
+          <h3>HOME </h3>
         </div>
         <ul class="nav flex-column accordion" id="sidebarAccordion">
           <li class="nav-item">
-            <a class="nav-link active" data-toggle="collapse" href="#collapseMenu1" onclick="showMenu('menu1')">ORGANIZACIÓN DOCUMENTAL</a>
+            <a class="nav-link active" data-toggle="collapse" href="#collapseMenu1" onclick="showMenu('menu1')">TRANSFERENCIAS PRIMARIAS Y SECUNDARIAS</a>
             <div id="collapseMenu1" class="collapse show">
               <ul class="nav flex-column ml-3">
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu1')"> Clasificación Documental</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu2')"> Ordenación Documental</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu3')"> Descripción Documental</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu1')">¿Que son?</a>
                 </li>
               </ul>
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#collapseMenu2" onclick="showMenu('menu2')">VALORACIÓN DOCUMENTAL</a>
+            <a class="nav-link" data-toggle="collapse" href="#collapseMenu2" onclick="showMenu('menu2')">ORGANIZACIÓN DOCUMENTAL</a>
             <div id="collapseMenu2" class="collapse">
               <ul class="nav flex-column ml-3">
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu4')">¿Que es?</a>
-                </li>               
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#collapseMenu3" onclick="showMenu('menu3')">TRANSFERENCIAS PRIMARIAS Y SECUNDARIAS</a>
-            <div id="collapseMenu3" class="collapse">
-              <ul class="nav flex-column ml-3">
+                  <a class="nav-link" href="#" onclick="showDescription('submenu2')"> Clasificación Documental</a>
+                </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="showDescription('submenu5')">¿Que son?</a>
+                  <a class="nav-link" href="#" onclick="showDescription('submenu3')"> Ordenación Documental</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#" onclick="showDescription('submenu4')"> Descripción Documental</a>
                 </li>
               </ul>
             </div>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#collapseMenu3" onclick="showMenu('menu3')">VALORACIÓN DOCUMENTAL</a>
+            <div id="collapseMenu3" class="collapse">
+              <ul class="nav flex-column ml-3">
+                <li class="nav-item">
+                  <a class="nav-link" href="#" onclick="showDescription('submenu5')">¿Que es?</a>
+                </li>               
+              </ul>
+            </div>
+          </li>          
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#collapseMenu4" onclick="showMenu('menu4')">EVALUACION DE CONOCIMIENTO</a>
             <div id="collapseMenu4" class="collapse">
@@ -119,9 +135,6 @@ a:active {
           </li>
         </ul>
       </div>
-
-      
-
       <div class="col-md-9 content">
         <h2 style="text-align: center; margin-bottom: 20px;" id="descriptionTitle">EL ARCHIVERO </h2>
         <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImage"  width="360" height="360" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-06-08%20at%205.42.23%20PM.jpeg?raw=true" alt="Descripción de la imagen">
@@ -132,6 +145,11 @@ a:active {
       </div>
     </div>
   </div>
+  
+  <!-- Agrega el contenedor del ProgressBar -->
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
@@ -139,6 +157,10 @@ a:active {
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
+
+    // Variable para contar los submenús llenados
+    let numSubmenusFilled = 0;
+
     // Variable para mantener el registro de los números clicados
     const numerosClicados = {
       1: false,
@@ -186,7 +208,6 @@ a:active {
       // Mostrar el submenú correspondiente al menú seleccionado
       var selectedSubmenu = document.querySelector('#collapse' + menu);
       selectedSubmenu.classList.add('show');
-
     }
 
     function showElementsHome(snShow){
@@ -227,25 +248,36 @@ a:active {
 
       switch (submenu) {
         case 'submenu1':
+          task = '¿Que son las transferencias primarias y secundarias?';
+          title = '¿QUE SON LAS TRANSFERENCIAS PRIMARIAS Y SECUNDARIAS?';
+          content = `
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.37.24%20PM.jpeg?raw=true" alt="Descripción de la imagen">        
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.37.42%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-08-21%20at%202.41.21%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-08-21%20at%2012.03.28%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-08-21%20at%202.50.16%20PM.jpeg?raw=true" alt="Descripción de la imagen">
+      `;
+          break;
+        case 'submenu2':
           task = 'Clasificación Documental.';
-          title = 'ORGANIZACIÓN DOCUMENTAL PRIMER PASO';
+          title = 'CLASIFICACIÓN DOCUMENTAL PRIMER PASO';
           content = `
         <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu1"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.23.44%20PM.jpeg?raw=true" alt="Descripción de la imagen">
         <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu1"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.26.32%20PM.jpeg?raw=true" alt="Descripción de la imagen">       
       `;
           break;
-        case 'submenu2':
+        case 'submenu3':
           task = 'Ordenación Documental.';
-          title = 'ORGANIZACIÓN DOCUMENTAL SEGUNDO PASO';
+          title = 'ORDENACIÓN DOCUMENTAL SEGUNDO PASO';
           content = `
         <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu2"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.30.23%20PM.jpeg?raw=true" alt="Descripción de la imagen">
         <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu2"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.33.06%20PM.jpeg?raw=true" alt="Descripción de la imagen">
         <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoSubmenu1"><iframe width="710" height="465" src="https://www.youtube.com/embed/UT5yF0QBmhA?start" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
       `;
           break;
-        case 'submenu3':
+        case 'submenu4':
           task = 'Descripción Documental.';
-          title = 'ORGANIZACIÓN DOCUMENTAL TERCER PASO';
+          title = 'DESCRIPCIÓN DOCUMENTAL TERCER PASO';
           content = `
         <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.33.45%20PM.jpeg?raw=true" alt="Descripción de la imagen">
         <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.34.16%20PM.jpeg?raw=true" alt="Descripción de la imagen">
@@ -254,7 +286,7 @@ a:active {
         <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoSubmenu1"><iframe width="710" height="465" src="https://www.youtube.com/embed/Hngq8WlvhIc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>        
       `;
           break;
-        case 'submenu4':
+        case 'submenu5':
           task = '¿Que es la valoración documental?';
           title = '¿QUE ES?';
           content = `
@@ -265,14 +297,6 @@ a:active {
         <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoSubmenu1"><iframe width="710" height="465" src="https://www.youtube.com/embed/AwcH-IUG8NU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>        
       `;
           break;
-        case 'submenu5':
-          task = '¿Que son las transferencias primarias y secundarias?';
-          title = '¿QUE SON LAS TRANSFERENCIAS PRIMARIAS Y SECUNDARIAS?';
-          content = `
-        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.37.24%20PM.jpeg?raw=true" alt="Descripción de la imagen">        
-        <img style="display: block; margin:0 auto; margin-bottom: 20px;" id="descriptionImageSubmenu3"  width="710" height="465" src="https://github.com/zaga1906/zaga1906.github.io/blob/main/WhatsApp%20Image%202023-07-30%20at%202.37.42%20PM.jpeg?raw=true" alt="Descripción de la imagen">
-      `;
-          break;
         case 'submenu6':
           task = 'Hora de evaluar lo aprendido!!!';
           title = 'ES HORA DE EVALUAR LO APRENDIDO!!!';
@@ -281,14 +305,11 @@ a:active {
           <h3 style="text-align: center; margin-bottom: 20px; text-decoration: underline;">
             <a href="https://forms.gle/Guncn3BAB8xSptbQ8" target="_blank">CLICK AQUI, PARA CONTINUAR CON LA EVALUACION!!!</a>
           </h3>
+          <img width="550" height="400"; alt="Imagenes De Emoji, Certificados, Negrita, Bordes Y Marcos, Consejos Y Trucos, Iconos, Objetos, Mensajes, Pantalla" class="hCL kVc L4E MIw" fetchpriority="auto" loading="auto" src="https://i.pinimg.com/originals/75/d3/bd/75d3bd6c2855cea6bd12af66cc37719b.gif" elementtiming="closeupImage">
         `;
           break;
         case 'submenu7':
-          task = '¿Como se hacen las transferencias documentales?';
-          title = '¿COMO SE HACEN LAS TRANSFERENCIAS DOCUMENTALES?';
-          content = `
-          <div style="width: 100%; text-align: center; margin-bottom: 20px;" id="descriptionVideoSubmenu1"><iframe width="710" height="465" src="https://www.youtube.com/embed/CrDWSXqcP98?start=7" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
-        `;
+          
           break;
         default:
           title = 'Descripción';
@@ -333,7 +354,32 @@ a:active {
         text:'Comenzaras con el tema: ' + task,
         icon: 'success'
         });
-      }      
+
+        // Incrementa el contador de submenús llenados solo si es una felicitación
+        
+        updateProgressBar(countTrueValues(numerosClicados));
+      }
+    }
+
+      function updateProgressBar(numSubmenusFilled) {
+      const progressBar = document.getElementById('progress-bar');
+      const totalSubmenus = 6; // Total de submenús
+
+      // Calcula el porcentaje de progreso
+      const progressPercentage = (numSubmenusFilled / totalSubmenus) * 100;
+
+      // Actualiza el ancho del ProgressBar
+      progressBar.style.width = progressPercentage + '%';
+    }
+
+    function countTrueValues(obj) {
+    let count = 0;
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && obj[key] === true) {
+        count++;
+      }
+    }
+      return count;
     }
   </script>
 </body>

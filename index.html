@@ -12,7 +12,7 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #f4f4f4;
+            background-color: #C0EDE7;
         }
         .ruleta-container {
             display: flex;
@@ -55,6 +55,13 @@
         .btn-full-width {
             width: 100%;
         }
+        .ruleta-titulo {
+            display: block;
+            margin: 0 auto; /* Centrar horizontalmente */
+            width: 500px; /* Ajusta el tamaño según necesites */
+            height: auto;
+            margin-bottom: 10px; /* Espaciado entre la imagen y la ruleta */
+        }
     </style>
 </head>
 <audio id="miAudio" loop>
@@ -63,17 +70,18 @@
 </audio>
 <body class="container text-center">
     <div class="ruleta-container">
-        <div class="contenedor mt-1">
+        <img src="./imagen.jpeg" alt="Título de la ruleta" class="ruleta-titulo">
+        <div class="contenedor mt-2">
             <div class="indicador"></div>
             <canvas id="ruleta" width="300" height="300"></canvas>
         </div>        
     </div>
 
-    <div class="tabla-container mt-1">
+    <div class="tabla-container mt-2">
       <button id="boton" class="btn btn-primary mt-1 btn-full-width">Girar</button>
     </div>
-    <div class="tabla-container mt-1">
-        <div class="control-group mb-1">
+    <div class="tabla-container mt-2">
+        <div class="control-group mb-2">
             <div class="col-9">
                 <input type="text" id="nombre" class="form-control" placeholder="Nombre Completo">
             </div>
@@ -94,7 +102,7 @@
             </div>
         </div>
 
-        <div class="control-group mb-1">
+        <div class="control-group mb-2">
             <button id="guardar" class="btn btn-success" disabled>Guardar</button>
         </div>
         
@@ -147,8 +155,11 @@
         
         function girarRuleta() {
             document.getElementById('miAudio').play();
-            let anguloFinal = anguloActual + (Math.random() * 2 + 5) * Math.PI;
-            let incremento = (anguloFinal - anguloActual) / 100;
+            let anguloFinal = anguloActual + (Math.random() * 2 + 25) * Math.PI; // Ajusta el rango de giro para 3 veces más rápido
+            let duracion = 10000; // Duración en milisegundos (10 segundos)
+            let pasos = duracion / 50; // Número de pasos (intervalos de 50ms)
+            let incremento = (anguloFinal - anguloActual) / pasos; // Incremento por paso
+
             let intervalo = setInterval(() => {
                 anguloActual += incremento;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -156,8 +167,9 @@
                 if (anguloActual >= anguloFinal) {
                     clearInterval(intervalo);
                     anguloActual %= 2 * Math.PI;
+                    detenerAudio();
                 }
-            }, 50);
+            }, 50); // Intervalo de 50ms
         }
 
         function detenerAudio() {

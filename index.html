@@ -64,7 +64,7 @@
     <script>
         const canvas = document.getElementById("ruleta");
         const ctx = canvas.getContext("2d");
-        const opciones = ["Ponimalta", "Mini Perrito", "Otra oportunidad", "Sigue intentando", "Sumas 5 puntos a tu salon", "Doritos", "Mini Hamburguesa"];
+        const opciones = ["Ponimalta", "Mini Perrito", "Otra oportunidad", "Sigue intentando", "Sumas 5 a tu salon", "Doritos", "Mini Hamburguesa"];
         const colores = ["#d72324", "#E57914", "#28A42F", "#564082", "#ECE346", "#FCFCFC", "#4AA1D2"];
         let anguloActual = 0;
         
@@ -83,8 +83,8 @@
                 ctx.translate(150, 150);
                 ctx.rotate(anguloActual + (i + 0.5) * anguloPorOpcion);
                 ctx.fillStyle = "black";
-                ctx.font = "14px Arial";
-                ctx.fillText(opciones[i], 60, 0);
+                ctx.font = "12px Arial";
+                ctx.fillText(opciones[i], 40, 0);
                 ctx.restore();
             }
         }

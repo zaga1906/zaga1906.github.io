@@ -40,10 +40,10 @@
         <div class="indicador"></div>
         <canvas id="ruleta" width="300" height="300"></canvas>
     </div>
-    <button id="boton" class="btn btn-primary mt-3">Girar</button>
+    <button id="boton" class="btn btn-primary mt-3">GIRAR</button>
     
     <div class="table-responsive mt-4">
-        <table class="table table-bordered table-striped">
+        <table id="tabla" class="table table-bordered table-striped">
             <thead class="table-dark">
                 <tr>
                     <th>Nombre del Estudiante</th>
@@ -105,8 +105,22 @@
             }, 10);
         }
         
+        function actualizarTabla() {
+            let tabla = document.getElementById("tabla").getElementsByTagName("tbody")[0];
+            let filas = Array.from(tabla.getElementsByTagName("tr"));
+            let idx1 = Math.floor(Math.random() * filas.length);
+            let idx2 = Math.floor(Math.random() * filas.length);
+            if (idx1 !== idx2) {
+                let temp = filas[idx1].innerHTML;
+                filas[idx1].innerHTML = filas[idx2].innerHTML;
+                filas[idx2].innerHTML = temp;
+            }
+            setTimeout(actualizarTabla, Math.floor(Math.random() * 3000) + 3000);
+        }
+        
         dibujarRuleta();
         document.getElementById("boton").addEventListener("click", girarRuleta);
+        setTimeout(actualizarTabla, Math.floor(Math.random() * 3000) + 3000);
     </script>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

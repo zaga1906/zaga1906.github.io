@@ -1,159 +1,97 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CIBERDEPENDENCIA THE GAME!!!</title>
-<style>
-
-    .swal2-styled.swal2-confirm.swalBtnColor {
-        background-color: #04ad29;
-    }
-
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    position: relative;
-  }
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .box {
-    width: 80%;
-    height: 100px;
-    border: 2px solid black;
-    border-radius: 15px;
-    margin: 10px 0;
-    cursor: pointer;
-  }
-  #azul {
-    background-color: blue;
-  }
-  #rojo {
-    background-color: red;
-  }
-  #blanco {
-    background-color: white;
-    position: relative;
-  }
-  h1 {
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  .footer-img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 20%;
-    height: 20%;
-    z-index: -1;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        canvas {
+            border: 2px solid black;
+            border-radius: 50%;
+        }
+        #boton {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .indicador {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 20px solid black;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .contenedor {
+            position: relative;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
-<h1>CIBERDEPENDENCIA <br>THE GAME!!!</h1>
-<div class="container">
-  <div class="box" id="azul"></div>
-  <div class="box" id="rojo"></div>
-  <div class="box" id="blanco"></div>
-</div>
-<br>
-<img class="footer-img" src="https://sena.edu.co/Style%20Library/alayout/images/logoSena.png" alt="Logo SENA">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-  var preguntas = {
-    azul: [
-      "¿Qué actividad te resulta más difícil de dejar cuando estás conectado a Internet?",
-      "¿Alguna vez has sentido ansiedad o malestar por no poder acceder a Internet?",
-      "Avanza dos casillas!!!",
-      "¿Qué crees que podrías hacer para reducir tu dependencia de Internet?",
-      "¿Has experimentado alguna vez la sensación de estar 'desconectado' de la vida real debido al tiempo que pasas en línea?",
-      "¿Qué estrategias crees que podrían ayudar a las personas a reducir su dependencia de Internet?",
-      "¿Cuántas horas al día pasas usando un dispositivo electrónico?",
-      "Retrocede dos casillas!!!",
-      "¿Tus relaciones personales han sufrido debido a tu excesivo uso de dispositivos electrónicos?",
-      "¿Te sientes inquieto o frustrado cuando no tienes acceso a tu dispositivo electrónico?",
-      "Seda el turno!!!",
-      "¿Eres capaz de pasar sin tu dispositivo electrónico durante una reunión o una cena familiar?",
-      "Avanza dos casillas!!!"
-    ],
-    rojo: [
-      "Avanza dos casillas!!!",  
-      "¿Cuántas horas pasas en promedio al día frente a una pantalla?",
-      "¿Has notado algún cambio en tu comportamiento o estado de ánimo cuando pasas mucho tiempo frente a una pantalla?",
-      "Retrocede dos casillas!!!",
-      "¿Crees que la ciberdependencia puede afectar tus relaciones personales?",
-      "Seda el turno!!!",
-      "¿Qué impacto crees que tiene la ciberdependencia en la productividad?",
-      "¿Qué impacto crees que tiene la ciberdependencia en la sociedad en general?",           
-      "Avanza dos casillas!!!",
-      "¿Qué piensas de las personas que usan sus dispositivos electrónicos para escapar de sus problemas personales o emocionales?",
-      "¿Cuáles crees que son las causas físicas que la ciberdependencia genera?",
-      "Retrocede dos casillas!!!",
-      "Cuentas con un sistema de apoyo para la salud mental en base a la dependencia cibernética?",
-      "Seda el turno!!!"
-    ],
-    blanco: [
-      "¿Has intentado reducir tu tiempo en línea alguna vez? ¿Cómo te fue?",
-      "Avanza dos casillas!!!",
-      "¿Cuál crees que es la principal razón por la que pasas tanto tiempo en línea?",
-      "Retrocede dos casillas!!!",
-      "¿Crees que la ciberdependencia puede tener consecuencias a largo plazo en la vida de una persona?",
-      "¿Has notado algún cambio en tu salud física debido al tiempo que pasas en línea?",
-      "Retrocede dos casillas!!!",
-      "¿Crees que la ciberdependencia es un problema que afecta a todas las edades por igual?",
-      "¿Qué consejo darías a alguien que siente que está pasando demasiado tiempo en línea?",
-      "Seda el turno!!!",
-      "¿Qué efecto crees que tiene la ciberdependencia en la salud mental?",
-      "Avanza dos casillas!!!",
-      "¿Crees que la ciberdependencia es un problema subestimado en la sociedad actual?",
-      "¿Qué crees que podría motivar a alguien a buscar ayuda si siente que está luchando con la ciberdependencia?",
-      "Seda el turno!!!" 
-    ]
-};
-
-function mostrarPregunta(color) {
-  var listaPreguntas = preguntas[color];
-  if (listaPreguntas.length === 0) {
-    preguntas[color] = listaPreguntas = shuffle(preguntas[color]);
-  }
-  var pregunta = listaPreguntas.pop();
-  Swal.fire({
-    customClass: {
-            confirmButton: 'swalBtnColor'
-        },
-    title: pregunta,
-    icon: 'success',
-    confirmButtonText: 'Continuar!!!'
-  });
-}
-
-function shuffle(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex;
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-  return array;
-}
-
-document.getElementById("azul").addEventListener("click", function() {
-  mostrarPregunta("azul");
-});
-
-document.getElementById("rojo").addEventListener("click", function() {
-  mostrarPregunta("rojo");
-});
-
-document.getElementById("blanco").addEventListener("click", function() {
-  mostrarPregunta("blanco");
-});
-</script>
+    <div class="contenedor">
+        <div class="indicador"></div>
+        <canvas id="ruleta" width="300" height="300"></canvas>
+    </div>
+    <button id="boton">Girar</button>
+    <script>
+        const canvas = document.getElementById("ruleta");
+        const ctx = canvas.getContext("2d");
+        const opciones = ["Opción 1", "Opción 2", "Opción 3", "Opción 4", "Opción 5", "Opción 6", "Opción 7"];
+        const colores = ["#A3C4BC", "#F2E1C1", "#E8B4BC", "#B5EAEA", "#FFB5A7", "#C3A29E", "#B0D0D3"];
+        let anguloActual = 0;
+        
+        function dibujarRuleta() {
+            const anguloPorOpcion = (2 * Math.PI) / opciones.length;
+            for (let i = 0; i < opciones.length; i++) {
+                ctx.beginPath();
+                ctx.moveTo(150, 150);
+                ctx.arc(150, 150, 150, anguloActual + i * anguloPorOpcion, anguloActual + (i + 1) * anguloPorOpcion);
+                ctx.fillStyle = colores[i];
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+                
+                ctx.save();
+                ctx.translate(150, 150);
+                ctx.rotate(anguloActual + (i + 0.5) * anguloPorOpcion);
+                ctx.fillStyle = "black";
+                ctx.font = "14px Arial";
+                ctx.fillText(opciones[i], 60, 0);
+                ctx.restore();
+            }
+        }
+        
+        function girarRuleta() {
+            let vueltas = Math.floor(Math.random() * 10) + 5;
+            let anguloFinal = anguloActual + vueltas * 2 * Math.PI;
+            let incremento = (anguloFinal - anguloActual) / 100;
+            
+            let intervalo = setInterval(() => {
+                anguloActual += incremento;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                dibujarRuleta();
+                if (anguloActual >= anguloFinal) {
+                    clearInterval(intervalo);
+                    anguloActual %= 2 * Math.PI;
+                }
+            }, 10);
+        }
+        
+        dibujarRuleta();
+        document.getElementById("boton").addEventListener("click", girarRuleta);
+    </script>
 </body>
 </html>

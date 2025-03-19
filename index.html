@@ -59,32 +59,39 @@
 </head>
 <body class="container text-center">
     <div class="ruleta-container">
-        <div class="contenedor mt-4">
+        <div class="contenedor mt-1">
             <div class="indicador"></div>
             <canvas id="ruleta" width="300" height="300"></canvas>
         </div>        
     </div>
 
-    <div class="tabla-container mt-4">
-      <button id="boton" class="btn btn-primary mt-3 btn-full-width">Girar</button>
+    <div class="tabla-container mt-1">
+      <button id="boton" class="btn btn-primary mt-1 btn-full-width">Girar</button>
     </div>
     
-    <div class="tabla-container mt-4">
-        <div class="control-group mb-2">
-            <input type="text" id="nombre" class="form-control" placeholder="Nombre Completo">
-            <select id="grado" class="form-select">
-                <option value="1">1°</option>
-                <option value="2">2°</option>
-                <option value="3">3°</option>
-                <option value="4">4°</option>
-                <option value="5">5°</option>
-                <option value="6">6°</option>
-                <option value="7">7°</option>
-                <option value="8">8°</option>
-                <option value="9">9°</option>
-                <option value="10">10°</option>
-                <option value="11">11°</option>
-            </select>
+    <div class="tabla-container mt-1">
+        <div class="control-group mb-1">
+            <div class="col-9">
+                <input type="text" id="nombre" class="form-control" placeholder="Nombre Completo">
+            </div>
+            <div class="col-2">
+                <select id="grado" class="form-select">
+                    <option value="1">1°</option>
+                    <option value="2">2°</option>
+                    <option value="3">3°</option>
+                    <option value="4">4°</option>
+                    <option value="5">5°</option>
+                    <option value="6">6°</option>
+                    <option value="7">7°</option>
+                    <option value="8">8°</option>
+                    <option value="9">9°</option>
+                    <option value="10">10°</option>
+                    <option value="11">11°</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group mb-1">
             <button id="guardar" class="btn btn-success" disabled>Guardar</button>
         </div>
         

@@ -14,6 +14,11 @@
             height: 100vh;
             background-color: #f4f4f4;
         }
+        .ruleta-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
         canvas {
             border: 2px solid black;
             border-radius: 50%;
@@ -33,16 +38,56 @@
             position: relative;
             display: inline-block;
         }
+        .tabla-container {
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .control-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .control-group input, .control-group select, .control-group button {
+            flex: 1;
+        }
+        .btn-full-width {
+            width: 100%;
+        }
     </style>
 </head>
 <body class="container text-center">
-    <div class="contenedor mt-4">
-        <div class="indicador"></div>
-        <canvas id="ruleta" width="300" height="300"></canvas>
+    <div class="ruleta-container">
+        <div class="contenedor mt-4">
+            <div class="indicador"></div>
+            <canvas id="ruleta" width="300" height="300"></canvas>
+        </div>        
     </div>
-    <button id="boton" class="btn btn-primary mt-3">Girar</button>
+
+    <div class="tabla-container mt-4">
+      <button id="boton" class="btn btn-primary mt-3 btn-full-width">Girar</button>
+    </div>
     
-    <div class="table-responsive mt-4">
+    <div class="tabla-container mt-4">
+        <div class="control-group mb-2">
+            <input type="text" id="nombre" class="form-control" placeholder="Nombre Completo">
+            <select id="grado" class="form-select">
+                <option value="1">1°</option>
+                <option value="2">2°</option>
+                <option value="3">3°</option>
+                <option value="4">4°</option>
+                <option value="5">5°</option>
+                <option value="6">6°</option>
+                <option value="7">7°</option>
+                <option value="8">8°</option>
+                <option value="9">9°</option>
+                <option value="10">10°</option>
+                <option value="11">11°</option>
+            </select>
+            <button id="guardar" class="btn btn-success" disabled>Guardar</button>
+        </div>
+        
         <table id="tabla" class="table table-bordered table-striped">
             <thead class="table-dark">
                 <tr>
@@ -52,19 +97,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>Juan Pérez</td><td>10°</td><td>85</td></tr>
-                <tr><td>María Gómez</td><td>9°</td><td>90</td></tr>
-                <tr><td>Carlos López</td><td>11°</td><td>75</td></tr>
-                <tr><td>Ana Torres</td><td>8°</td><td>50</td></tr>
-                <tr><td>David Rojas</td><td>7°</td><td>15</td></tr>
+                <tr><td>Carlos López</td><td>11</td><td>75</td></tr>
+                <tr><td>Juan Pérez</td><td>10</td><td>85</td></tr>
+                <tr><td>María Gómez</td><td>9</td><td>90</td></tr>
+                <tr><td>Ana Torres</td><td>8</td><td>50</td></tr>
+                <tr><td>David Rojas</td><td>7</td><td>15</td></tr>
             </tbody>
         </table>
     </div>
-
+    
     <script>
         const canvas = document.getElementById("ruleta");
         const ctx = canvas.getContext("2d");
-        const opciones = ["Ponimalta", "Mini Perrito", "Otra oportunidad", "Sigue intentando", "Sumas 5 a tu salon", "Doritos", "Mini Hamburguesa"];
+        const opciones = ["Ponimalta", "Mini Perrito", "Otra oportunidad", "Sigue intentando", "Sumas 5 a tu salón", "Doritos", "Mini Hamburguesa"];
         const colores = ["#d72324", "#E57914", "#28A42F", "#564082", "#ECE346", "#FCFCFC", "#4AA1D2"];
         let anguloActual = 0;
         
@@ -79,6 +124,7 @@
                 ctx.stroke();
                 ctx.closePath();
                 
+                // Agregar texto rotado
                 ctx.save();
                 ctx.translate(150, 150);
                 ctx.rotate(anguloActual + (i + 0.5) * anguloPorOpcion);
@@ -90,10 +136,8 @@
         }
         
         function girarRuleta() {
-            let vueltas = Math.floor(Math.random() * 10) + 5;
-            let anguloFinal = anguloActual + vueltas * 2 * Math.PI;
+            let anguloFinal = anguloActual + (Math.random() * 2 + 5) * Math.PI;
             let incremento = (anguloFinal - anguloActual) / 100;
-            
             let intervalo = setInterval(() => {
                 anguloActual += incremento;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -104,25 +148,36 @@
                 }
             }, 10);
         }
-        
-        function actualizarTabla() {
-            let tabla = document.getElementById("tabla").getElementsByTagName("tbody")[0];
-            let filas = Array.from(tabla.getElementsByTagName("tr"));
-            let idx1 = Math.floor(Math.random() * filas.length);
-            let idx2 = Math.floor(Math.random() * filas.length);
-            if (idx1 !== idx2) {
-                let temp = filas[idx1].innerHTML;
-                filas[idx1].innerHTML = filas[idx2].innerHTML;
-                filas[idx2].innerHTML = temp;
+
+        document.getElementById("nombre").addEventListener("input", function () {
+            const nombreIngresado = this.value.trim().toLowerCase();
+            const filas = document.querySelectorAll("#tabla tbody tr");
+            let nombreExiste = false;
+
+            filas.forEach(fila => {
+                const nombreEnTabla = fila.cells[0].textContent.trim().toLowerCase();
+                if (nombreIngresado === nombreEnTabla) {
+                    nombreExiste = true;
+                }
+            });
+
+            document.getElementById("guardar").disabled = nombreExiste || nombreIngresado === "";
+        });
+
+        document.getElementById("guardar").addEventListener("click", function () {
+            const nombre = document.getElementById("nombre").value.trim();
+            const grado = document.getElementById("grado").value;
+            if (nombre !== "") {
+                const nuevaFila = document.createElement("tr");
+                nuevaFila.innerHTML = `<td>${nombre}</td><td>${grado}</td><td>5</td>`;
+                document.querySelector("#tabla tbody").appendChild(nuevaFila);
+                document.getElementById("nombre").value = "";
+                this.disabled = true;
             }
-            setTimeout(actualizarTabla, Math.floor(Math.random() * 3000) + 3000);
-        }
+        });
         
-        dibujarRuleta();
         document.getElementById("boton").addEventListener("click", girarRuleta);
-        setTimeout(actualizarTabla, Math.floor(Math.random() * 3000) + 3000);
+        dibujarRuleta();
     </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

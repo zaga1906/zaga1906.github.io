@@ -57,6 +57,10 @@
         }
     </style>
 </head>
+<audio id="miAudio" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    Tu navegador no soporta el elemento de audio.
+</audio>
 <body class="container text-center">
     <div class="ruleta-container">
         <div class="contenedor mt-1">
@@ -68,7 +72,6 @@
     <div class="tabla-container mt-1">
       <button id="boton" class="btn btn-primary mt-1 btn-full-width">Girar</button>
     </div>
-    
     <div class="tabla-container mt-1">
         <div class="control-group mb-1">
             <div class="col-9">
@@ -143,6 +146,7 @@
         }
         
         function girarRuleta() {
+            document.getElementById('miAudio').play();
             let anguloFinal = anguloActual + (Math.random() * 2 + 5) * Math.PI;
             let incremento = (anguloFinal - anguloActual) / 100;
             let intervalo = setInterval(() => {
@@ -153,7 +157,13 @@
                     clearInterval(intervalo);
                     anguloActual %= 2 * Math.PI;
                 }
-            }, 10);
+            }, 50);
+        }
+
+        function detenerAudio() {
+            let audio = document.getElementById('miAudio');
+            audio.pause();
+            audio.currentTime = 0;
         }
 
         document.getElementById("nombre").addEventListener("input", function () {

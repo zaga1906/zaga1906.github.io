@@ -135,6 +135,13 @@ body {
 .btn-survey { background: linear-gradient(135deg, #4facfe, #00c6fb); }
 .btn-res    { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #155724; }
 .btn-ia     { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: #7fffcb; }
+
+.btn-ia-img {
+  height: 42px;
+  width: auto;
+  transform: scaleX(-1);
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.3));
+}
 .btn-exp    { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #7b4200; }
 .btn-clear  { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); color: #5d4037; }
 
@@ -533,6 +540,7 @@ img.bot-avatar {
   .message          { max-width: 96%; }
   .msg-avatar       { font-size: 1.2rem; min-width: 26px; }
   img.bot-avatar    { height: 34px; }
+  .btn-ia-img       { height: 32px; }
   .msg-bubble       { font-size: 0.9rem; padding: 10px 13px; }
 
   /* Tarjeta resultado: sin límite de ancho */

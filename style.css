@@ -132,6 +132,7 @@ body {
 .btn-gen    { background: linear-gradient(135deg, #f093fb, #f5576c); }
 .btn-survey { background: linear-gradient(135deg, #4facfe, #00c6fb); }
 .btn-res    { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #155724; }
+.btn-ia     { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: #7fffcb; }
 .btn-exp    { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #7b4200; }
 .btn-clear  { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); color: #5d4037; }
 
@@ -344,6 +345,31 @@ body {
   transition: background .18s;
 }
 .btn-cancel:hover { background: var(--border); }
+
+/* ── Modal API key: estilos extras ─────────────────────────── */
+.ia-modal-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.ia-steps {
+  font-size: 0.85rem;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #f8f9ff;
+  border-radius: 10px;
+  padding: 10px 10px 10px 28px;
+  border-left: 3px solid var(--purple);
+}
+.ia-modal-note {
+  margin-top: 12px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+}
 
 /* ── Tarjeta: recomendación ─────────────────────────────────── */
 .result-inner { padding: 4px; }

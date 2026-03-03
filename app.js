@@ -564,6 +564,158 @@ const App = (() => {
   }
 
   // ═══════════════════════════════════════════════════════════════
+  //  GROQ IA — PacoBot con inteligencia artificial real
+  // ═══════════════════════════════════════════════════════════════
+
+  const IA_SYSTEM_PROMPT = `Eres PacoBot IA 🤖, un asistente amigable y muy divertido para niños de 10 años.
+Fuiste creado por Simón Parra Morales de grado 4º del colegio Anglohispano para la Feria de Ciencias del municipio de Pácora (Caldas, Colombia) 2026.
+
+REGLAS IMPORTANTES:
+- Solo hablas sobre: juegos tradicionales colombianos, historia y cultura de Pácora (Caldas), fiestas, geografía del municipio, consejos para jugar mejor.
+- Si te preguntan algo fuera de estos temas, redirige de forma simpática y divertida hacia los juegos o la historia de Pácora.
+- Usa lenguaje muy simple, claro y divertido para niños de 10 años.
+- Usa emojis para hacer las respuestas más visuales y alegres 🎉.
+- Respuestas cortas: máximo 4 oraciones. Nunca escribas bloques de texto largos.
+- Habla en español colombiano. Puedes usar palabras como "chévere", "bacano", "parce".`;
+
+  const IA_MODES = [
+    { label: '💬 Chat libre sobre Pácora',  mode: 'chat',   starter: null },
+    { label: '❓ Trivia: ¿Cuánto sabes?',   mode: 'trivia', starter: 'Vamos a jugar trivia. Hazme UNA pregunta de trivia sobre Pácora (historia, cultura o juegos tradicionales colombianos). Espera mi respuesta para evaluarla.' },
+    { label: '🎲 Adivina el juego',          mode: 'guess',  starter: 'Vamos a jugar "Adivina el juego". Piensa en un juego tradicional colombiano, pero NO lo digas. Dame solo la primera pista. Yo intentaré adivinar cuál es.' },
+    { label: '🪢 Rimas para saltar la cuerda', mode: 'rhymes', starter: 'Inventa una rima corta y divertida para saltar la cuerda, al estilo de los niños de Pácora. Luego pregúntame si quiero otra.' },
+  ];
+
+  let iaHistory = [];
+
+  function getGroqKey()      { return localStorage.getItem('pacobot_groq_key') || ''; }
+  function setGroqKey(key)   { localStorage.setItem('pacobot_groq_key', key.trim()); }
+  function clearGroqKey()    { localStorage.removeItem('pacobot_groq_key'); }
+
+  async function startIA() {
+    clearOptions(); hideInput();
+    state.mode = 'ia';
+    if (!getGroqKey()) { showApiKeyModal(); return; }
+    await showIAModes();
+  }
+
+  function showApiKeyModal() {
+    document.getElementById('ia-key-error').textContent = '';
+    document.getElementById('ia-key-input').value = '';
+    document.getElementById('ia-modal').classList.remove('hidden');
+  }
+
+  function closeIAModal() {
+    document.getElementById('ia-modal').classList.add('hidden');
+  }
+
+  function saveAPIKey() {
+    const key = document.getElementById('ia-key-input').value.trim();
+    const err = document.getElementById('ia-key-error');
+    if (!key) { err.textContent = '⚠️ Escribe la clave antes de continuar.'; return; }
+    if (!key.startsWith('gsk_')) { err.textContent = '⚠️ La clave debe empezar con "gsk_"'; return; }
+    setGroqKey(key);
+    closeIAModal();
+    showIAModes();
+  }
+
+  function clearAPIKey() {
+    clearGroqKey();
+    closeIAModal();
+    say('🔑 Clave borrada. Pulsa <strong>PacoBot IA</strong> para ingresar una nueva.', false, 200);
+  }
+
+  async function showIAModes() {
+    iaHistory = [];
+    state.mode = 'ia';
+    await say(
+      '¡Hola! Soy <strong>PacoBot IA</strong> 🧠✨, la versión con inteligencia artificial real.<br>' +
+      'Puedo charlar contigo, hacerte trivia, jugar a adivinar juegos o inventar rimas.<br>' +
+      '<em>Solo hablo de Pácora y sus juegos 😄</em><br><br>¿Qué quieres hacer?',
+      false, 400
+    );
+    showOptions(IA_MODES, async (opt) => {
+      await addUserMsg(opt.label);
+      await startIAMode(opt.starter);
+    });
+  }
+
+  async function startIAMode(starter) {
+    iaHistory = [];
+    state.mode = 'ia_chat';
+    if (starter) {
+      const reply = await callGroq(starter, true);
+      if (reply) await addBotMsg(reply);
+    } else {
+      await say('¡Genial! Pregúntame lo que quieras sobre Pácora y sus juegos 🎮', false, 300);
+    }
+    showInput('Escribe tu mensaje...');
+  }
+
+  async function handleIAInput(text) {
+    hideInput();
+    await addUserMsg(text);
+    const reply = await callGroq(text, false);
+    if (reply) await addBotMsg(reply);
+    showInput('Escribe tu mensaje...');
+  }
+
+  async function callGroq(userMessage, isStarter) {
+    const key = getGroqKey();
+
+    // Construir historial: si es starter va como primer turno user sin guardarlo en iaHistory
+    const messages = [{ role: 'system', content: IA_SYSTEM_PROMPT }];
+    if (isStarter) {
+      messages.push({ role: 'user', content: userMessage });
+    } else {
+      iaHistory.push({ role: 'user', content: userMessage });
+      messages.push(...iaHistory);
+    }
+
+    showTyping();
+    try {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages,
+          max_tokens: 220,
+          temperature: 0.75
+        })
+      });
+
+      hideTyping();
+
+      if (res.status === 401) {
+        clearGroqKey();
+        await say('❌ La clave de API no es válida o venció. Pulsa <strong>PacoBot IA</strong> para ingresar una nueva.', false, 200);
+        state.mode = 'idle';
+        return null;
+      }
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        await say(`❌ Error ${res.status}: ${err.error?.message || 'intenta de nuevo'}`, false, 200);
+        return null;
+      }
+
+      const data  = await res.json();
+      const reply = data.choices[0].message.content;
+
+      // Guardar en historial de conversación (máx. 10 turnos para no crecer indefinidamente)
+      iaHistory.push({ role: 'assistant', content: reply });
+      if (iaHistory.length > 20) iaHistory = iaHistory.slice(-20);
+
+      DB.saveMessage('ia', reply.slice(0, 300), 'ia_chat');
+      return reply;
+
+    } catch {
+      hideTyping();
+      await say('❌ Sin conexión a internet. Verifica tu red e intenta de nuevo.', false, 200);
+      return null;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
   //  INPUT DE TEXTO
   // ═══════════════════════════════════════════════════════════════
 
@@ -573,6 +725,7 @@ const App = (() => {
     if (!text) return;
     input.value = '';
     if (state.mode === 'survey_why') await submitSurveyWhy(text);
+    else if (state.mode === 'ia_chat') await handleIAInput(text);
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -646,6 +799,7 @@ const App = (() => {
     startGenerator, generateGame, closeModal,
     startSurvey,
     showResults,
+    startIA, saveAPIKey, closeIAModal, clearAPIKey,
     confirmClear, exportData,
     submitTextInput
   };

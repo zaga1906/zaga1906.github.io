@@ -419,11 +419,101 @@ body {
 #chat-messages::-webkit-scrollbar-track { background: transparent; }
 #chat-messages::-webkit-scrollbar-thumb { background: #c4b5f5; border-radius: 5px; }
 
-/* ── Responsive ─────────────────────────────────────────────── */
-@media (max-width: 600px) {
-  .sidebar       { width: 115px; min-width: 115px; }
-  .header-badge  { display: none; }
+/* ════════════════════════════════════════════════════════════
+   MÓVIL  ≤ 640px
+   El sidebar lateral se transforma en barra de nav inferior
+   ════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+
+  /* Viewport dinámico: respeta la barra del navegador en iPhone */
+  #app { height: 100dvh; }
+
+  /* ── Header compacto ── */
+  .app-header   { padding: 8px 14px; }
+  .bot-icon     { font-size: 1.9rem; }
+  .app-header h1 { font-size: 1.25rem; }
+  .app-header p  { display: none; }
+  .header-badge  { font-size: 0.65rem; padding: 4px 8px; white-space: nowrap; }
+
+  /* ── Layout: columna invertida (chat arriba, nav abajo) ── */
+  .main-layout {
+    flex-direction: column-reverse;  /* nav queda al fondo */
+  }
+
+  /* ── Sidebar → barra de nav inferior ── */
+  .sidebar {
+    width: 100%;
+    min-width: unset;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));  /* iPhone home bar */
+    gap: 7px;
+    box-shadow: 0 -3px 12px rgba(0,0,0,.1);
+    border-top: 1px solid var(--border);
+    /* quita el scroll horizontal visible */
+    scrollbar-width: none;
+  }
+  .sidebar::-webkit-scrollbar { display: none; }
+
+  /* Ocultar título y divisor en móvil */
+  .sidebar h2  { display: none; }
+  .sb-divider  { width: 1px; min-width: 1px; height: 40px; background: var(--border); margin: 0 2px; }
+
+  /* Botones de nav: compactos pero tocables (mínimo 44px) */
+  .action-btn {
+    min-width: 62px;
+    max-width: 72px;
+    padding: 8px 4px 6px;
+    font-size: 0.62rem;
+    border-radius: 12px;
+    flex-shrink: 0;
+    flex: 1;
+  }
+  .btn-icon  { font-size: 1.4rem; }
+  .btn-label { white-space: pre-line; }
+
+  /* ── Chat: ocupa todo el ancho ── */
+  .chat-container { flex: 1; min-height: 0; }
+
   #chat-messages { padding: 12px 12px 6px; }
-  #quick-options { padding: 5px 12px 8px; }
-  #input-form    { padding: 8px 12px 10px; }
+
+  /* Mensajes más anchos en pantalla pequeña */
+  .message          { max-width: 96%; }
+  .msg-avatar       { font-size: 1.2rem; min-width: 26px; }
+  .msg-bubble       { font-size: 0.9rem; padding: 10px 13px; }
+
+  /* Tarjeta resultado: sin límite de ancho */
+  .result-card .msg-bubble { max-width: none; }
+
+  /* ── Opciones de respuesta: más grandes para dedos ── */
+  #quick-options { padding: 6px 12px 8px; gap: 8px; }
+  .option-btn    { padding: 11px 14px; font-size: 0.9rem; min-height: 44px; }
+
+  /* ── Input: font-size 16px evita el zoom automático de iOS ── */
+  #input-form  { padding: 8px 12px 10px; }
+  #text-input  { font-size: 1rem; padding: 10px 14px; }
+  .send-btn    { padding: 10px 14px; font-size: 0.85rem; }
+
+  /* ── Modal: casi pantalla completa ── */
+  .modal { align-items: flex-end; }   /* sube desde abajo */
+  .modal-box {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    padding: 22px 18px calc(18px + env(safe-area-inset-bottom));
+    animation: slideUp .3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  /* ── Barras de encuesta: etiqueta más corta ── */
+  .bar-label { min-width: 105px; font-size: 0.72rem; }
+
+  /* ── Tarjeta generador: padding reducido ── */
+  .gen-card { padding: 12px; }
+  .rule-step { font-size: 0.82rem; }
 }

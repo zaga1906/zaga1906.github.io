@@ -622,7 +622,7 @@ const App = (() => {
     });
 
     await say(
-      `¡Hola! Soy <strong>PacoBot</strong> 🤖, el asistente de juegos tradicionales de Pácora.<br>Fui creado por Simón Parra Morales de grado 4º del colegio Anglohispano<br><br>
+      `¡Hola! Soy <strong>PacoBot</strong> 🤖, el asistente de juegos tradicionales de Pácora.<br>Fui creado por <strong>Simón Parra Morales</strong> de grado <strong>4º</strong> del colegio Anglohispano<br><br>
       Puedo ayudarte a:<br>
       🎯 <strong>Recomendar</strong> el juego perfecto para ti<br>
       ✨ <strong>Inventar</strong> un juego nuevo y divertido<br>

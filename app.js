@@ -420,7 +420,7 @@ const App = (() => {
       </div>`;
 
     await say(html, true, 600, `Recomendación: ${winner.name}`);
-    await say('¿Quieres otro juego? ¡Usa los botones del menú! 👈', false, 700);
+    await say(`¿Quieres otro juego? ${menuHint()}`, false, 700);
     state.mode = 'idle';
   }
 
@@ -607,6 +607,13 @@ const App = (() => {
   //  INICIALIZACIÓN
   // ═══════════════════════════════════════════════════════════════
 
+  // Helper: devuelve la pista de dirección según el dispositivo
+  function menuHint() {
+    return window.matchMedia('(max-width: 640px)').matches
+      ? '¡Usa los botones del menú de abajo! 👇'
+      : '¡Usa los botones del menú de la izquierda! 👈';
+  }
+
   async function init() {
     try { await DB.init(); } catch { /* sin persistencia: ok */ }
 
@@ -615,13 +622,13 @@ const App = (() => {
     });
 
     await say(
-      `¡Hola! Soy <strong>PacoBot</strong> 🤖, el asistente de juegos tradicionales de Pácora.<br>Fui creado por Simón Parra Morales de grado 4º del colegio Anglohispano<br><br>
+      `¡Hola! Soy <strong>PacoBot</strong> 🤖, el asistente de juegos tradicionales de Pácora.<br>Fui creado por <strong>Simón Parra Morales</strong> de grado <strong>4º</strong> del colegio Anglohispano<br><br>
       Puedo ayudarte a:<br>
       🎯 <strong>Recomendar</strong> el juego perfecto para ti<br>
       ✨ <strong>Inventar</strong> un juego nuevo y divertido<br>
       📊 <strong>Encuesta</strong> para saber qué juegos gustan más<br>
       🏆 <strong>Ver resultados</strong> de la encuesta<br><br>
-      ¡Elige una opción del menú de la izquierda! 👈`,
+      ${menuHint()}`,
       false, 300
     );
   }

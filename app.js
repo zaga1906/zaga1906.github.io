@@ -614,6 +614,11 @@ const App = (() => {
       if (e.key === 'Enter') submitTextInput();
     });
 
+    const isMobile = window.matchMedia('(max-width: 640px)').matches;
+    const menuHint = isMobile
+      ? '¡Elige una opción del menú de abajo! 👇'
+      : '¡Elige una opción del menú de la izquierda! 👈';
+
     await say(
       `¡Hola! Soy <strong>PacoBot</strong> 🤖, el asistente de juegos tradicionales de Pácora.<br>Fui creado por Simón Parra Morales de grado 4º del colegio Anglohispano<br><br>
       Puedo ayudarte a:<br>
@@ -621,7 +626,7 @@ const App = (() => {
       ✨ <strong>Inventar</strong> un juego nuevo y divertido<br>
       📊 <strong>Encuesta</strong> para saber qué juegos gustan más<br>
       🏆 <strong>Ver resultados</strong> de la encuesta<br><br>
-      ¡Elige una opción del menú de la izquierda! 👈`,
+      ${menuHint}`,
       false, 300
     );
   }

@@ -290,7 +290,7 @@ const App = (() => {
   async function addBotMsg(html, isCard = false, saveText = '') {
     const wrap = document.createElement('div');
     wrap.className = `message bot${isCard ? ' result-card' : ''}`;
-    wrap.innerHTML = `<div class="msg-avatar">🤖</div><div class="msg-bubble">${html}</div>`;
+    wrap.innerHTML = `<img src="pacobot-mascot.png" class="msg-avatar bot-avatar" alt="PacoBot"><div class="msg-bubble">${html}</div>`;
     document.getElementById('chat-messages').appendChild(wrap);
     scrollBottom();
     if (saveText || !isCard) {
@@ -352,7 +352,7 @@ const App = (() => {
     typingEl = document.createElement('div');
     typingEl.className = 'message bot';
     typingEl.id = 'typing';
-    typingEl.innerHTML = `<div class="msg-avatar">🤖</div>
+    typingEl.innerHTML = `<img src="pacobot-mascot.png" class="msg-avatar bot-avatar" alt="PacoBot">
       <div class="msg-bubble"><div class="dots"><span></span><span></span><span></span></div></div>`;
     document.getElementById('chat-messages').appendChild(typingEl);
     scrollBottom();
@@ -775,7 +775,7 @@ REGLAS IMPORTANTES:
     });
 
     await say(
-      `¡Hola! Soy <strong>PacoBot</strong> 🤖, el asistente de juegos tradicionales de Pácora.<br>Fui creado por <strong>Simón Parra Morales</strong> de grado <strong>4º</strong> del colegio Anglohispano<br><br>
+      `¡Hola! Soy <strong>PacoBot</strong> <img src="pacobot-mascot.png" class="inline-mascot" alt="PacoBot">, el asistente de juegos tradicionales de Pácora.<br>Fui creado por <strong>Simón Parra Morales</strong> de grado <strong>4º</strong> del colegio Anglohispano<br><br>
       Puedo ayudarte a:<br>
       🎯 <strong>Recomendar</strong> el juego perfecto para ti<br>
       ✨ <strong>Inventar</strong> un juego nuevo y divertido<br>

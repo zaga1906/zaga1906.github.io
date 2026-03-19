@@ -34,16 +34,6 @@
         <span class="btn-label">PacoBot&#10;IA</span>
       </button>
 
-      <button class="action-btn btn-rec" onclick="App.startRecommender()">
-        <span class="btn-icon">🎯</span>
-        <span class="btn-label">Recomendar&#10;Juego</span>
-      </button>
-
-      <button class="action-btn btn-gen" onclick="App.startGenerator()">
-        <span class="btn-icon">✨</span>
-        <span class="btn-label">Inventar&#10;Juego Nuevo</span>
-      </button>
-
       <button class="action-btn btn-survey" onclick="App.startSurvey()">
         <span class="btn-icon">📊</span>
         <span class="btn-label">Encuesta&#10;de Juegos</span>
@@ -55,11 +45,6 @@
       </button>
 
       <div class="sb-divider"></div>
-
-      <button class="action-btn btn-exp" onclick="App.exportData()">
-        <span class="btn-icon">💾</span>
-        <span class="btn-label">Exportar&#10;Datos</span>
-      </button>
 
       <button class="action-btn btn-clear" onclick="App.confirmClear()">
         <span class="btn-icon">🗑️</span>
@@ -79,38 +64,6 @@
 
   </div><!-- end main-layout -->
 </div><!-- end app -->
-
-<!-- ── Modal: Clave API de Groq ─────────────────────────────── -->
-<div id="ia-modal" class="modal hidden">
-  <div class="modal-box">
-    <h2>🧠 PacoBot IA</h2>
-    <p class="ia-modal-desc">
-      Para usar la IA necesitas una clave <strong>gratuita</strong> de Groq.<br>
-      Se guarda solo en tu dispositivo, nunca en internet.
-    </p>
-    <ol class="ia-steps">
-      <li>Entra a <strong>console.groq.com</strong></li>
-      <li>Crea una cuenta gratis (con Google o correo)</li>
-      <li>Ve a <em>API Keys → Create API Key</em></li>
-      <li>Copia la clave y pégala abajo</li>
-    </ol>
-    <div class="form-group" style="margin-top:14px">
-      <label>🔑 Tu clave de Groq (empieza con gsk_…)</label>
-      <input type="password" id="ia-key-input" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx"
-             style="width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:0.95rem;outline:none;margin-top:4px">
-      <p id="ia-key-error" style="color:var(--danger);font-size:0.8rem;margin-top:4px;min-height:18px"></p>
-    </div>
-    <div class="modal-btns">
-      <button class="btn-do"     onclick="App.saveAPIKey()">✅ Guardar y continuar</button>
-      <button class="btn-cancel" onclick="App.closeIAModal()">Cancelar</button>
-    </div>
-    <p class="ia-modal-note">¿Ya tienes una clave guardada?
-      <button onclick="App.clearAPIKey()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:0.8rem;text-decoration:underline">
-        Borrarla
-      </button>
-    </p>
-  </div>
-</div>
 
 <!-- ── Modal: Generador de juegos ───────────────────────────── -->
 <div id="gen-modal" class="modal hidden">

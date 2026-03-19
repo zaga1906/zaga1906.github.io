@@ -420,7 +420,7 @@ const App = (() => {
       </div>`;
 
     await say(html, true, 600, `Recomendación: ${winner.name}`);
-    await say(`¿Quieres otro juego? ${menuHint()}`, false, 700);
+    await say('¿Quieres más? ¡Pulsa <strong>PacoBot IA</strong> y elige otra opción! 👆', false, 700);
     state.mode = 'idle';
   }
 
@@ -465,7 +465,7 @@ const App = (() => {
       </div>`;
 
     await say(html, true, 500, `Juego generado: ${game.name}`);
-    await say('¡Espero que les guste! 🎉 ¿Quieres inventar otro? ¡Pulsa el botón "Inventar Juego" de nuevo!', false, 600);
+    await say('¡Espero que les guste! 🎉 ¿Quieres inventar otro? ¡Pulsa <strong>PacoBot IA</strong> y elige "Inventar Juego Nuevo"!', false, 600);
     state.mode = 'idle';
   }
 
@@ -712,7 +712,7 @@ También puedes usar conectores naturales como:
 - Si preguntan algo que no tenga que ver con Pácora, responde con humor y redirige.
 - Habla como un niño de 10 años emocionado.
 - Usa expresiones como: "¡Eso fue súper chévere!", "¡No te imaginas!", "¡Me encantó!"
-- Respuestas cortas: máximo 4-5 oraciones.
+- Respuestas cortas: máximo 2-3 oraciones.
 - Habla en español colombiano paisa con emojis 🎉☕🏔️.
 `;
 
@@ -725,41 +725,14 @@ También puedes usar conectores naturales como:
 
   let iaHistory = [];
 
-  function getGroqKey()      { return localStorage.getItem('pacobot_groq_key') || ''; }
-  function setGroqKey(key)   { localStorage.setItem('pacobot_groq_key', key.trim()); }
-  function clearGroqKey()    { localStorage.removeItem('pacobot_groq_key'); }
+  const GROQ_KEY = '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';
+  function getGroqKey() { return GROQ_KEY; }
+  function clearGroqKey() { /* clave fija, nada que borrar */ }
 
   async function startIA() {
     clearOptions(); hideInput();
     state.mode = 'ia';
-    if (!getGroqKey()) { showApiKeyModal(); return; }
     await showIAModes();
-  }
-
-  function showApiKeyModal() {
-    document.getElementById('ia-key-error').textContent = '';
-    document.getElementById('ia-key-input').value = '';
-    document.getElementById('ia-modal').classList.remove('hidden');
-  }
-
-  function closeIAModal() {
-    document.getElementById('ia-modal').classList.add('hidden');
-  }
-
-  function saveAPIKey() {
-    const key = document.getElementById('ia-key-input').value.trim();
-    const err = document.getElementById('ia-key-error');
-    if (!key) { err.textContent = '⚠️ Escribe la clave antes de continuar.'; return; }
-    if (!key.startsWith('gsk_')) { err.textContent = '⚠️ La clave debe empezar con "gsk_"'; return; }
-    setGroqKey(key);
-    closeIAModal();
-    showIAModes();
-  }
-
-  function clearAPIKey() {
-    clearGroqKey();
-    closeIAModal();
-    say('🔑 Clave borrada. Pulsa <strong>PacoBot IA</strong> para ingresar una nueva.', false, 200);
   }
 
   async function showIAModes() {
@@ -771,9 +744,20 @@ También puedes usar conectores naturales como:
       '¡Tengo mucho que contarte! ¿Por dónde empezamos?',
       false, 400
     );
-    showOptions(IA_MODES, async (opt) => {
+    const allOptions = [
+      { label: '🎯 Recomendar Juego',  type: 'rec' },
+      { label: '✨ Inventar Juego Nuevo', type: 'gen' },
+      ...IA_MODES.map(m => ({ ...m, type: 'ia' }))
+    ];
+    showOptions(allOptions, async (opt) => {
       await addUserMsg(opt.label);
-      await startIAMode(opt.starter);
+      if (opt.type === 'rec') {
+        await startRecommender();
+      } else if (opt.type === 'gen') {
+        startGenerator();
+      } else {
+        await startIAMode(opt.starter);
+      }
     });
   }
 
@@ -784,7 +768,7 @@ También puedes usar conectores naturales como:
       const reply = await callGroq(starter, true);
       if (reply) await addBotMsg(reply);
     } else {
-      await say('¡Genial! Pregúntame lo que quieras sobre Pácora y sus juegos 🎮', false, 300);
+      await say('¡Genial! Pregúntame lo que quieras sobre Pácora', false, 300);
     }
     showInput('Escribe tu mensaje...');
   }
@@ -914,12 +898,8 @@ También puedes usar conectores naturales como:
 
     await say(
       `¡Hola! Soy <strong>PacoBot</strong> <img src="pacobot-mascot.png" class="inline-mascot" alt="PacoBot">, el asistente de juegos tradicionales de Pácora.<br>Fui creado por <strong>Simón Parra Morales</strong> de grado <strong>4º</strong> del Colegio Anglohispano de Manizales, a quienes les tocó investigar el municipio de <strong>Pácora</strong> 🗺️<br><br>
-      Puedo ayudarte a:<br>
-      <img src="pacobot-mascot.png" class="inline-mascot" alt="PacoBot"> <strong>Conocer Pácora</strong> te contare todo lo que vivi en mi viaje a Pácora: comida, gente, lugares y más<br>
-      🎯 <strong>Recomendar</strong> el juego perfecto para ti<br>
-      ✨ <strong>Inventar</strong> un juego nuevo y divertido<br>
-      📊 <strong>Encuesta</strong> para saber qué juegos gustan más<br>
-      🏆 <strong>Ver resultados</strong> de la encuesta<br><br>
+      Pulsa <img src="pacobot-mascot.png" class="inline-mascot" alt="PacoBot"> <strong>PacoBot IA</strong> y te cuento todo: el viaje, los juegos, las rimas ¡y más! 🏔️☕🎮<br>
+      También puedes hacer la <strong>📊 Encuesta</strong> o <strong>🏆 Ver Resultados</strong>.<br><br>
       ${menuHint()}`,
       false, 300
     );
@@ -938,7 +918,7 @@ También puedes usar conectores naturales como:
     startGenerator, generateGame, closeModal,
     startSurvey,
     showResults,
-    startIA, saveAPIKey, closeIAModal, clearAPIKey,
+    startIA,
     confirmClear, exportData,
     submitTextInput
   };

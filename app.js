@@ -751,6 +751,7 @@ También puedes usar conectores naturales como:
 
   function closeIAModal() {
     document.getElementById('ia-modal').classList.add('hidden');
+    showMenuOptions();
   }
 
   function saveAPIKey() {

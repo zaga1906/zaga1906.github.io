@@ -787,6 +787,7 @@ También puedes usar conectores naturales como:
     // Cierra si se toca el fondo oscuro (no el sheet)
     if (e && e.target !== document.getElementById('menu-modal')) return;
     document.getElementById('menu-modal').classList.add('hidden');
+    showMenuOptions();
   }
 
   async function menuAction(type) {

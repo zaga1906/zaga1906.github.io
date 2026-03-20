@@ -739,13 +739,28 @@ También puedes usar conectores naturales como:
   async function startIA() {
     clearOptions(); hideInput();
     state.mode = 'ia';
-    if (!getGroqKey()) {
-      await say('🔑 Para usar PacoBot IA necesito una clave de Groq.<br>Escríbela abajo (empieza con <strong>gsk_</strong>):', false, 300);
-      showInput('Pega tu clave gsk_...');
-      state.mode = 'ia_setup';
-      return;
-    }
+    if (!getGroqKey()) { showAPIKeyModal(); return; }
     await showIAModes();
+  }
+
+  function showAPIKeyModal() {
+    document.getElementById('ia-key-input').value = '';
+    document.getElementById('ia-key-error').textContent = '';
+    document.getElementById('ia-modal').classList.remove('hidden');
+  }
+
+  function closeIAModal() {
+    document.getElementById('ia-modal').classList.add('hidden');
+  }
+
+  function saveAPIKey() {
+    const key = document.getElementById('ia-key-input').value.trim();
+    const err = document.getElementById('ia-key-error');
+    if (!key) { err.textContent = '⚠️ Escribe la clave antes de continuar.'; return; }
+    if (!key.startsWith('gsk_')) { err.textContent = '⚠️ La clave debe empezar con gsk_'; return; }
+    localStorage.setItem(GROQ_LS_KEY, key);
+    closeIAModal();
+    showIAModes();
   }
 
   function showMenuOptions() {
@@ -867,18 +882,6 @@ También puedes usar conectores naturales como:
   //  INPUT DE TEXTO
   // ═══════════════════════════════════════════════════════════════
 
-  async function setupGroqKey(key) {
-    hideInput();
-    if (!key.startsWith('gsk_')) {
-      await say('⚠️ La clave debe empezar con <strong>gsk_</strong>. Intenta de nuevo:', false, 300);
-      showInput('Pega tu clave gsk_...');
-      return;
-    }
-    localStorage.setItem(GROQ_LS_KEY, key);
-    await say('✅ ¡Clave guardada! Ya puedo usar la IA 🎉', false, 300);
-    await showIAModes();
-  }
-
   async function submitTextInput() {
     const input = document.getElementById('text-input');
     const text  = input.value.trim();
@@ -886,7 +889,6 @@ También puedes usar conectores naturales como:
     input.value = '';
     if (state.mode === 'survey_why')  await submitSurveyWhy(text);
     else if (state.mode === 'ia_chat')  await handleIAInput(text);
-    else if (state.mode === 'ia_setup') await setupGroqKey(text);
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -957,7 +959,7 @@ También puedes usar conectores naturales como:
     startGenerator, generateGame, closeModal,
     startSurvey,
     showResults,
-    startIA,
+    startIA, saveAPIKey, closeIAModal,
     confirmClear, exportData,
     submitTextInput
   };

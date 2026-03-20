@@ -38,6 +38,24 @@
   </div><!-- end main-layout -->
 </div><!-- end app -->
 
+<!-- ── Modal: Clave API de Groq ─────────────────────────────── -->
+<div id="ia-modal" class="modal hidden">
+  <div class="modal-box">
+    <h2>🔑 Clave de Groq</h2>
+    <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:14px;line-height:1.5">
+      Ingresa tu clave gratuita de Groq para activar PacoBot IA.<br>
+      Se guarda solo en este dispositivo.
+    </p>
+    <input type="password" id="ia-key-input" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx"
+           style="width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:0.95rem;outline:none">
+    <p id="ia-key-error" style="color:var(--danger);font-size:0.8rem;margin-top:6px;min-height:18px"></p>
+    <div class="modal-btns" style="margin-top:10px">
+      <button class="btn-do"     onclick="App.saveAPIKey()">✅ Guardar y continuar</button>
+      <button class="btn-cancel" onclick="App.closeIAModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Modal: Generador de juegos ───────────────────────────── -->
 <div id="gen-modal" class="modal hidden">
   <div class="modal-box">

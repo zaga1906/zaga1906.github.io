@@ -308,9 +308,10 @@ const App = (() => {
     DB.saveMessage('user', text, state.mode);
   }
 
-  function showOptions(options, cb) {
+  function showOptions(options, cb, align = 'center') {
     const area = document.getElementById('quick-options');
     area.innerHTML = '';
+    area.style.justifyContent = align;
     options.forEach(opt => {
       const btn = document.createElement('button');
       const label = typeof opt === 'string' ? opt : opt.label;
@@ -827,7 +828,7 @@ También puedes usar conectores naturales como:
       clearOptions();
       await say('¿Qué quieres hacer ahora? 😊', false, 200);
       showMenuOptions();
-    });
+    }, 'flex-start');
   }
 
   async function startIAMode(starter) {
@@ -975,6 +976,15 @@ También puedes usar conectores naturales como:
 
   async function init() {
     try { await DB.init(); } catch { /* sin persistencia: ok */ }
+
+    // Leer clave desde URL (?key=gsk_...) — útil para QR de la feria
+    const urlKey = new URLSearchParams(window.location.search).get('key');
+    if (urlKey && urlKey.startsWith('gsk_')) {
+      localStorage.setItem(GROQ_LS_KEY, urlKey);
+      // Limpiar la URL para que la clave no quede expuesta en el navegador
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+
     document.getElementById('text-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') submitTextInput();
     });

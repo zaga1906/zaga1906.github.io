@@ -732,13 +732,19 @@ También puedes usar conectores naturales como:
 
   let iaHistory = [];
 
-  const GROQ_KEY = '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';
-  function getGroqKey() { return GROQ_KEY; }
-  function clearGroqKey() { /* clave fija, nada que borrar */ }
+  const GROQ_LS_KEY = 'pacobot_groq_key';
+  function getGroqKey()   { return localStorage.getItem(GROQ_LS_KEY) || ''; }
+  function clearGroqKey() { localStorage.removeItem(GROQ_LS_KEY); }
 
   async function startIA() {
     clearOptions(); hideInput();
     state.mode = 'ia';
+    if (!getGroqKey()) {
+      await say('🔑 Para usar PacoBot IA necesito una clave de Groq.<br>Escríbela abajo (empieza con <strong>gsk_</strong>):', false, 300);
+      showInput('Pega tu clave gsk_...');
+      state.mode = 'ia_setup';
+      return;
+    }
     await showIAModes();
   }
 
@@ -861,13 +867,26 @@ También puedes usar conectores naturales como:
   //  INPUT DE TEXTO
   // ═══════════════════════════════════════════════════════════════
 
+  async function setupGroqKey(key) {
+    hideInput();
+    if (!key.startsWith('gsk_')) {
+      await say('⚠️ La clave debe empezar con <strong>gsk_</strong>. Intenta de nuevo:', false, 300);
+      showInput('Pega tu clave gsk_...');
+      return;
+    }
+    localStorage.setItem(GROQ_LS_KEY, key);
+    await say('✅ ¡Clave guardada! Ya puedo usar la IA 🎉', false, 300);
+    await showIAModes();
+  }
+
   async function submitTextInput() {
     const input = document.getElementById('text-input');
     const text  = input.value.trim();
     if (!text) return;
     input.value = '';
-    if (state.mode === 'survey_why') await submitSurveyWhy(text);
-    else if (state.mode === 'ia_chat') await handleIAInput(text);
+    if (state.mode === 'survey_why')  await submitSurveyWhy(text);
+    else if (state.mode === 'ia_chat')  await handleIAInput(text);
+    else if (state.mode === 'ia_setup') await setupGroqKey(text);
   }
 
   // ═══════════════════════════════════════════════════════════════

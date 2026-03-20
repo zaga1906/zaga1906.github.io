@@ -313,8 +313,9 @@ const App = (() => {
     area.innerHTML = '';
     options.forEach(opt => {
       const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.textContent = typeof opt === 'string' ? opt : opt.label;
+      const label = typeof opt === 'string' ? opt : opt.label;
+      btn.className = 'option-btn' + (opt.primary ? ' option-btn--primary' : '');
+      btn.textContent = label;
       btn.onclick = () => { area.innerHTML = ''; cb(opt); };
       area.appendChild(btn);
     });
@@ -767,7 +768,7 @@ También puedes usar conectores naturales como:
   function showMenuOptions() {
     state.mode = 'ia';
     showOptions([
-      { label: '💬 Cuéntame del viaje' },
+      { label: '💬 ¡Cuéntame del viaje!', primary: true },
       { label: '🎮 Más actividades' }
     ], async (opt) => {
       await addUserMsg(opt.label);
@@ -936,7 +937,7 @@ También puedes usar conectores naturales como:
     document.getElementById('chat-messages').innerHTML = '';
     clearOptions(); hideInput();
     await say('¡Datos borrados! 🗑️ Empezamos de cero.', false, 200);
-    await showIAModes();
+    await showWelcome();
   }
 
   async function exportData() {
@@ -959,13 +960,9 @@ También puedes usar conectores naturales como:
   //  INICIALIZACIÓN
   // ═══════════════════════════════════════════════════════════════
 
-  async function init() {
-    try { await DB.init(); } catch { /* sin persistencia: ok */ }
-
-    document.getElementById('text-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') submitTextInput();
-    });
-
+  async function showWelcome() {
+    iaHistory = [];
+    state.mode = 'ia';
     await say(
       '¡Hola! Soy <img src="pacobot-mascot.png" class="inline-mascot" alt="PacoBot"><strong>PacoBot</strong> ✨, ¡acabo de volver de un viaje increíble a <strong>Pácora</strong> con <strong>Simón Parra Morales</strong>!<br>' +
       'Simón es estudiante de grado <strong>4º</strong> del Colegio Anglohispano de Manizales, a quienes les tocó investigar el municipio de <strong>Pácora</strong> 🗺️<br>' +
@@ -973,9 +970,15 @@ También puedes usar conectores naturales como:
       '¡Tengo mucho que contarte! ¿Por dónde empezamos?',
       false, 300
     );
-    iaHistory = [];
-    state.mode = 'ia';
     showMenuOptions();
+  }
+
+  async function init() {
+    try { await DB.init(); } catch { /* sin persistencia: ok */ }
+    document.getElementById('text-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitTextInput();
+    });
+    await showWelcome();
   }
 
   // ── Auto-arranque ─────────────────────────────────────────────

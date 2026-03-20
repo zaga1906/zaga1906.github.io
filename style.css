@@ -201,7 +201,25 @@ img.bot-avatar {
   background: var(--purple);
   color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108,63,197,.3);
+  box-shadow: 0 4px 12px rgba(26,58,143,.3);
+}
+
+.option-btn--primary {
+  background: linear-gradient(135deg, var(--purple), var(--purple-lt));
+  color: #fff;
+  border-color: transparent;
+  font-size: 0.98rem;
+  padding: 12px 24px;
+  box-shadow: 0 4px 14px rgba(26,58,143,.35);
+  animation: pulse-primary 2.2s ease-in-out infinite;
+}
+.option-btn--primary:hover {
+  background: linear-gradient(135deg, var(--purple-lt), var(--purple));
+  box-shadow: 0 6px 20px rgba(26,58,143,.45);
+}
+@keyframes pulse-primary {
+  0%, 100% { box-shadow: 0 4px 14px rgba(26,58,143,.35); }
+  50%       { box-shadow: 0 4px 22px rgba(26,58,143,.6); }
 }
 
 /* ── Input form ─────────────────────────────────────────────── */

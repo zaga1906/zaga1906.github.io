@@ -47,20 +47,33 @@ class PacoBotDB {
     return this._getAll('messages').then(rows => rows.slice(-limit));
   }
 
-  // ── Encuesta ──────────────────────────────────────────────────────────────
+  // ── Encuesta (localStorage) ───────────────────────────────────────────────
+
+  static get SURVEY_KEY() { return 'pacobot_surveys'; }
+
+  _loadSurveys() {
+    try {
+      return JSON.parse(localStorage.getItem(PacoBotDB.SURVEY_KEY) || '[]');
+    } catch { return []; }
+  }
+
+  _saveSurveys(surveys) {
+    localStorage.setItem(PacoBotDB.SURVEY_KEY, JSON.stringify(surveys));
+  }
 
   saveSurvey(favoriteGame, whyReason) {
-    if (!this.db) return Promise.resolve(null);
-    return this._add('surveys', {
+    const surveys = this._loadSurveys();
+    surveys.push({
       favoriteGame: String(favoriteGame).trim(),
       whyReason:    String(whyReason).trim().toLowerCase(),
       timestamp:    Date.now()
     });
+    this._saveSurveys(surveys);
+    return Promise.resolve();
   }
 
-  async getSurveyResults() {
-    if (!this.db) return { gameCounts: {}, wordCounts: {}, total: 0 };
-    const surveys = await this._getAll('surveys');
+  getSurveyResults() {
+    const surveys = this._loadSurveys();
 
     // Popularidad de juegos
     const gameCounts = {};
@@ -85,17 +98,17 @@ class PacoBotDB {
       });
     });
 
-    return { gameCounts, wordCounts, total: surveys.length };
+    return Promise.resolve({ gameCounts, wordCounts, total: surveys.length });
   }
 
   // ── Utilidades ────────────────────────────────────────────────────────────
 
   clearAll() {
+    localStorage.removeItem(PacoBotDB.SURVEY_KEY);
     if (!this.db) return Promise.resolve();
     return new Promise((resolve, reject) => {
-      const tx = this.db.transaction(['messages', 'surveys'], 'readwrite');
+      const tx = this.db.transaction(['messages'], 'readwrite');
       tx.objectStore('messages').clear();
-      tx.objectStore('surveys').clear();
       tx.oncomplete = resolve;
       tx.onerror    = () => reject(tx.error);
     });
@@ -103,7 +116,7 @@ class PacoBotDB {
 
   async exportData() {
     const messages = await this.getMessages(5000);
-    const surveys  = await this._getAll('surveys');
+    const surveys  = this._loadSurveys();
     return { messages, surveys, exportedAt: new Date().toISOString() };
   }
 

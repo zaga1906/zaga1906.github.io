@@ -420,8 +420,9 @@ const App = (() => {
       </div>`;
 
     await say(html, true, 600, `Recomendación: ${winner.name}`);
-    await say('¿Quieres más? ¡Pulsa <strong>PacoBot IA</strong> y elige otra opción! 👆', false, 700);
     state.mode = 'idle';
+    await say('¿Qué más quieres hacer? 😊', false, 500);
+    showMenuOptions();
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -434,6 +435,7 @@ const App = (() => {
 
   function closeModal() {
     document.getElementById('gen-modal').classList.add('hidden');
+    showMenuOptions();
   }
 
   async function generateGame() {
@@ -465,8 +467,9 @@ const App = (() => {
       </div>`;
 
     await say(html, true, 500, `Juego generado: ${game.name}`);
-    await say('¡Espero que les guste! 🎉 ¿Quieres inventar otro? ¡Pulsa <strong>PacoBot IA</strong> y elige "Inventar Juego Nuevo"!', false, 600);
     state.mode = 'idle';
+    await say('¡Espero que les guste! 🎉 ¿Qué más quieres hacer?', false, 500);
+    showMenuOptions();
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -501,10 +504,11 @@ const App = (() => {
     hideInput();
     await addUserMsg(text);
     await DB.saveSurvey(state.surveyGame, text);
-    await say('¡Gracias! 🌟 Tu respuesta quedó guardada en la encuesta.', false, 400);
-    await say('¿Quieres ver los resultados? ¡Pulsa <strong>"Ver Resultados"</strong>! 📊', false, 600);
     state.mode = 'idle';
     state.surveyGame = null;
+    await say('¡Gracias! 🌟 Tu respuesta quedó guardada en la encuesta.', false, 400);
+    await say('¿Qué más quieres hacer? 😊', false, 300);
+    showMenuOptions();
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -522,6 +526,7 @@ const App = (() => {
     if (results.total === 0) {
       await say('No hay respuestas de encuesta todavía.<br>¡Pídele a alguien que participe primero! 📊', false, 300);
       state.mode = 'idle';
+      showMenuOptions();
       return;
     }
 
@@ -561,6 +566,8 @@ const App = (() => {
 
     await say(html, true, 600, `Resultados: popular=${popular}, total=${results.total}`);
     state.mode = 'idle';
+    await say('¿Qué más quieres hacer? 😊', false, 300);
+    showMenuOptions();
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -735,29 +742,39 @@ También puedes usar conectores naturales como:
     await showIAModes();
   }
 
-  async function showIAModes() {
-    iaHistory = [];
+  function showMenuOptions() {
     state.mode = 'ia';
-    await say(
-      '¡Hola! Soy <img src="pacobot-mascot.png" class="inline-mascot" alt="PacoBot"><strong>PacoBot</strong> ✨, ¡acabo de volver de un viaje increíble a Pácora con Simón!<br>' +
-      'Aprendí sobre su gente, su comida, su café, sus lugares y sus juegos tradicionales. 🏔️☕🎮<br>' +
-      '¡Tengo mucho que contarte! ¿Por dónde empezamos?',
-      false, 400
-    );
     const allOptions = [
-      { label: '🎯 Recomendar Juego',  type: 'rec' },
+      ...IA_MODES.map(m => ({ ...m, type: 'ia' })),
+      { label: '🎯 Recomendar Juego',     type: 'rec' },
       { label: '✨ Inventar Juego Nuevo', type: 'gen' },
-      ...IA_MODES.map(m => ({ ...m, type: 'ia' }))
+      { label: '📊 Encuesta de Juegos',   type: 'survey' },
+      { label: '🏆 Ver Resultados',       type: 'results' },
+      { label: '🗑️ Limpiar Todo',         type: 'clear' }
     ];
     showOptions(allOptions, async (opt) => {
       await addUserMsg(opt.label);
-      if (opt.type === 'rec') {
-        await startRecommender();
-      } else if (opt.type === 'gen') {
-        startGenerator();
-      } else {
-        await startIAMode(opt.starter);
-      }
+      if      (opt.type === 'rec')     { await startRecommender(); }
+      else if (opt.type === 'gen')     { startGenerator(); }
+      else if (opt.type === 'survey')  { await startSurvey(); }
+      else if (opt.type === 'results') { await showResults(); }
+      else if (opt.type === 'clear')   { await confirmClear(); }
+      else                             { await startIAMode(opt.starter); }
+    });
+  }
+
+  async function showIAModes() {
+    iaHistory = [];
+    state.mode = 'ia';
+    await say('¿Qué quieres hacer? 😊', false, 300);
+    showMenuOptions();
+  }
+
+  function showBackButton() {
+    showOptions([{ label: '🏠 Volver al menú' }], async () => {
+      hideInput();
+      clearOptions();
+      await showIAModes();
     });
   }
 
@@ -771,14 +788,17 @@ También puedes usar conectores naturales como:
       await say('¡Genial! Pregúntame lo que quieras sobre Pácora', false, 300);
     }
     showInput('Escribe tu mensaje...');
+    showBackButton();
   }
 
   async function handleIAInput(text) {
     hideInput();
+    clearOptions();
     await addUserMsg(text);
     const reply = await callGroq(text, false);
     if (reply) await addBotMsg(reply);
     showInput('Escribe tu mensaje...');
+    showBackButton();
   }
 
   async function callGroq(userMessage, isStarter) {
@@ -855,11 +875,15 @@ También puedes usar conectores naturales como:
   // ═══════════════════════════════════════════════════════════════
 
   async function confirmClear() {
-    if (!confirm('¿Borrar todo el historial y la encuesta?\n\n¡Esta acción no se puede deshacer!')) return;
+    if (!confirm('¿Borrar todo el historial y la encuesta?\n\n¡Esta acción no se puede deshacer!')) {
+      showMenuOptions();
+      return;
+    }
     await DB.clearAll();
     document.getElementById('chat-messages').innerHTML = '';
     clearOptions(); hideInput();
     await say('¡Datos borrados! 🗑️ Empezamos de cero.', false, 200);
+    await showIAModes();
   }
 
   async function exportData() {
@@ -882,13 +906,6 @@ También puedes usar conectores naturales como:
   //  INICIALIZACIÓN
   // ═══════════════════════════════════════════════════════════════
 
-  // Helper: devuelve la pista de dirección según el dispositivo
-  function menuHint() {
-    return window.matchMedia('(max-width: 640px)').matches
-      ? '¡Usa los botones del menú de abajo! 👇'
-      : '¡Usa los botones del menú de la izquierda! 👈';
-  }
-
   async function init() {
     try { await DB.init(); } catch { /* sin persistencia: ok */ }
 
@@ -897,12 +914,15 @@ También puedes usar conectores naturales como:
     });
 
     await say(
-      `¡Hola! Soy <strong>PacoBot</strong> <img src="pacobot-mascot.png" class="inline-mascot" alt="PacoBot">, el asistente de juegos tradicionales de Pácora.<br>Fui creado por <strong>Simón Parra Morales</strong> de grado <strong>4º</strong> del Colegio Anglohispano de Manizales, a quienes les tocó investigar el municipio de <strong>Pácora</strong> 🗺️<br><br>
-      Pulsa <img src="pacobot-mascot.png" class="inline-mascot" alt="PacoBot"> <strong>PacoBot IA</strong> y te cuento todo: el viaje, los juegos, las rimas ¡y más! 🏔️☕🎮<br>
-      También puedes hacer la <strong>📊 Encuesta</strong> o <strong>🏆 Ver Resultados</strong>.<br><br>
-      ${menuHint()}`,
+      '¡Hola! Soy <img src="pacobot-mascot.png" class="inline-mascot" alt="PacoBot"><strong>PacoBot</strong> ✨, ¡acabo de volver de un viaje increíble a <strong>Pácora</strong> con <strong>Simón Parra Morales</strong>!<br>' +
+      'Simón es estudiante de grado <strong>4º</strong> del Colegio Anglohispano de Manizales, a quienes les tocó investigar el municipio de <strong>Pácora</strong> 🗺️<br>' +
+      'Aprendí sobre su gente, su comida, su café, sus lugares y sus juegos tradicionales. 🏔️☕🎮<br>' +
+      '¡Tengo mucho que contarte! ¿Por dónde empezamos?',
       false, 300
     );
+    iaHistory = [];
+    state.mode = 'ia';
+    showMenuOptions();
   }
 
   // ── Auto-arranque ─────────────────────────────────────────────

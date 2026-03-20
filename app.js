@@ -765,26 +765,50 @@ También puedes usar conectores naturales como:
 
   function showMenuOptions() {
     state.mode = 'ia';
-    const allOptions = [
-      ...IA_MODES.map(m => ({ ...m, type: 'ia' })),
-      { label: '🎯 Recomendar Juego',     type: 'rec' },
-      { label: '✨ Inventar Juego Nuevo', type: 'gen' },
-      { label: '📊 Encuesta de Juegos',   type: 'survey' },
-      { label: '🏆 Ver Resultados',       type: 'results' },
-      { label: '🗑️ Limpiar Todo',         type: 'clear' }
-    ];
-    showOptions(allOptions, async (opt) => {
+    showOptions([
+      { label: '💬 Cuéntame del viaje' },
+      { label: '🎮 Más actividades' }
+    ], async (opt) => {
       await addUserMsg(opt.label);
-      if      (opt.type === 'rec')     { await startRecommender(); }
-      else if (opt.type === 'gen')     { startGenerator(); }
-      else if (opt.type === 'survey')  { await startSurvey(); }
-      else if (opt.type === 'results') { await showResults(); }
-      else if (opt.type === 'clear')   { await confirmClear(); }
-      else {
+      if (opt.label === '🎮 Más actividades') {
+        showMenuModal();
+      } else {
         if (!getGroqKey()) { showAPIKeyModal(); return; }
-        await startIAMode(opt.starter);
+        await startIAMode(null); // "Cuéntame del viaje" starter es null
       }
     });
+  }
+
+  function showMenuModal() {
+    document.getElementById('menu-modal').classList.remove('hidden');
+  }
+
+  function closeMenuModal(e) {
+    // Cierra si se toca el fondo oscuro (no el sheet)
+    if (e && e.target !== document.getElementById('menu-modal')) return;
+    document.getElementById('menu-modal').classList.add('hidden');
+  }
+
+  async function menuAction(type) {
+    document.getElementById('menu-modal').classList.add('hidden');
+    const labels = {
+      trivia: '❓ Trivia', guess: '🎲 Adivina el juego',
+      rhymes: '🪢 Rimas', rec: '🎯 Recomendar Juego',
+      gen: '✨ Inventar Juego', survey: '📊 Encuesta',
+      results: '🏆 Ver Resultados', clear: '🗑️ Limpiar Todo'
+    };
+    await addUserMsg(labels[type] || type);
+    if      (type === 'rec')     { await startRecommender(); }
+    else if (type === 'gen')     { startGenerator(); }
+    else if (type === 'survey')  { await startSurvey(); }
+    else if (type === 'results') { await showResults(); }
+    else if (type === 'clear')   { await confirmClear(); }
+    else {
+      // modos IA: trivia, guess, rhymes
+      if (!getGroqKey()) { showAPIKeyModal(); return; }
+      const mode = IA_MODES.find(m => m.mode === type);
+      await startIAMode(mode ? mode.starter : null);
+    }
   }
 
   async function showIAModes() {
@@ -795,10 +819,11 @@ También puedes usar conectores naturales como:
   }
 
   function showBackButton() {
-    showOptions([{ label: '🏠 Volver al menú' }], async () => {
+    showOptions([{ label: '🏠 Menú principal' }], async () => {
       hideInput();
       clearOptions();
-      await showIAModes();
+      await say('¿Qué quieres hacer ahora? 😊', false, 200);
+      showMenuOptions();
     });
   }
 
@@ -965,6 +990,7 @@ También puedes usar conectores naturales como:
     startSurvey,
     showResults,
     startIA, saveAPIKey, closeIAModal,
+    closeMenuModal, menuAction,
     confirmClear, exportData,
     submitTextInput
   };

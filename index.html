@@ -63,6 +63,24 @@
   </div>
 </div>
 
+<!-- ── Modal: Menú de actividades ───────────────────────────── -->
+<div id="menu-modal" class="modal hidden" onclick="App.closeMenuModal(event)">
+  <div class="menu-sheet">
+    <div class="menu-sheet-handle"></div>
+    <h3 class="menu-sheet-title">¿Qué quieres hacer?</h3>
+    <div class="menu-grid">
+      <button class="menu-item" onclick="App.menuAction('trivia')">   <span class="menu-item-icon">❓</span><span>Trivia</span></button>
+      <button class="menu-item" onclick="App.menuAction('guess')">    <span class="menu-item-icon">🎲</span><span>Adivina el juego</span></button>
+      <button class="menu-item" onclick="App.menuAction('rhymes')">   <span class="menu-item-icon">🪢</span><span>Rimas</span></button>
+      <button class="menu-item" onclick="App.menuAction('rec')">      <span class="menu-item-icon">🎯</span><span>Recomendar Juego</span></button>
+      <button class="menu-item" onclick="App.menuAction('gen')">      <span class="menu-item-icon">✨</span><span>Inventar Juego</span></button>
+      <button class="menu-item" onclick="App.menuAction('survey')">   <span class="menu-item-icon">📊</span><span>Encuesta</span></button>
+      <button class="menu-item" onclick="App.menuAction('results')">  <span class="menu-item-icon">🏆</span><span>Resultados</span></button>
+      <button class="menu-item menu-item--danger" onclick="App.menuAction('clear')"><span class="menu-item-icon">🗑️</span><span>Limpiar Todo</span></button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Modal: Generador de juegos ───────────────────────────── -->
 <div id="gen-modal" class="modal hidden">
   <div class="modal-box">

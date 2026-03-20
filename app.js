@@ -780,7 +780,10 @@ También puedes usar conectores naturales como:
       else if (opt.type === 'survey')  { await startSurvey(); }
       else if (opt.type === 'results') { await showResults(); }
       else if (opt.type === 'clear')   { await confirmClear(); }
-      else                             { await startIAMode(opt.starter); }
+      else {
+        if (!getGroqKey()) { showAPIKeyModal(); return; }
+        await startIAMode(opt.starter);
+      }
     });
   }
 
@@ -851,7 +854,9 @@ También puedes usar conectores naturales como:
 
       if (res.status === 401) {
         clearGroqKey();
-        await say('❌ La clave de API no es válida o venció. Pulsa <strong>PacoBot IA</strong> para ingresar una nueva.', false, 200);
+        hideInput(); clearOptions();
+        await say('❌ La clave de API no es válida o venció.', false, 200);
+        showAPIKeyModal();
         state.mode = 'idle';
         return null;
       }

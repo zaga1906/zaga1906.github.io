@@ -47,6 +47,7 @@ body {
   justify-content: space-between;
   flex-shrink: 0;
   box-shadow: 0 3px 10px rgba(0,0,0,.2);
+  border-radius: 0 0 22px 22px;
 }
 
 .header-left { display: flex; align-items: center; gap: 12px; }
@@ -180,6 +181,7 @@ img.bot-avatar {
 #quick-options {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 7px;
   padding: 6px 18px 10px;
 }

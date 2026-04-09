@@ -55,10 +55,17 @@
       border-radius: var(--radius-sm); border: 1px solid var(--border);
       background: rgba(255,255,255,0.04); transition: all .2s; }
     .token-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--dim); flex-shrink: 0; }
-    .dot.on { background: var(--accent); box-shadow: 0 0 6px var(--accent);
-      animation: blink 2s infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.45} }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+      background: var(--danger); box-shadow: 0 0 5px var(--danger);
+      animation: blink-red 1.2s infinite; }
+    .dot.on { background: var(--accent); box-shadow: 0 0 7px var(--accent);
+      animation: pulse-green 2s infinite; }
+    @keyframes blink-red {
+      0%,100% { opacity: 1; box-shadow: 0 0 5px var(--danger); }
+      50%      { opacity: .3; box-shadow: none; } }
+    @keyframes pulse-green {
+      0%,100% { box-shadow: 0 0 4px var(--accent); }
+      50%      { box-shadow: 0 0 10px var(--accent), 0 0 18px rgba(16,185,129,.4); } }
 
     /* CHAT */
     .chat-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -66,16 +73,17 @@
     #messages::-webkit-scrollbar { width: 3px; }
     #messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-    .msg { display: flex; gap: 9px; margin-bottom: 11px;
+    .msg { display: flex; gap: 6px; margin-bottom: 11px;
       animation: fadein .22s ease-out; }
     .msg.user { flex-direction: row-reverse; }
     @keyframes fadein { from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:translateY(0)} }
     .avatar { width: 30px; height: 30px; border-radius: 8px; display: flex;
       align-items: center; justify-content: center; font-size: 14px;
-      flex-shrink: 0; align-self: flex-end; }
-    .msg.bot .avatar { background: transparent; overflow: hidden; }
-    .msg.bot .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
-    .msg.user .avatar { background: transparent; overflow: hidden; }
+      flex-shrink: 0; align-self: center; }
+    .msg.bot .avatar { background: transparent; overflow: visible; }
+    .msg.bot .avatar img { width: 100%; height: 100%; object-fit: contain;
+      border-radius: 0; filter: drop-shadow(0 1px 4px rgba(0,0,0,.4)); }
+    .msg.user .avatar { background: transparent; overflow: hidden; align-self: center; }
     .msg.user .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
     .bubble { max-width: 78%; padding: 9px 13px; border-radius: 13px;
       line-height: 1.55; font-size: 0.88rem; }
@@ -93,10 +101,10 @@
     .typing span:nth-child(3){animation-delay:.4s}
     @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-5px);opacity:1}}
 
-    /* OPTIONS */
-    #opts { display: flex; flex-wrap: wrap; gap: 6px; padding: 7px 14px; }
-    .opt { background: var(--card); border: 1px solid var(--border); color: var(--text);
-      padding: 6px 12px; border-radius: 18px; font-size: 0.8rem;
+    /* OPTIONS — solo chips contextuales (2-3 máx) */
+    #opts { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 14px; }
+    .opt { background: var(--card); border: 1px solid var(--border); color: var(--muted);
+      padding: 5px 12px; border-radius: 16px; font-size: 0.78rem;
       cursor: pointer; transition: all .17s; white-space: nowrap; }
     .opt:hover { border-color: var(--accent); color: var(--accent);
       background: var(--accent-glow); }
@@ -114,6 +122,39 @@
       padding: 9px 15px; border-radius: var(--radius-sm); font-size: 0.86rem;
       font-weight: 600; cursor: pointer; transition: background .2s; }
     #send:hover { background: #059669; }
+
+    /* MENU BTN — ya definido abajo, solo override de tamaño */
+    #menu-btn { font-size: 1.1rem; }
+
+    /* BOTTOM SHEET MENÚ */
+    #menu-sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6);
+      backdrop-filter: blur(3px); z-index: 900; display: none; }
+    #menu-sheet-overlay.open { display: block; }
+    #menu-sheet { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 860px; background: var(--surface);
+      border: 1px solid var(--border); border-bottom: none;
+      border-radius: 20px 20px 0 0; z-index: 901;
+      padding: 14px 18px;
+      padding-bottom: calc(18px + env(safe-area-inset-bottom));
+      transform: translateX(-50%) translateY(100%);
+      transition: transform .3s cubic-bezier(.32,0,.67,0); }
+    #menu-sheet.open { transform: translateX(-50%) translateY(0); }
+    .sheet-handle { width: 36px; height: 4px; background: var(--border);
+      border-radius: 2px; margin: 0 auto 14px; }
+    .sheet-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: .8px;
+      color: var(--dim); margin-bottom: 14px; text-align: center; }
+    .sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .sheet-item { display: flex; flex-direction: column; align-items: center;
+      gap: 7px; padding: 13px 8px; background: var(--card);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      cursor: pointer; transition: all .18s; }
+    .sheet-item:hover, .sheet-item:active { border-color: var(--accent);
+      background: var(--accent-glow); }
+    .sheet-item .si-icon { font-size: 1.5rem; line-height: 1; }
+    .sheet-item .si-label { font-size: 0.72rem; color: var(--muted);
+      text-align: center; line-height: 1.3; }
+    .sheet-item.danger .si-label { color: var(--warning); }
+    .sheet-item.danger { border-color: rgba(245,158,11,.2); }
 
     /* APARTMENT CARD (in chat) */
     .acard { background: var(--card2); border: 1px solid var(--border);
@@ -242,6 +283,14 @@
     .import-summary .s-val.ok  { color: var(--accent); }
     .import-summary .s-val.warn{ color: var(--warning); }
     .import-summary .s-val.skip{ color: var(--muted); }
+
+    /* MENU BTN */
+    #menu-btn { background: var(--card2); border: 1px solid var(--border);
+      color: var(--muted); padding: 9px 12px; border-radius: var(--radius-sm);
+      font-size: 1rem; cursor: pointer; transition: all .18s; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; }
+    #menu-btn:hover { border-color: var(--accent); color: var(--accent);
+      background: var(--accent-glow); }
   </style>
 </head>
 <body>
@@ -264,8 +313,42 @@
     <div id="messages"></div>
     <div id="opts"></div>
     <div id="input-bar">
+      <button id="menu-btn" onclick="App.openMenu()" title="Menú principal">⊞</button>
       <input type="text" id="txt" placeholder="Buscar apto, placa, nombre…" autocomplete="off" autocorrect="off">
       <button id="send">Enviar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom sheet menú -->
+<div id="menu-sheet-overlay" onclick="App.closeMenu()"></div>
+<div id="menu-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">¿Qué necesitas?</div>
+  <div class="sheet-grid">
+    <div class="sheet-item" onclick="App.menuAction('num')">
+      <span class="si-icon">🔍</span><span class="si-label">Buscar por número</span>
+    </div>
+    <div class="sheet-item" onclick="App.menuAction('plate')">
+      <span class="si-icon">🚗</span><span class="si-label">Buscar por placa</span>
+    </div>
+    <div class="sheet-item" onclick="App.menuAction('name')">
+      <span class="si-icon">👤</span><span class="si-label">Buscar por nombre</span>
+    </div>
+    <div class="sheet-item" onclick="App.menuAction('stats')">
+      <span class="si-icon">📊</span><span class="si-label">Estadísticas</span>
+    </div>
+    <div class="sheet-item" onclick="App.menuAction('export')">
+      <span class="si-icon">📤</span><span class="si-label">Exportar datos</span>
+    </div>
+    <div class="sheet-item" onclick="App.menuAction('import')">
+      <span class="si-icon">📥</span><span class="si-label">Importar datos</span>
+    </div>
+    <div class="sheet-item danger" onclick="App.menuAction('conflicts')">
+      <span class="si-icon">⚠️</span><span class="si-label">Ver conflictos</span>
+    </div>
+    <div class="sheet-item" onclick="App.menuAction('help')">
+      <span class="si-icon">❓</span><span class="si-label">Ayuda</span>
     </div>
   </div>
 </div>
@@ -753,7 +836,7 @@ const App = (() => {
     const el = document.createElement('div');
     el.className = `msg ${isUser ? 'user' : 'bot'}`;
     el.innerHTML = `
-      <div class="avatar">${isUser ? '<img src="entrebot-guard.png" alt="Guarda">' : '<img src="entrebot-mascot.png" alt="EntreBot">'}</div>
+      <div class="avatar">${isUser ? '<img src="entrebot-guard.png" alt="Guarda">' : '<img src="entrebot-mascot-nobg.png" alt="EntreBot">'}</div>
       <div class="bubble">${html}</div>`;
     document.getElementById('messages').appendChild(el);
     el.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -790,19 +873,8 @@ const App = (() => {
 
   // ─ welcome
   function welcome() {
-    say(`¡Bienvenido a <strong>EntreBot</strong>! 👮‍♂️<br>
-      Puedo buscar apartamentos por número, placa de vehículo, nombre de residente o parqueadero.<br>
-      También puedo editar y actualizar la información.`, 300);
-    setTimeout(() => showOpts([
-      { text: '🔍 Buscar por número', fn: () => { addMsg('Buscar por número', true); clearOpts(); say('Escribe el número del apartamento (ej: 302, 1105…)'); } },
-      { text: '🚗 Buscar por placa',  fn: () => { addMsg('Buscar por placa', true); clearOpts(); say('Escribe la placa del vehículo o moto (ej: EMT745, VEL950…)'); } },
-      { text: '👤 Buscar por nombre', fn: () => { addMsg('Buscar por nombre', true); clearOpts(); say('Escribe el apellido o nombre del residente'); } },
-      { text: '📊 Estadísticas',      fn: () => { addMsg('Estadísticas', true); clearOpts(); showStats(); } },
-      { text: '📤 Exportar datos',    fn: () => { addMsg('Exportar datos', true); clearOpts(); exportData(); } },
-      { text: '📥 Importar datos',    fn: () => { addMsg('Importar datos', true); clearOpts(); triggerImport(); } },
-      { text: '⚠️ Ver conflictos',    fn: () => { addMsg('Ver conflictos', true); clearOpts(); showConflicts(); } },
-      { text: '❓ Ayuda',             fn: () => { addMsg('Ayuda', true); clearOpts(); showHelp(); } },
-    ]), 700);
+    say(`¡Bienvenido a <strong>EntreBot</strong>!<br>
+      Escribe directamente o toca <strong>⊞</strong> para ver las opciones.`, 300);
   }
 
   // ─ send
@@ -846,7 +918,7 @@ const App = (() => {
       });
       const wrap = document.createElement('div');
       wrap.className = 'msg bot';
-      wrap.innerHTML = '<div class="avatar"><img src="entrebot-mascot.png" alt="EntreBot"></div><div class="bubble" style="max-width:100%;padding:0;background:transparent;border:none"></div>';
+      wrap.innerHTML = '<div class="avatar"><img src="entrebot-mascot-nobg.png" alt="EntreBot"></div><div class="bubble" style="max-width:100%;padding:0;background:transparent;border:none"></div>';
       wrap.querySelector('.bubble').appendChild(frag);
       document.getElementById('messages').appendChild(wrap);
       wrap.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -867,15 +939,40 @@ const App = (() => {
   function addCardToChat(a) {
     const el = document.createElement('div');
     el.className = 'msg bot';
-    el.innerHTML = `<div class="avatar"><img src="entrebot-mascot.png" alt="EntreBot"></div><div class="bubble" style="max-width:90%;padding:0;background:transparent;border:none">${cardHtml(a)}</div>`;
+    el.innerHTML = `<div class="avatar"><img src="entrebot-mascot-nobg.png" alt="EntreBot"></div><div class="bubble" style="max-width:90%;padding:0;background:transparent;border:none">${cardHtml(a)}</div>`;
     document.getElementById('messages').appendChild(el);
     el.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }
 
+  function openMenu() {
+    document.getElementById('menu-sheet-overlay').classList.add('open');
+    document.getElementById('menu-sheet').classList.add('open');
+  }
+
+  function closeMenu() {
+    document.getElementById('menu-sheet-overlay').classList.remove('open');
+    document.getElementById('menu-sheet').classList.remove('open');
+  }
+
+  function menuAction(action) {
+    closeMenu();
+    clearOpts();
+    const actions = {
+      num:       () => { addMsg('Buscar por número', true); say('Escribe el número del apartamento (ej: 302, 1105…)'); },
+      plate:     () => { addMsg('Buscar por placa', true);  say('Escribe la placa del vehículo o moto (ej: EMT745, VEL950…)'); },
+      name:      () => { addMsg('Buscar por nombre', true); say('Escribe el apellido o nombre del residente'); },
+      stats:     () => { addMsg('Estadísticas', true); showStats(); },
+      export:    () => { addMsg('Exportar datos', true); exportData(); },
+      import:    () => { addMsg('Importar datos', true); triggerImport(); },
+      conflicts: () => { addMsg('Ver conflictos', true); showConflicts(); },
+      help:      () => { addMsg('Ayuda', true); showHelp(); },
+    };
+    actions[action]?.();
+  }
+
   function showMainOpts() {
     showOpts([
-      { text: '🔄 Buscar otro', fn: () => { clearOpts(); say('Escribe tu búsqueda:'); } },
-      { text: '📊 Estadísticas', fn: () => { clearOpts(); showStats(); } },
+      { text: '🔄 Nueva búsqueda', fn: () => { clearOpts(); say('Escribe tu búsqueda:'); } },
     ]);
   }
 
@@ -1163,7 +1260,7 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
 
     const el = document.createElement('div');
     el.className = 'msg bot';
-    el.innerHTML = `<div class="avatar"><img src="entrebot-mascot.png" alt="EntreBot"></div>
+    el.innerHTML = `<div class="avatar"><img src="entrebot-mascot-nobg.png" alt="EntreBot"></div>
       <div class="bubble" style="max-width:95%;padding:0;background:transparent;border:none">
         <div style="padding:8px 0 6px;font-size:.85rem;color:var(--muted)">
           <strong style="color:var(--warning)">${list.length} conflicto${list.length>1?'s':''}</strong> pendiente${list.length>1?'s':''}
@@ -1209,7 +1306,8 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
 
   return { init, send, openDetail, openEdit, saveEdit, clearEdit,
            closeModal, bgClose, openTokenModal, saveToken, clearToken,
-           exportData, triggerImport, showConflicts, clearConflicts };
+           exportData, triggerImport, showConflicts, clearConflicts,
+           openMenu, closeMenu, menuAction };
 })();
 
 document.addEventListener('DOMContentLoaded', App.init);

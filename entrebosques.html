@@ -213,6 +213,35 @@
       .bubble { max-width: 88%; }
       .form-row { grid-template-columns: 1fr; }
     }
+
+    /* CONFLICTOS */
+    .conflict-card { background: var(--card2); border: 1px solid rgba(245,158,11,.35);
+      border-left: 3px solid var(--warning); border-radius: var(--radius);
+      padding: 11px 13px; margin-bottom: 8px; font-size: 0.82rem; }
+    .conflict-head { display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
+    .conflict-apto { font-weight: 700; color: var(--warning); font-size: 0.95rem; }
+    .conflict-date { font-size: 0.7rem; color: var(--dim); }
+    .conflict-field { margin-bottom: 7px; padding-bottom: 7px;
+      border-bottom: 1px solid var(--border); }
+    .conflict-field:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .conflict-lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: .6px;
+      color: var(--dim); margin-bottom: 4px; }
+    .conflict-row { display: flex; gap: 6px; margin-bottom: 3px; align-items: flex-start; }
+    .conflict-row .icon { font-size: 0.75rem; flex-shrink: 0; margin-top: 1px; }
+    .conflict-row .val { font-size: 0.8rem; line-height: 1.4; }
+    .conflict-row.local    .val { color: var(--accent); }
+    .conflict-row.imported .val { color: var(--muted); text-decoration: line-through; }
+    .conflict-note { font-size: 0.74rem; color: var(--accent); margin-top: 7px; }
+
+    .import-summary { background: var(--card2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px; font-size: 0.83rem; }
+    .import-summary .s-row { display: flex; justify-content: space-between;
+      margin-bottom: 5px; }
+    .import-summary .s-val { font-weight: 700; }
+    .import-summary .s-val.ok  { color: var(--accent); }
+    .import-summary .s-val.warn{ color: var(--warning); }
+    .import-summary .s-val.skip{ color: var(--muted); }
   </style>
 </head>
 <body>
@@ -240,6 +269,9 @@
     </div>
   </div>
 </div>
+
+<!-- Input oculto para importar -->
+<input type="file" id="import-file" accept=".json" style="display:none">
 
 <!-- Modal token -->
 <div id="m-token" class="modal hidden">
@@ -701,6 +733,10 @@ const App = (() => {
     document.getElementById('txt').addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
     });
+    document.getElementById('import-file').addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (f) { importData(f); e.target.value = ''; }
+    });
 
     welcome();
   }
@@ -762,6 +798,9 @@ const App = (() => {
       { text: '🚗 Buscar por placa',  fn: () => { addMsg('Buscar por placa', true); clearOpts(); say('Escribe la placa del vehículo o moto (ej: EMT745, VEL950…)'); } },
       { text: '👤 Buscar por nombre', fn: () => { addMsg('Buscar por nombre', true); clearOpts(); say('Escribe el apellido o nombre del residente'); } },
       { text: '📊 Estadísticas',      fn: () => { addMsg('Estadísticas', true); clearOpts(); showStats(); } },
+      { text: '📤 Exportar datos',    fn: () => { addMsg('Exportar datos', true); clearOpts(); exportData(); } },
+      { text: '📥 Importar datos',    fn: () => { addMsg('Importar datos', true); clearOpts(); triggerImport(); } },
+      { text: '⚠️ Ver conflictos',    fn: () => { addMsg('Ver conflictos', true); clearOpts(); showConflicts(); } },
       { text: '❓ Ayuda',             fn: () => { addMsg('Ayuda', true); clearOpts(); showHelp(); } },
     ]), 700);
   }
@@ -783,6 +822,9 @@ const App = (() => {
     if (/^(ayuda|help|\?|\/ayuda)$/i.test(t)) { showHelp(); return; }
     if (/estadís|estadis|cuántos|cuantos|stats/i.test(t)) { showStats(); return; }
     if (/^(hola|buenas|hey|hi)$/i.test(t)) { welcome(); return; }
+    if (/exportar|export/i.test(t)) { exportData(); return; }
+    if (/importar|import/i.test(t)) { triggerImport(); return; }
+    if (/conflicto/i.test(t)) { showConflicts(); return; }
 
     const results = search(q);
 
@@ -956,6 +998,7 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
       dep:  g('dep') || null,
       obs:  g('obs') || null,
     };
+    upd._updated = new Date().toISOString();
     await edb.put(upd);
     _ov[id] = upd;
     closeModal('m-edit');
@@ -981,6 +1024,161 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
 
   function bgClose(event, id) {
     if (event.target === document.getElementById(id)) closeModal(id);
+  }
+
+  // ─ export / import
+  const FIELD_LABELS = {
+    res:'Residentes', hij:'Hijos/adultos', nin:'Niños',
+    car:'Carro', moto:'Moto', parq:'Parqueadero',
+    tipo:'Tipo', tel:'Teléfono', wa:'WhatsApp',
+    dep:'Depósito', obs:'Observaciones'
+  };
+  const DATA_FIELDS = Object.keys(FIELD_LABELS);
+
+  async function exportData() {
+    const overrides = await edb.getAll();
+    if (!overrides.length) {
+      say('⚠️ No hay cambios locales que exportar. Los registros sin editar son datos base del sistema.', 100);
+      return;
+    }
+    const payload = {
+      meta: { app: 'EntreBot', version: '1.0.0',
+              exported_at: new Date().toISOString(), total: overrides.length },
+      overrides
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `entrebot-datos-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    say(`✅ Exportados <strong>${overrides.length}</strong> registros.<br>
+      <small style="color:var(--muted)">Comparte el archivo con tus compañeros por WhatsApp o correo.</small>`, 100);
+  }
+
+  function triggerImport() {
+    document.getElementById('import-file').click();
+  }
+
+  async function importData(file) {
+    let payload;
+    try {
+      payload = JSON.parse(await file.text());
+    } catch {
+      say('⚠️ Archivo inválido. Asegúrate de importar un archivo <code>.json</code> generado por EntreBot.', 100);
+      return;
+    }
+    if (!payload?.overrides?.length) {
+      say('⚠️ El archivo no contiene registros válidos.', 100);
+      return;
+    }
+
+    const imported   = payload.overrides;
+    const importedAt = payload.meta?.exported_at
+      ? new Date(payload.meta.exported_at).toLocaleString('es-CO')
+      : 'desconocida';
+
+    let countNew = 0, countSkip = 0;
+    const conflicts = [];
+
+    for (const rec of imported) {
+      const local = _ov[rec.apto];
+
+      if (!local) {
+        // No hay versión local → importar directamente
+        const clean = { apto: rec.apto, _updated: rec._updated || null };
+        DATA_FIELDS.forEach(f => clean[f] = rec[f] ?? null);
+        await edb.put(clean);
+        _ov[rec.apto] = clean;
+        countNew++;
+        continue;
+      }
+
+      // Hay versión local → comparar campo por campo
+      const diffs = DATA_FIELDS.filter(f => {
+        const lv = local[f] ?? null;
+        const rv = rec[f]   ?? null;
+        return lv !== rv;
+      });
+
+      if (!diffs.length) { countSkip++; continue; } // idénticos
+
+      // Conflicto: guardar info pero mantener local
+      conflicts.push({
+        apto: rec.apto, importedAt,
+        fields: diffs.map(f => ({
+          field: f, label: FIELD_LABELS[f],
+          local: local[f] ?? null,
+          imported: rec[f] ?? null
+        }))
+      });
+      countSkip++;
+    }
+
+    // Persistir conflictos
+    if (conflicts.length) {
+      const prev = JSON.parse(localStorage.getItem('eb_conflicts') || '[]');
+      const merged = [...prev.filter(c => !conflicts.find(n => n.apto === c.apto)), ...conflicts];
+      localStorage.setItem('eb_conflicts', JSON.stringify(merged));
+    }
+
+    // Mostrar resumen
+    await say(`<strong>📥 Importación completada</strong>
+      <div class="import-summary" style="margin-top:8px">
+        <div class="s-row"><span>Registros nuevos aplicados</span><span class="s-val ok">${countNew}</span></div>
+        <div class="s-row"><span>Sin cambios / ya existían</span><span class="s-val skip">${countSkip - conflicts.length}</span></div>
+        <div class="s-row"><span>Conflictos detectados</span><span class="s-val warn">${conflicts.length}</span></div>
+      </div>
+      ${conflicts.length ? `<br><small style="color:var(--warning)">⚠️ Se mantuvo tu versión local en los conflictos.<br>Usa <strong>"ver conflictos"</strong> para revisar las diferencias.</small>` : ''}
+    `, 100);
+  }
+
+  function showConflicts() {
+    const list = JSON.parse(localStorage.getItem('eb_conflicts') || '[]');
+    if (!list.length) {
+      say('✅ No hay conflictos registrados.', 100);
+      return;
+    }
+    const html = list.map(c => `
+      <div class="conflict-card">
+        <div class="conflict-head">
+          <span class="conflict-apto">⚠️ Apto ${esc(c.apto)}</span>
+          <span class="conflict-date">Importado: ${esc(c.importedAt)}</span>
+        </div>
+        ${c.fields.map(f => `
+          <div class="conflict-field">
+            <div class="conflict-lbl">${esc(f.label)}</div>
+            <div class="conflict-row local">
+              <span class="icon">📱</span>
+              <span class="val">Tu versión: ${f.local ? esc(f.local) : '<em style="opacity:.5">vacío</em>'}</span>
+            </div>
+            <div class="conflict-row imported">
+              <span class="icon">📥</span>
+              <span class="val">Importado: ${f.imported ? esc(f.imported) : '<em style="opacity:.5">vacío</em>'}</span>
+            </div>
+          </div>`).join('')}
+        <div class="conflict-note">✅ Se mantiene tu versión local</div>
+      </div>`).join('');
+
+    const el = document.createElement('div');
+    el.className = 'msg bot';
+    el.innerHTML = `<div class="avatar"><img src="entrebot-mascot.png" alt="EntreBot"></div>
+      <div class="bubble" style="max-width:95%;padding:0;background:transparent;border:none">
+        <div style="padding:8px 0 6px;font-size:.85rem;color:var(--muted)">
+          <strong style="color:var(--warning)">${list.length} conflicto${list.length>1?'s':''}</strong> pendiente${list.length>1?'s':''}
+        </div>
+        ${html}
+        <button class="cbtn" style="margin-top:8px;width:100%;color:var(--danger);border-color:rgba(239,68,68,.3)"
+          onclick="App.clearConflicts()">🗑️ Limpiar conflictos</button>
+      </div>`;
+    document.getElementById('messages').appendChild(el);
+    el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }
+
+  function clearConflicts() {
+    localStorage.removeItem('eb_conflicts');
+    say('🗑️ Conflictos eliminados.', 100);
   }
 
   // ─ token modal
@@ -1010,7 +1208,8 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
   }
 
   return { init, send, openDetail, openEdit, saveEdit, clearEdit,
-           closeModal, bgClose, openTokenModal, saveToken, clearToken };
+           closeModal, bgClose, openTokenModal, saveToken, clearToken,
+           exportData, triggerImport, showConflicts, clearConflicts };
 })();
 
 document.addEventListener('DOMContentLoaded', App.init);

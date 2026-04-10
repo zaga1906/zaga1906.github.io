@@ -283,6 +283,12 @@
     .import-summary .s-val.warn{ color: var(--warning); }
     .import-summary .s-val.skip{ color: var(--muted); }
 
+    /* CONTACT GROUP (detail modal) */
+    .cgroup { padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .cgroup:last-child { border-bottom: none; padding-bottom: 0; }
+    .cgroup-nom { font-size: 0.72rem; font-weight: 600; color: var(--accent2);
+      text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+
     /* MENU BTN */
     #menu-btn { background: var(--card2); border: 1px solid var(--border);
       color: var(--muted); padding: 9px 12px; border-radius: var(--radius-sm);
@@ -392,164 +398,166 @@
 
 <script>
 // ── DATA ─────────────────────────────────────────────────────────
-// Campos: apto,bl,car,moto,parq,tipo(pr/ar/null),res,hij,nin,tel,wa,dep,obs
+// Campos: apto,bl,car,moto,parq,tipo(pr/ar/null),res,hij,nin,tel,wa,tel2,wa2,dep,obs
+// tel/wa  = contacto persona 1 (primer nombre en res)
+// tel2/wa2= contacto persona 2 (segundo nombre en res, separado por ' - ')
 const BASE = [
   // PISO 1
-  {apto:101,bl:'A',car:null,moto:'VUW76F',parq:'3B',tipo:'ar',res:'Gloria Piedad Gonzales Velez',hij:null,nin:'Luciana flores',tel:'300 610 0908',wa:'300 779 2481',dep:'106',obs:null},
-  {apto:102,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:103,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:104,bl:'B',car:'EMT 745',moto:'YHB 44G',parq:'44B',tipo:'pr',res:'José Rubiel Arbelaes - Sandra Murillo',hij:'Juan Camilo Arbelaes',nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:105,bl:'B',car:null,moto:null,parq:'43B',tipo:null,res:'Juan Pablo Osorio Arango - Luz Francy Arango',hij:null,nin:null,tel:null,wa:null,dep:'103',obs:null},
-  {apto:106,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:107,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:108,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:109,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:110,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:111,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:112,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
+  {apto:101,bl:'A',car:null,moto:'VUW76F',parq:'3B',tipo:'ar',res:'Gloria Piedad Gonzales Velez',hij:null,nin:'Luciana flores',tel:'300 610 0908',wa:'300 779 2481',tel2:null,wa2:null,dep:'106',obs:null},
+  {apto:102,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:103,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:104,bl:'B',car:'EMT 745',moto:'YHB 44G',parq:'44B',tipo:'pr',res:'José Rubiel Arbelaes - Sandra Murillo',hij:'Juan Camilo Arbelaes',nin:null,tel:'310 387 7289',wa:'310 387 7289',tel2:null,wa2:null,dep:null,obs:null},
+  {apto:105,bl:'B',car:null,moto:null,parq:'43B',tipo:null,res:'Juan Pablo Osorio Arango - Luz Francy Arango',hij:null,nin:null,tel:'318 835 2193',wa:'318 835 2193',tel2:'316 252 2247',wa2:'316 252 2247',dep:'103',obs:null},
+  {apto:106,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:107,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:108,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:109,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:110,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:111,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:112,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
   // PISO 2
-  {apto:201,bl:'A',car:'TDN 580 / UET 478 / DCF 171',moto:null,parq:'61B',tipo:'pr',res:'Jina Tatiana - Camilo Orozco',hij:null,nin:'1 niña',tel:null,wa:null,dep:null,obs:null},
-  {apto:202,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:203,bl:'B',car:'EHM 340',moto:null,parq:'30A',tipo:'pr',res:'Alejandro Orozco - Mateo Valencia',hij:null,nin:'1 niña',tel:null,wa:null,dep:'608',obs:null},
-  {apto:204,bl:'B',car:null,moto:null,parq:'39A',tipo:'ar',res:'Daniel Eduardo Aristizabal - Natalia',hij:null,nin:null,tel:null,wa:null,dep:'No',obs:null},
-  {apto:205,bl:'B',car:'VEL 950',moto:null,parq:'65A',tipo:'ar',res:'Carlos Eduardo Cabrera Palacio - Sandra Manuela Cardona',hij:null,nin:null,tel:null,wa:null,dep:'No',obs:null},
-  {apto:206,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:207,bl:'B',car:'UEU 465',moto:null,parq:'29B',tipo:null,res:'Cristian David - Paula Andrea Aguirre',hij:null,nin:null,tel:null,wa:null,dep:'No',obs:null},
-  {apto:208,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:209,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:210,bl:'A',car:'NXP 057',moto:null,parq:'4B',tipo:null,res:'Sergio Molina - Carol Fernandez',hij:null,nin:'2 niños',tel:null,wa:null,dep:null,obs:null},
-  {apto:211,bl:'A',car:'PQV 626',moto:null,parq:'38B',tipo:'ar',res:'Ignacio Chavez - Catherine Velez',hij:null,nin:null,tel:null,wa:null,dep:'207',obs:null},
-  {apto:212,bl:'A',car:'CCR 949',moto:null,parq:'40A',tipo:'pr',res:'Johan Mateo - Maria Camila Arenas',hij:null,nin:'1 bebé',tel:null,wa:null,dep:'208',obs:null},
+  {apto:201,bl:'A',car:'TDN 580 / UET 478 / DCF 171',moto:null,parq:'61B',tipo:'pr',res:'Jina Tatiana - Camilo Orozco',hij:null,nin:'1 niña',tel:'301 244 3802',wa:'301 244 3802',tel2:'317 112 6418',wa2:'317 112 6418',dep:null,obs:null},
+  {apto:202,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:203,bl:'B',car:'EHM 340',moto:null,parq:'30A',tipo:'pr',res:'Alejandro Orozco - Mateo Valencia',hij:null,nin:'1 niña',tel:null,wa:null,tel2:null,wa2:null,dep:'608',obs:null},
+  {apto:204,bl:'B',car:null,moto:null,parq:'39A',tipo:'ar',res:'Daniel Eduardo Aristizabal - Natalia',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'No',obs:null},
+  {apto:205,bl:'B',car:'VEL 950',moto:null,parq:'65A',tipo:'ar',res:'Carlos Eduardo Cabrera Palacio - Sandra Manuela Cardona',hij:null,nin:null,tel:'321 607 8962',wa:'321 607 8962',tel2:'310 385 7404',wa2:'310 385 7404',dep:'No',obs:null},
+  {apto:206,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:207,bl:'B',car:'UEU 465',moto:null,parq:'29B',tipo:null,res:'Cristian David - Paula Andrea Aguirre',hij:null,nin:null,tel:'310 538 0860',wa:'310 538 0860',tel2:'310 448 9812',wa2:'310 448 9812',dep:'No',obs:null},
+  {apto:208,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:209,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:210,bl:'A',car:'NXP 057',moto:null,parq:'4B',tipo:null,res:'Sergio Molina - Carol Fernandez',hij:null,nin:'2 niños',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:211,bl:'A',car:'PQV 626',moto:null,parq:'38B',tipo:'ar',res:'Ignacio Chavez - Catherine Velez',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'207',obs:null},
+  {apto:212,bl:'A',car:'CCR 949',moto:null,parq:'40A',tipo:'pr',res:'Johan Mateo - Maria Camila Arenas',hij:null,nin:'1 bebé',tel:'301 229 1268',wa:'301 229 1268',tel2:'313 512 2769',wa2:'313 512 2769',dep:'208',obs:null},
   // PISO 3
-  {apto:301,bl:'A',car:null,moto:null,parq:'57A',tipo:'pr',res:'Luis Lopez Calderón',hij:null,nin:null,tel:null,wa:null,dep:'306',obs:null},
-  {apto:302,bl:'A',car:'MPM 044 / LPU 936',moto:null,parq:'67A',tipo:null,res:'Alba Valencia - Laura Valencia',hij:null,nin:'1 bebé',tel:null,wa:null,dep:'301',obs:null},
-  {apto:303,bl:'B',car:'EOY 570',moto:null,parq:'45A',tipo:'pr',res:'Luz Ofelia Agudelo - José Calderón Patiño',hij:null,nin:'2 niños',tel:null,wa:null,dep:'301',obs:null},
-  {apto:304,bl:'B',car:'IER 980',moto:null,parq:'72A',tipo:'ar',res:'Ana María Morales',hij:null,nin:null,tel:null,wa:null,dep:'72A',obs:null},
-  {apto:305,bl:'B',car:null,moto:null,parq:'27B',tipo:'pr',res:null,hij:null,nin:null,tel:null,wa:null,dep:'27B',obs:null},
-  {apto:306,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:307,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:308,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:309,bl:'A',car:'FYX 590',moto:null,parq:'74A',tipo:'ar',res:'Juan Agudelo',hij:null,nin:'1 niño',tel:null,wa:null,dep:null,obs:'2 parqueaderos: 17A - 16B'},
-  {apto:310,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:311,bl:'A',car:'GKK 938',moto:'YCD 65F',parq:'67B',tipo:'ar',res:'Lina Maria Osorio - Jhon Jamilton',hij:null,nin:null,tel:null,wa:null,dep:'308',obs:null},
-  {apto:312,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
+  {apto:301,bl:'A',car:null,moto:null,parq:'57A',tipo:'pr',res:'Luis Lopez Calderón',hij:null,nin:null,tel:'310 451 7386',wa:'310 451 7386',tel2:null,wa2:null,dep:'306',obs:null},
+  {apto:302,bl:'A',car:'MPM 044 / LPU 936',moto:null,parq:'67A',tipo:null,res:'Alba Valencia - Laura Valencia',hij:null,nin:'1 bebé',tel:'310 546 5623',wa:'310 546 5623',tel2:'320 626 3559',wa2:'320 626 3559',dep:'301',obs:null},
+  {apto:303,bl:'B',car:'EOY 570',moto:null,parq:'45A',tipo:'pr',res:'Luz Ofelia Agudelo - José Calderón Patiño',hij:null,nin:'2 niños',tel:'310 524 9689',wa:'310 524 9689',tel2:'312 226 0994',wa2:'312 226 0994',dep:'301',obs:null},
+  {apto:304,bl:'B',car:'IER 980',moto:null,parq:'72A',tipo:'ar',res:'Ana María Morales',hij:null,nin:null,tel:'300 553 7573',wa:'300 553 7573',tel2:null,wa2:null,dep:'72A',obs:null},
+  {apto:305,bl:'B',car:null,moto:null,parq:'27B',tipo:'pr',res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'27B',obs:null},
+  {apto:306,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:307,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:308,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:309,bl:'A',car:'FYX 590',moto:null,parq:'74A',tipo:'ar',res:'Juan Agudelo',hij:null,nin:'1 niño',tel:'321 206 2701',wa:'321 206 2701',tel2:null,wa2:null,dep:null,obs:'2 parqueaderos: 17A - 16B'},
+  {apto:310,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:311,bl:'A',car:'GKK 938',moto:'YCD 65F',parq:'67B',tipo:'ar',res:'Lina Maria Osorio - Jhon Jamilton',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'308',obs:null},
+  {apto:312,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
   // PISO 4
-  {apto:401,bl:'A',car:'LPW 612 / NWZ 463',moto:null,parq:'4A',tipo:'ar',res:'Yessica Velez - Andrea Valencia',hij:null,nin:null,tel:null,wa:null,dep:'408',obs:null},
-  {apto:402,bl:'A',car:null,moto:null,parq:'29A',tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:'No',obs:null},
-  {apto:403,bl:'B',car:'HHS 894',moto:null,parq:'32A',tipo:'pr',res:'Luz Mila Rodas',hij:null,nin:null,tel:null,wa:null,dep:'100',obs:null},
-  {apto:404,bl:'B',car:'KJQ 498',moto:'AHU 36E',parq:'68A',tipo:'ar',res:'Alejandro Vedoya Ocampo - Natalia Salazar',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:405,bl:'B',car:null,moto:'BQF 38C',parq:'50A',tipo:'pr',res:'Octavio Luna',hij:'Valeria y Santiago Luna',nin:null,tel:null,wa:null,dep:'No',obs:null},
-  {apto:406,bl:'B',car:'JMV 311',moto:null,parq:'19B',tipo:'pr',res:'Mira Alejandra Mejía (visita: Will Ar Sepulveda)',hij:null,nin:null,tel:null,wa:null,dep:'407',obs:null},
-  {apto:407,bl:'B',car:'GQL 151 / NNZ 016',moto:null,parq:'12B',tipo:'ar',res:'Jhoana Salazar',hij:null,nin:null,tel:null,wa:null,dep:'403',obs:null},
-  {apto:408,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:409,bl:'A',car:null,moto:null,parq:'11A',tipo:'pr',res:'Valentina Betancur',hij:null,nin:'1 niño',tel:null,wa:null,dep:'405',obs:null},
-  {apto:410,bl:'A',car:'NPR 184',moto:null,parq:'9B',tipo:'pr',res:'Alejandro Varón - Milena Bautista',hij:null,nin:'1 niño',tel:null,wa:null,dep:null,obs:null},
-  {apto:411,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:412,bl:'A',car:'XNN 958',moto:null,parq:'47A',tipo:'ar',res:'Natalia Ramirez - Stiven Gonzales',hij:null,nin:'2 niños',tel:null,wa:null,dep:null,obs:null},
+  {apto:401,bl:'A',car:'LPW 612 / NWZ 463',moto:null,parq:'4A',tipo:'ar',res:'Yessica Velez - Andrea Valencia',hij:null,nin:null,tel:'320 769 4760',wa:'320 769 4760',tel2:'316 696 5461',wa2:'316 696 5461',dep:'408',obs:null},
+  {apto:402,bl:'A',car:null,moto:null,parq:'29A',tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'No',obs:null},
+  {apto:403,bl:'B',car:'HHS 894',moto:null,parq:'32A',tipo:'pr',res:'Luz Mila Rodas',hij:null,nin:null,tel:'315 451 8097',wa:'315 451 8097',tel2:null,wa2:null,dep:'100',obs:null},
+  {apto:404,bl:'B',car:'KJQ 498',moto:'AHU 36E',parq:'68A',tipo:'ar',res:'Alejandro Vedoya Ocampo - Natalia Salazar',hij:null,nin:null,tel:'310 603 2707',wa:'310 603 2707',tel2:'320 659 9949',wa2:'320 659 9949',dep:null,obs:null},
+  {apto:405,bl:'B',car:null,moto:'BQF 38C',parq:'50A',tipo:'pr',res:'Octavio Luna',hij:'Valeria y Santiago Luna',nin:null,tel:'314 583 9503',wa:'314 583 9503',tel2:null,wa2:null,dep:'No',obs:null},
+  {apto:406,bl:'B',car:'JMV 311',moto:null,parq:'19B',tipo:'pr',res:'Mira Alejandra Mejía (visita: Will Ar Sepulveda)',hij:null,nin:null,tel:'313 516 0777',wa:'311 371 6605',tel2:null,wa2:null,dep:'407',obs:null},
+  {apto:407,bl:'B',car:'GQL 151 / NNZ 016',moto:null,parq:'12B',tipo:'ar',res:'Jhoana Salazar',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'403',obs:null},
+  {apto:408,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:409,bl:'A',car:null,moto:null,parq:'11A',tipo:'pr',res:'Valentina Betancur',hij:null,nin:'1 niño',tel:'310 501 3521',wa:'310 501 3521',tel2:null,wa2:null,dep:'405',obs:null},
+  {apto:410,bl:'A',car:'NPR 184',moto:null,parq:'9B',tipo:'pr',res:'Alejandro Varón - Milena Bautista',hij:null,nin:'1 niño',tel:'311 626 6630',wa:'311 626 6630',tel2:'311 248 9807',wa2:'311 248 9807',dep:null,obs:null},
+  {apto:411,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:412,bl:'A',car:'XNN 958',moto:null,parq:'47A',tipo:'ar',res:'Natalia Ramirez - Stiven Gonzales',hij:null,nin:'2 niños',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
   // PISO 5
-  {apto:501,bl:'A',car:null,moto:null,parq:'7B',tipo:'ar',res:'Alexandra Delgado',hij:null,nin:null,tel:null,wa:null,dep:'507',obs:null},
-  {apto:502,bl:'A',car:null,moto:'COI 29E',parq:'10A',tipo:'ar',res:'Maicol Steve Botero Delgado - Carlos Hernan Gutiérrez',hij:null,nin:null,tel:null,wa:null,dep:'508',obs:null},
-  {apto:503,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:504,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:505,bl:'B',car:'APV 56H / HSX 10H',moto:'(motos)',parq:'27A',tipo:'ar',res:'Mauricio Rivas - Sebastián Franco',hij:null,nin:null,tel:null,wa:null,dep:'502/503',obs:null},
-  {apto:506,bl:'B',car:'DQW 329',moto:'HSX 10',parq:'6B',tipo:'pr',res:'Leandro Tejada - Carolina Castro',hij:null,nin:'2 niños',tel:null,wa:null,dep:'401',obs:null},
-  {apto:507,bl:'B',car:'VEV 321 / ZLV 221',moto:null,parq:'25B',tipo:'pr',res:'Blanca Viviana Zapata - Vianor y Dora Nancy Arboleda Valencia',hij:null,nin:null,tel:null,wa:null,dep:'501',obs:null},
-  {apto:508,bl:'B',car:'VCM 795',moto:null,parq:'21B',tipo:'ar',res:'Paula Andrea Rincón',hij:null,nin:'1 niño',tel:null,wa:null,dep:null,obs:null},
-  {apto:509,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:510,bl:'A',car:'QLI 108',moto:null,parq:'44A',tipo:'pr',res:'Daniela Guerrero',hij:null,nin:null,tel:null,wa:null,dep:'506',obs:null},
-  {apto:511,bl:'A',car:'KSN 327',moto:null,parq:'36B',tipo:'pr',res:'Jhon y Alejandro',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:512,bl:'A',car:'JKQ 998 / FRU 654',moto:null,parq:'23B',tipo:'pr',res:'Diana Estrada Velez (Roberto Estrada - papá, no reside)',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
+  {apto:501,bl:'A',car:null,moto:null,parq:'7B',tipo:'ar',res:'Alexandra Delgado',hij:null,nin:null,tel:'304 588 9987',wa:'304 588 9987',tel2:null,wa2:null,dep:'507',obs:null},
+  {apto:502,bl:'A',car:null,moto:'COI 29E',parq:'10A',tipo:'ar',res:'Maicol Steve Botero Delgado - Carlos Hernan Gutiérrez',hij:null,nin:null,tel:'322 678 7998',wa:'322 678 7998',tel2:'310 390 2079',wa2:'310 390 2079',dep:'508',obs:null},
+  {apto:503,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:504,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:505,bl:'B',car:'APV 56H / HSX 10H',moto:'(motos)',parq:'27A',tipo:'ar',res:'Mauricio Rivas - Sebastián Franco',hij:null,nin:null,tel:'322 363 8494',wa:'322 363 8494',tel2:null,wa2:null,dep:'502/503',obs:null},
+  {apto:506,bl:'B',car:'DQW 329',moto:'HSX 10',parq:'6B',tipo:'pr',res:'Leandro Tejada - Carolina Castro',hij:null,nin:'2 niños',tel:'317 765 4737',wa:'317 765 4737',tel2:'317 363 7142',wa2:'317 363 7142',dep:'401',obs:null},
+  {apto:507,bl:'B',car:'VEV 321 / ZLV 221',moto:null,parq:'25B',tipo:'pr',res:'Blanca Viviana Zapata - Vianor y Dora Nancy Arboleda Valencia',hij:null,nin:null,tel:'313 786 2035',wa:'313 786 2035',tel2:'310 472 6737',wa2:'310 472 6737',dep:'501',obs:null},
+  {apto:508,bl:'B',car:'VCM 795',moto:null,parq:'21B',tipo:'ar',res:'Paula Andrea Rincón',hij:null,nin:'1 niño',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:509,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:510,bl:'A',car:'QLI 108',moto:null,parq:'44A',tipo:'pr',res:'Daniela Guerrero',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'506',obs:null},
+  {apto:511,bl:'A',car:'KSN 327',moto:null,parq:'36B',tipo:'pr',res:'Jhon y Alejandro',hij:null,nin:null,tel:'321 574 1585',wa:'321 574 1585',tel2:null,wa2:null,dep:null,obs:null},
+  {apto:512,bl:'A',car:'JKQ 998 / FRU 654',moto:null,parq:'23B',tipo:'pr',res:'Diana Estrada Velez (Roberto Estrada - papá, no reside)',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
   // PISO 6
-  {apto:601,bl:'A',car:'FBQ 497',moto:'HUT 68H',parq:'62B',tipo:'ar',res:'Daniel Fernando Chalarca - Ginna Paola Serna',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:602,bl:'A',car:'NLV 58D / HAS 51F',moto:'JJV 501',parq:'59A',tipo:'ar',res:'Angela Marcela Serna Zuluaga - Edwar Francisco Ramos',hij:null,nin:null,tel:null,wa:null,dep:'605',obs:null},
-  {apto:603,bl:'B',car:null,moto:'XZZ 67C',parq:'51A',tipo:'pr',res:'Marcela Giraldo',hij:null,nin:'1 niña',tel:null,wa:null,dep:null,obs:null},
-  {apto:604,bl:'B',car:'UEU 901 / KFM 073 / LPW 638',moto:null,parq:'23A',tipo:'ar',res:'Diana Cristina Serna - Ivan David Trujillo',hij:null,nin:'1 niño',tel:null,wa:null,dep:null,obs:null},
-  {apto:605,bl:'B',car:'DAB 191',moto:null,parq:'22A',tipo:'pr',res:'Valentina Aguirre Muñoz - Amparo Muñoz - Daniel Aguirre',hij:null,nin:null,tel:null,wa:null,dep:'601/603',obs:null},
-  {apto:606,bl:'B',car:null,moto:null,parq:'74A',tipo:'pr',res:'Gloria Ines Herrera',hij:null,nin:null,tel:null,wa:null,dep:'602',obs:null},
-  {apto:607,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:608,bl:'B',car:null,moto:null,parq:'31A',tipo:'pr',res:'Oscar Julián Duque - Juliana Gomez',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:609,bl:'A',car:'KNR 778',moto:null,parq:'61A',tipo:'ar',res:'Diana Patricia Ríos Ocampo - Alejandro Arias',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:610,bl:'A',car:null,moto:null,parq:'51B',tipo:'ar',res:'Melisa Ocampo Cañon',hij:null,nin:'1 niño',tel:null,wa:null,dep:null,obs:null},
-  {apto:611,bl:'A',car:null,moto:'RDR 09C',parq:'65B',tipo:'ar',res:'Alexis Cuevo Muñoz - Milena Londoño',hij:null,nin:'2 niños',tel:null,wa:null,dep:null,obs:null},
-  {apto:612,bl:'A',car:'HUT 98H / OTQ 98G',moto:null,parq:'6B',tipo:'pr',res:'Santiago Hernández - Andrea Orozco',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
+  {apto:601,bl:'A',car:'FBQ 497',moto:'HUT 68H',parq:'62B',tipo:'ar',res:'Daniel Fernando Chalarca - Ginna Paola Serna',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:602,bl:'A',car:'NLV 58D / HAS 51F',moto:'JJV 501',parq:'59A',tipo:'ar',res:'Angela Marcela Serna Zuluaga - Edwar Francisco Ramos',hij:null,nin:null,tel:'301 471 4950',wa:'301 471 4950',tel2:'321 762 6873',wa2:'321 762 6873',dep:'605',obs:null},
+  {apto:603,bl:'B',car:null,moto:'XZZ 67C',parq:'51A',tipo:'pr',res:'Marcela Giraldo',hij:null,nin:'1 niña',tel:'321 556 3241',wa:'321 556 3241',tel2:null,wa2:null,dep:null,obs:null},
+  {apto:604,bl:'B',car:'UEU 901 / KFM 073 / LPW 638',moto:null,parq:'23A',tipo:'ar',res:'Diana Cristina Serna - Ivan David Trujillo',hij:null,nin:'1 niño',tel:'304 527 7123',wa:'304 527 7123',tel2:'312 822 8641',wa2:'312 822 8641',dep:null,obs:null},
+  {apto:605,bl:'B',car:'DAB 191',moto:null,parq:'22A',tipo:'pr',res:'Valentina Aguirre Muñoz - Amparo Muñoz - Daniel Aguirre',hij:null,nin:null,tel:'313 736 6236',wa:'313 736 6236',tel2:'320 504 0373',wa2:'320 504 0373',dep:'601/603',obs:null},
+  {apto:606,bl:'B',car:null,moto:null,parq:'74A',tipo:'pr',res:'Gloria Ines Herrera',hij:null,nin:null,tel:'320 677 6269',wa:'320 677 6269',tel2:null,wa2:null,dep:'602',obs:null},
+  {apto:607,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:608,bl:'B',car:null,moto:null,parq:'31A',tipo:'pr',res:'Oscar Julián Duque - Juliana Gomez',hij:null,nin:null,tel:'312 698 3584',wa:'312 698 3584',tel2:'322 660 5081',wa2:'322 660 5081',dep:null,obs:null},
+  {apto:609,bl:'A',car:'KNR 778',moto:null,parq:'61A',tipo:'ar',res:'Diana Patricia Ríos Ocampo - Alejandro Arias',hij:null,nin:null,tel:'310 456 7474',wa:'310 456 7474',tel2:'300 357 0001',wa2:'300 357 0001',dep:null,obs:null},
+  {apto:610,bl:'A',car:null,moto:null,parq:'51B',tipo:'ar',res:'Melisa Ocampo Cañon',hij:null,nin:'1 niño',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:611,bl:'A',car:null,moto:'RDR 09C',parq:'65B',tipo:'ar',res:'Alexis Cuevo Muñoz - Milena Londoño',hij:null,nin:'2 niños',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:612,bl:'A',car:'HUT 98H / OTQ 98G',moto:null,parq:'6B',tipo:'pr',res:'Santiago Hernández - Andrea Orozco',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
   // PISO 7
-  {apto:701,bl:'A',car:'GTN 832',moto:null,parq:'46A',tipo:'pr',res:'Sebastián Murillo - Alba Piedrahita - Conrado Murillo',hij:null,nin:null,tel:null,wa:null,dep:'706',obs:null},
-  {apto:702,bl:'A',car:'KNR 543',moto:'XTZ AZUL',parq:'73A',tipo:'ar',res:'David Zuluaga - Amanda Isaza',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:703,bl:'B',car:null,moto:null,parq:'41A',tipo:'ar',res:'Nury Luz Ledezma - Richard Suarez',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:704,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:705,bl:'B',car:'LPR 927',moto:null,parq:'49A',tipo:'ar',res:'Martha Lucía Hincapié - Ruben Dario Gutiérrez',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:706,bl:'B',car:'KNP 443',moto:'YGD 836',parq:'42A',tipo:'pr',res:'Santiago Restrepo Lopez',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:707,bl:'B',car:'KNR 015 / NRL 587',moto:'PSF 23B',parq:'64A',tipo:'pr',res:'Jessica Rendon - Jhon Jairo Valencia',hij:null,nin:null,tel:null,wa:null,dep:'701',obs:null},
-  {apto:708,bl:'B',car:null,moto:'VM70F',parq:'48B',tipo:'pr',res:'Frankil Dussan Rodriguez',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:709,bl:'A',car:'HZS 341',moto:null,parq:'42B',tipo:'pr',res:'Juan Camilo Muñoz - Hugo Muñoz Hurtado',hij:null,nin:null,tel:null,wa:null,dep:'707',obs:null},
-  {apto:710,bl:'A',car:'GTQ 854',moto:'HUN 45H',parq:'34A',tipo:null,res:'Maria Juliana Aguirre - Erika Hernández - Mauricio Aguirre',hij:null,nin:'1 niña',tel:null,wa:null,dep:'710',obs:'Parquea en visitantes S1 y plataforma'},
-  {apto:711,bl:'A',car:'KIH 472',moto:null,parq:'35A',tipo:'pr',res:'Carlos Castaño - Ana Arango',hij:null,nin:null,tel:null,wa:null,dep:'708',obs:null},
-  {apto:712,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
+  {apto:701,bl:'A',car:'GTN 832',moto:null,parq:'46A',tipo:'pr',res:'Sebastián Murillo - Alba Piedrahita - Conrado Murillo',hij:null,nin:null,tel:'310 377 6937',wa:'310 377 6937',tel2:'313 654 8544',wa2:'313 654 8544',dep:'706',obs:null},
+  {apto:702,bl:'A',car:'KNR 543',moto:'XTZ AZUL',parq:'73A',tipo:'ar',res:'David Zuluaga - Amanda Isaza',hij:null,nin:null,tel:'301 486 2363',wa:'301 486 2363',tel2:null,wa2:null,dep:null,obs:null},
+  {apto:703,bl:'B',car:null,moto:null,parq:'41A',tipo:'ar',res:'Nury Luz Ledezma - Richard Suarez',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:704,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:705,bl:'B',car:'LPR 927',moto:null,parq:'49A',tipo:'ar',res:'Martha Lucía Hincapié - Ruben Dario Gutiérrez',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:706,bl:'B',car:'KNP 443',moto:'YGD 836',parq:'42A',tipo:'pr',res:'Santiago Restrepo Lopez',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:707,bl:'B',car:'KNR 015 / NRL 587',moto:'PSF 23B',parq:'64A',tipo:'pr',res:'Jessica Rendon - Jhon Jairo Valencia',hij:null,nin:null,tel:'314 871 3227',wa:'314 871 3227',tel2:'310 392 1000',wa2:'310 392 1000',dep:'701',obs:null},
+  {apto:708,bl:'B',car:null,moto:'VM70F',parq:'48B',tipo:'pr',res:'Frankil Dussan Rodriguez',hij:null,nin:null,tel:'313 751 2114',wa:'313 751 2114',tel2:null,wa2:null,dep:null,obs:null},
+  {apto:709,bl:'A',car:'HZS 341',moto:null,parq:'42B',tipo:'pr',res:'Juan Camilo Muñoz - Hugo Muñoz Hurtado',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'707',obs:null},
+  {apto:710,bl:'A',car:'GTQ 854',moto:'HUN 45H',parq:'34A',tipo:null,res:'Maria Juliana Aguirre - Erika Hernández - Mauricio Aguirre',hij:null,nin:'1 niña',tel:null,wa:null,tel2:null,wa2:null,dep:'710',obs:'Parquea en visitantes S1 y plataforma'},
+  {apto:711,bl:'A',car:'KIH 472',moto:null,parq:'35A',tipo:'pr',res:'Carlos Castaño - Ana Arango',hij:null,nin:null,tel:'300 640 7411',wa:'300 640 7411',tel2:'322 576 8527',wa2:'322 576 8527',dep:'708',obs:null},
+  {apto:712,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
   // PISO 8
-  {apto:801,bl:'A',car:'LNG 786 (hijo visita)',moto:null,parq:'9A',tipo:'pr',res:'Luz Amparo Marin',hij:null,nin:null,tel:null,wa:null,dep:null,obs:'Vive sola'},
-  {apto:802,bl:'A',car:'DKW 474',moto:null,parq:'38A',tipo:'ar',res:'Manuela Muñoz Garcia',hij:null,nin:'1 bebé',tel:null,wa:null,dep:null,obs:null},
-  {apto:803,bl:'B',car:null,moto:null,parq:'48A',tipo:'pr',res:'Jeisson Avelino Moreno',hij:null,nin:null,tel:null,wa:null,dep:'804',obs:null},
-  {apto:804,bl:'B',car:'GOZ 746 / GPM 712 / KNR 596',moto:null,parq:'63A',tipo:'pr',res:'David Hernández - Mariana Marin',hij:null,nin:null,tel:null,wa:null,dep:'802',obs:null},
-  {apto:805,bl:'B',car:'JJY 869',moto:null,parq:'56A',tipo:'ar',res:'Juanita Duque - Daniel Gaviria',hij:null,nin:'1 bebé',tel:null,wa:null,dep:null,obs:null},
-  {apto:806,bl:'B',car:null,moto:null,parq:'53A',tipo:'ar',res:'Daniel Fernando Gaviria',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:807,bl:'B',car:null,moto:null,parq:'55B',tipo:'pr',res:'Juan Stevan Giraldo - Laura Valencia',hij:null,nin:'1 bebé',tel:null,wa:null,dep:'801',obs:null},
-  {apto:808,bl:'B',car:'DKR 320',moto:null,parq:'37A',tipo:'pr',res:'Jennifer Lopez Arias',hij:null,nin:null,tel:null,wa:null,dep:'805',obs:null},
-  {apto:809,bl:'A',car:'JJU 885',moto:null,parq:'60B',tipo:'pr',res:'Raul Carmona - Laura Stefani Polo',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:810,bl:'A',car:'KIH 036',moto:'EYD 47F',parq:'56B',tipo:'pr',res:'Juan David Candamil - Jimena Valencia',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:811,bl:'A',car:'BVH 720',moto:null,parq:'64B',tipo:'ar',res:'Natalia Apolinar Agudelo - Alexander Tobón',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:812,bl:'A',car:'GVR 229',moto:null,parq:'3A',tipo:'pr',res:'Gloria Isabel Orozco Murillo',hij:null,nin:null,tel:null,wa:null,dep:'807',obs:null},
+  {apto:801,bl:'A',car:'LNG 786 (hijo visita)',moto:null,parq:'9A',tipo:'pr',res:'Luz Amparo Marin',hij:null,nin:null,tel:'313 700 6160',wa:'313 700 6160',tel2:null,wa2:null,dep:null,obs:'Vive sola'},
+  {apto:802,bl:'A',car:'DKW 474',moto:null,parq:'38A',tipo:'ar',res:'Manuela Muñoz Garcia',hij:null,nin:'1 bebé',tel:'321 753 6963',wa:'321 753 6963',tel2:null,wa2:null,dep:null,obs:null},
+  {apto:803,bl:'B',car:null,moto:null,parq:'48A',tipo:'pr',res:'Jeisson Avelino Moreno',hij:null,nin:null,tel:'313 649 5994',wa:'313 649 5994',tel2:null,wa2:null,dep:'804',obs:null},
+  {apto:804,bl:'B',car:'GOZ 746 / GPM 712 / KNR 596',moto:null,parq:'63A',tipo:'pr',res:'David Hernández - Mariana Marin',hij:null,nin:null,tel:'320 767 3761',wa:'320 767 3761',tel2:'311 435 2740',wa2:'311 435 2740',dep:'802',obs:null},
+  {apto:805,bl:'B',car:'JJY 869',moto:null,parq:'56A',tipo:'ar',res:'Juanita Duque - Daniel Gaviria',hij:null,nin:'1 bebé',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:806,bl:'B',car:null,moto:null,parq:'53A',tipo:'ar',res:'Daniel Fernando Gaviria',hij:null,nin:null,tel:'321 666 9877',wa:'315 439 2129',tel2:null,wa2:null,dep:null,obs:null},
+  {apto:807,bl:'B',car:null,moto:null,parq:'55B',tipo:'pr',res:'Juan Stevan Giraldo - Laura Valencia',hij:null,nin:'1 bebé',tel:'311 352 8013',wa:'311 352 8013',tel2:'321 309 6257',wa2:'321 309 6257',dep:'801',obs:null},
+  {apto:808,bl:'B',car:'DKR 320',moto:null,parq:'37A',tipo:'pr',res:'Jennifer Lopez Arias',hij:null,nin:null,tel:'316 284 2945',wa:'316 284 2945',tel2:null,wa2:null,dep:'805',obs:null},
+  {apto:809,bl:'A',car:'JJU 885',moto:null,parq:'60B',tipo:'pr',res:'Raul Carmona - Laura Stefani Polo',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:810,bl:'A',car:'KIH 036',moto:'EYD 47F',parq:'56B',tipo:'pr',res:'Juan David Candamil - Jimena Valencia',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:811,bl:'A',car:'BVH 720',moto:null,parq:'64B',tipo:'ar',res:'Natalia Apolinar Agudelo - Alexander Tobón',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:812,bl:'A',car:'GVR 229',moto:null,parq:'3A',tipo:'pr',res:'Gloria Isabel Orozco Murillo',hij:null,nin:null,tel:'311 700 1758',wa:'311 700 1758',tel2:null,wa2:null,dep:'807',obs:null},
   // PISO 9
-  {apto:901,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:902,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:903,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:904,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:905,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:906,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:907,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:908,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:909,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:910,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:911,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:912,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
+  {apto:901,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:902,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:903,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:904,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:905,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:906,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:907,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:908,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:909,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:910,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:911,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:912,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
   // PISO 10
-  {apto:1001,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1002,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1003,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1004,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:'Pasean perro - Guardería'},
-  {apto:1005,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1006,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1007,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1008,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1009,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1010,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1011,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1012,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
+  {apto:1001,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1002,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1003,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1004,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:'Pasean perro - Guardería'},
+  {apto:1005,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1006,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1007,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1008,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1009,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1010,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1011,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1012,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
   // PISO 11
-  {apto:1101,bl:'A',car:null,moto:null,parq:'58B',tipo:'pr',res:'José Aparicio Sarmiento - Dora Marcela Torres',hij:'Maria Aparicio Torres',nin:null,tel:null,wa:null,dep:'1108-808',obs:null},
-  {apto:1102,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1103,bl:'B',car:'HA33 BOXET',moto:'(moto)',parq:'52A',tipo:'pr',res:'Leidy Jhoana León Pineda - Jhoana Alejandro Taborda',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1104,bl:'B',car:'CQH 285 / DHS 314',moto:null,parq:'50B',tipo:'pr',res:'Laura Silva - David Aristizabal',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1105,bl:'B',car:'GJX 978',moto:'OMT 15E',parq:'58A',tipo:'pr',res:'Lina Paola Ocampo - Edward Ospina Ramos',hij:null,nin:'1 niña',tel:null,wa:null,dep:'1102',obs:null},
-  {apto:1106,bl:'B',car:'KFM 678 / MHO 802',moto:'OMS 63E',parq:'14B',tipo:'pr',res:'Jennifer Perez - Santiago Quintero',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1107,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1108,bl:'B',car:'LPW 109',moto:null,parq:'14A',tipo:'pr',res:'Adriana Murillo Leal - Jairo Alonso Cierra',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1109,bl:'A',car:null,moto:'VOU 42F',parq:'15A',tipo:'pr',res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1110,bl:'A',car:null,moto:null,parq:'32B',tipo:'ar',res:'Monica Yanet Garcia - Wilmer Javier Lopez',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1111,bl:'A',car:'ZNR 534',moto:'AX38G',parq:'12A',tipo:'pr',res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1112,bl:'A',car:null,moto:null,parq:null,tipo:null,res:'Sindy Gonzales Arias - Jose Rosio Arias',hij:null,nin:null,tel:null,wa:null,dep:'1107-1101',obs:null},
+  {apto:1101,bl:'A',car:null,moto:null,parq:'58B',tipo:'pr',res:'José Aparicio Sarmiento - Dora Marcela Torres',hij:'Maria Aparicio Torres',nin:null,tel:'313 612 1045',wa:'313 612 1045',tel2:'320 493 4519',wa2:'320 493 4519',dep:'1108-808',obs:null},
+  {apto:1102,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1103,bl:'B',car:'HA33 BOXET',moto:'(moto)',parq:'52A',tipo:'pr',res:'Leidy Jhoana León Pineda - Jhoana Alejandro Taborda',hij:null,nin:null,tel:'322 621 2524',wa:'322 621 2524',tel2:'310 396 0221',wa2:'310 396 0221',dep:null,obs:null},
+  {apto:1104,bl:'B',car:'CQH 285 / DHS 314',moto:null,parq:'50B',tipo:'pr',res:'Laura Silva - David Aristizabal',hij:null,nin:null,tel:'310 833 2343',wa:'310 833 2343',tel2:'310 832 2660',wa2:'310 832 2660',dep:null,obs:null},
+  {apto:1105,bl:'B',car:'GJX 978',moto:'OMT 15E',parq:'58A',tipo:'pr',res:'Lina Paola Ocampo - Edward Ospina Ramos',hij:null,nin:'1 niña',tel:'314 869 9204',wa:'314 869 9204',tel2:'313 753 6245',wa2:'313 753 6245',dep:'1102',obs:null},
+  {apto:1106,bl:'B',car:'KFM 678 / MHO 802',moto:'OMS 63E',parq:'14B',tipo:'pr',res:'Jennifer Perez - Santiago Quintero',hij:null,nin:null,tel:'311 711 9058',wa:'311 711 9058',tel2:'311 628 8864',wa2:'311 628 8864',dep:null,obs:null},
+  {apto:1107,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1108,bl:'B',car:'LPW 109',moto:null,parq:'14A',tipo:'pr',res:'Adriana Murillo Leal - Jairo Alonso Cierra',hij:null,nin:null,tel:'310 840 5939',wa:'310 840 5939',tel2:'318 518 3631',wa2:'318 518 3631',dep:null,obs:null},
+  {apto:1109,bl:'A',car:null,moto:'VOU 42F',parq:'15A',tipo:'pr',res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1110,bl:'A',car:null,moto:null,parq:'32B',tipo:'ar',res:'Monica Yanet Garcia - Wilmer Javier Lopez',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1111,bl:'A',car:'ZNR 534',moto:'AX38G',parq:'12A',tipo:'pr',res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1112,bl:'A',car:null,moto:null,parq:null,tipo:null,res:'Sindy Gonzales Arias - Jose Rosio Arias',hij:null,nin:null,tel:'314 505 7398',wa:'314 505 7398',tel2:'314 637 1755',wa2:'314 637 1755',dep:'1107-1101',obs:null},
   // PISO 12
-  {apto:1201,bl:'A',car:null,moto:null,parq:'19A',tipo:null,res:'Ana Matilde Ordoñez',hij:'Santiago Melano',nin:null,tel:null,wa:null,dep:'1207',obs:null},
-  {apto:1202,bl:'A',car:'KOV 527',moto:'XBF 98G',parq:'62A',tipo:'pr',res:'Jessica Gallo',hij:null,nin:null,tel:null,wa:null,dep:'1206',obs:null},
-  {apto:1203,bl:'B',car:'WNY 877 / HMR 068',moto:null,parq:'71A',tipo:'ar',res:'Estefania Sanchez Morales - Stevan Naranjo',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1204,bl:'B',car:null,moto:null,parq:'20A',tipo:null,res:'Juan Sebastián Piñero - Victoria Escobar',hij:null,nin:null,tel:null,wa:null,dep:'1202',obs:null},
-  {apto:1205,bl:'B',car:'IXL 904',moto:null,parq:'26A',tipo:'pr',res:'Diego Fernando Ruje - Paula Andrea Alvarez',hij:'Valentina Ruje',nin:null,tel:null,wa:null,dep:'1201',obs:null},
-  {apto:1206,bl:'B',car:'FPN 546',moto:null,parq:'17B',tipo:'ar',res:'Victor Giraldo Arenas',hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1207,bl:'B',car:'KNP 003',moto:null,parq:'13A',tipo:'pr',res:'Yuli Viviana Marin - Mariana Marin',hij:null,nin:'Mariana Marin',tel:null,wa:null,dep:null,obs:null},
-  {apto:1208,bl:'B',car:null,moto:null,parq:'22B',tipo:'ar',res:'Valentina Ortiz - Mateo Garcia',hij:null,nin:'Manuel y Juan Jose (2 niños)',tel:null,wa:null,dep:null,obs:null},
-  {apto:1209,bl:'A',car:null,moto:null,parq:'47B',tipo:'pr',res:'Katherine Grajales - Sol Angel Gonzales',hij:null,nin:'Nícol Ayala Grajales',tel:null,wa:null,dep:null,obs:null},
-  {apto:1210,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1211,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
-  {apto:1212,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,dep:null,obs:null},
+  {apto:1201,bl:'A',car:null,moto:null,parq:'19A',tipo:null,res:'Ana Matilde Ordoñez',hij:'Santiago Melano',nin:null,tel:'312 777 3493',wa:'312 777 3493',tel2:null,wa2:null,dep:'1207',obs:null},
+  {apto:1202,bl:'A',car:'KOV 527',moto:'XBF 98G',parq:'62A',tipo:'pr',res:'Jessica Gallo',hij:null,nin:null,tel:'315 653 1213',wa:'315 653 1213',tel2:null,wa2:null,dep:'1206',obs:null},
+  {apto:1203,bl:'B',car:'WNY 877 / HMR 068',moto:null,parq:'71A',tipo:'ar',res:'Estefania Sanchez Morales - Stevan Naranjo',hij:null,nin:null,tel:'310 876 7753',wa:'310 876 7753',tel2:'321 750 5225',wa2:'321 750 5225',dep:null,obs:null},
+  {apto:1204,bl:'B',car:null,moto:null,parq:'20A',tipo:null,res:'Juan Sebastián Piñero - Victoria Escobar',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'1202',obs:null},
+  {apto:1205,bl:'B',car:'IXL 904',moto:null,parq:'26A',tipo:'pr',res:'Diego Fernando Ruje - Paula Andrea Alvarez',hij:'Valentina Ruje',nin:null,tel:'304 343 3306',wa:'304 343 3306',tel2:'320 663 9409',wa2:'320 663 9409',dep:'1201',obs:null},
+  {apto:1206,bl:'B',car:'FPN 546',moto:null,parq:'17B',tipo:'ar',res:'Victor Giraldo Arenas',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1207,bl:'B',car:'KNP 003',moto:null,parq:'13A',tipo:'pr',res:'Yuli Viviana Marin - Mariana Marin',hij:null,nin:'Mariana Marin',tel:'301 446 0024',wa:'301 446 0024',tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1208,bl:'B',car:null,moto:null,parq:'22B',tipo:'ar',res:'Valentina Ortiz - Mateo Garcia',hij:null,nin:'Manuel y Juan Jose (2 niños)',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1209,bl:'A',car:null,moto:null,parq:'47B',tipo:'pr',res:'Katherine Grajales - Sol Angel Gonzales',hij:null,nin:'Nícol Ayala Grajales',tel:'300 746 1047',wa:'300 746 1047',tel2:'311 654 7873',wa2:'311 654 7873',dep:null,obs:null},
+  {apto:1210,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1211,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
+  {apto:1212,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
 ];
 
 // ── INDEXEDDB ─────────────────────────────────────────────────────
@@ -702,6 +710,33 @@ function cardHtml(a) {
   </div>`;
 }
 
+function contactDetailBlock(a) {
+  const noms = (a.res || '').split(' - ').map(n => n.trim());
+  const n1 = noms[0] || null;
+  const n2 = noms[1] || null;
+  const tl = t => t ? `<a class="dval" href="tel:${esc(t)}">${esc(t)}</a>` : `<span class="dval nil">—</span>`;
+  const wl = w => w ? `<a class="dval" href="https://wa.me/57${esc(w.replace(/\D/g,''))}">${esc(w)}</a>` : `<span class="dval nil">—</span>`;
+  const has1 = a.tel || a.wa;
+  const has2 = a.tel2 || a.wa2;
+  if (!has1 && !has2) return `<div class="drow"><span class="dval nil">Sin contacto registrado</span></div>`;
+  let html = '';
+  if (has1) {
+    html += `<div class="cgroup">`;
+    if (n1 && n2) html += `<div class="cgroup-nom">👤 ${esc(n1)}</div>`;
+    html += `<div class="drow"><span class="dlbl">Teléfono</span>${tl(a.tel)}</div>`;
+    html += `<div class="drow"><span class="dlbl">WhatsApp</span>${wl(a.wa)}</div>`;
+    html += `</div>`;
+  }
+  if (has2 && n2) {
+    html += `<div class="cgroup">`;
+    html += `<div class="cgroup-nom">👤 ${esc(n2)}</div>`;
+    html += `<div class="drow"><span class="dlbl">Teléfono</span>${tl(a.tel2)}</div>`;
+    html += `<div class="drow"><span class="dlbl">WhatsApp</span>${wl(a.wa2)}</div>`;
+    html += `</div>`;
+  }
+  return html;
+}
+
 function detailHtml(a) {
   const vac = isVacant(a);
   const n = s => s ? `<span class="dval">${esc(s)}</span>` : `<span class="dval nil">—</span>`;
@@ -733,8 +768,7 @@ function detailHtml(a) {
 
   <div class="det-sec">
     <div class="det-sec-t">Contacto</div>
-    <div class="drow"><span class="dlbl">Teléfono</span>${a.tel ? `<a class="dval" href="tel:${esc(a.tel)}">${esc(a.tel)}</a>` : `<span class="dval nil">—</span>`}</div>
-    <div class="drow"><span class="dlbl">WhatsApp</span>${a.wa ? `<a class="dval" href="https://wa.me/57${esc(a.wa.replace(/\s/g,''))}">${esc(a.wa)}</a>` : `<span class="dval nil">—</span>`}</div>
+    ${contactDetailBlock(a)}
   </div>
 
   <div class="det-sec">
@@ -777,12 +811,30 @@ function editFormHtml(a) {
     <div class="fg"><label>Tipo</label>
       ${sel('tipo',[['','Desconocido'],['pr','Propietario'],['ar','Arrendatario']])}</div>
   </div>
+  ${(() => {
+    const noms = (a.res || '').split(' - ').map(n => n.trim());
+    const n1 = noms[0] || 'Persona 1';
+    const n2 = noms[1] || null;
+    return `
+  <div class="fg" style="margin-bottom:4px"><label style="color:var(--accent2);font-weight:600">👤 ${esc(n1)}</label></div>
   <div class="form-row">
     <div class="fg"><label>Teléfono</label>
       <input id="e-tel" type="tel" value="${v('tel')}"></div>
     <div class="fg"><label>WhatsApp</label>
       <input id="e-wa" type="tel" value="${v('wa')}"></div>
   </div>
+  ${n2 ? `
+  <div class="fg" style="margin-bottom:4px;margin-top:4px"><label style="color:var(--accent2);font-weight:600">👤 ${esc(n2)}</label></div>
+  <div class="form-row">
+    <div class="fg"><label>Teléfono</label>
+      <input id="e-tel2" type="tel" value="${v('tel2')}"></div>
+    <div class="fg"><label>WhatsApp</label>
+      <input id="e-wa2" type="tel" value="${v('wa2')}"></div>
+  </div>` : `
+  <input type="hidden" id="e-tel2" value="${v('tel2')}">
+  <input type="hidden" id="e-wa2" value="${v('wa2')}">
+  `}`;
+  })()}
   <div class="fg"><label>Depósito</label>
     <input id="e-dep" value="${v('dep')}"></div>
   <div class="fg"><label>Observaciones</label>
@@ -1100,6 +1152,8 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
       tipo: g('tipo') || null,
       tel:  g('tel') || null,
       wa:   g('wa') || null,
+      tel2: g('tel2') || null,
+      wa2:  g('wa2') || null,
       dep:  g('dep') || null,
       obs:  g('obs') || null,
     };

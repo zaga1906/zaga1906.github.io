@@ -254,35 +254,6 @@
       .form-row { grid-template-columns: 1fr; }
     }
 
-    /* CONFLICTOS */
-    .conflict-card { background: var(--card2); border: 1px solid rgba(245,158,11,.35);
-      border-left: 3px solid var(--warning); border-radius: var(--radius);
-      padding: 11px 13px; margin-bottom: 8px; font-size: 0.82rem; }
-    .conflict-head { display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
-    .conflict-apto { font-weight: 700; color: var(--warning); font-size: 0.95rem; }
-    .conflict-date { font-size: 0.7rem; color: var(--dim); }
-    .conflict-field { margin-bottom: 7px; padding-bottom: 7px;
-      border-bottom: 1px solid var(--border); }
-    .conflict-field:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .conflict-lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: .6px;
-      color: var(--dim); margin-bottom: 4px; }
-    .conflict-row { display: flex; gap: 6px; margin-bottom: 3px; align-items: flex-start; }
-    .conflict-row .icon { font-size: 0.75rem; flex-shrink: 0; margin-top: 1px; }
-    .conflict-row .val { font-size: 0.8rem; line-height: 1.4; }
-    .conflict-row.local    .val { color: var(--accent); }
-    .conflict-row.imported .val { color: var(--muted); text-decoration: line-through; }
-    .conflict-note { font-size: 0.74rem; color: var(--accent); margin-top: 7px; }
-
-    .import-summary { background: var(--card2); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 12px 14px; font-size: 0.83rem; }
-    .import-summary .s-row { display: flex; justify-content: space-between;
-      margin-bottom: 5px; }
-    .import-summary .s-val { font-weight: 700; }
-    .import-summary .s-val.ok  { color: var(--accent); }
-    .import-summary .s-val.warn{ color: var(--warning); }
-    .import-summary .s-val.skip{ color: var(--muted); }
-
     /* EDIT FORM — FOTOS */
     .ep-sec-t { font-size:0.68rem; text-transform:uppercase; letter-spacing:.7px;
       color:var(--dim); margin:10px 0 6px; }
@@ -487,15 +458,6 @@
     <div class="sheet-item" onclick="App.menuAction('stats')">
       <span class="si-icon">📊</span><span class="si-label">Estadísticas</span>
     </div>
-    <div class="sheet-item" onclick="App.menuAction('export')">
-      <span class="si-icon">📤</span><span class="si-label">Exportar datos</span>
-    </div>
-    <div class="sheet-item" onclick="App.menuAction('import')">
-      <span class="si-icon">📥</span><span class="si-label">Importar datos</span>
-    </div>
-    <div class="sheet-item danger" onclick="App.menuAction('conflicts')">
-      <span class="si-icon">⚠️</span><span class="si-label">Ver conflictos</span>
-    </div>
     <div class="sheet-item" onclick="App.menuAction('help')">
       <span class="si-icon">❓</span><span class="si-label">Ayuda</span>
     </div>
@@ -505,8 +467,18 @@
   </div>
 </div>
 
-<!-- Input oculto para importar -->
-<input type="file" id="import-file" accept=".json" style="display:none">
+<!-- Modal: Confirmación -->
+<div id="m-confirm" class="modal hidden">
+  <div class="mbox" style="max-width:360px">
+    <div class="mhandle"></div>
+    <p id="confirm-title" style="font-size:1rem;font-weight:700;margin-bottom:8px"></p>
+    <p id="confirm-msg"   style="font-size:0.84rem;color:var(--muted);margin-bottom:20px;line-height:1.55"></p>
+    <div style="display:flex;gap:10px">
+      <button id="confirm-yes" class="btn-d" style="flex:1;padding:11px">Sí, confirmar</button>
+      <button id="confirm-no"  class="btn-s" style="flex:1;padding:11px">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 <!-- Input ocultos para fotos -->
 <input type="file" id="ph-inp-1"   accept="image/*" capture="environment" style="display:none">
@@ -838,13 +810,24 @@ async function loadOv() {
   list.forEach(o => _ov[o.apto] = o);
 }
 
-function resolve(id) {
-  const base = BASE.find(a => a.apto === id);
-  if (!base) return null;
-  return _ov[id] ? { ...base, ..._ov[id] } : { ...base };
+async function migrateBase() {
+  let inserted = 0, skipped = 0;
+  for (const apt of BASE) {
+    if (_ov[apt.apto]) { skipped++; continue; }
+    await edb.put(apt);
+    _ov[apt.apto] = apt;
+    inserted++;
+  }
+  return { inserted, skipped, total: BASE.length };
 }
 
-function all() { return BASE.map(a => resolve(a.apto)); }
+function resolve(id) {
+  return _ov[id] || null;
+}
+
+function all() {
+  return Object.values(_ov).sort((a, b) => a.apto - b.apto);
+}
 
 // ── SEARCH ────────────────────────────────────────────────────────
 function search(q) {
@@ -1227,6 +1210,20 @@ async function unlockApp() {
   }
 }
 
+// ── CONFIRM DIALOG ───────────────────────────────────────────────
+function confirmAction(title, msg) {
+  return new Promise(resolve => {
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-msg').textContent   = msg;
+    const modal = document.getElementById('m-confirm');
+    modal.classList.remove('hidden');
+    const done = ok => { modal.classList.add('hidden'); resolve(ok); };
+    document.getElementById('confirm-yes').onclick = () => done(true);
+    document.getElementById('confirm-no').onclick  = () => done(false);
+    modal.onclick = e => { if (e.target === modal) done(false); };
+  });
+}
+
 // ── APP ───────────────────────────────────────────────────────────
 const App = (() => {
   let token = null;
@@ -1248,11 +1245,6 @@ const App = (() => {
     document.getElementById('txt').addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
     });
-    document.getElementById('import-file').addEventListener('change', e => {
-      const f = e.target.files[0];
-      if (f) { importData(f); e.target.value = ''; }
-    });
-
     wirePhotoInputs();
     welcome();
   }
@@ -1336,10 +1328,17 @@ const App = (() => {
     if (/^(ayuda|help|\?|\/ayuda)$/i.test(t)) { showHelp(); return; }
     if (/estadís|estadis|cuántos|cuantos|stats/i.test(t)) { showStats(); return; }
     if (/^(hola|buenas|hey|hi)$/i.test(t)) { welcome(); return; }
-    if (/exportar|export/i.test(t)) { exportData(); return; }
-    if (/importar|import/i.test(t)) { triggerImport(); return; }
-    if (/conflicto/i.test(t)) { showConflicts(); return; }
-
+    if (/^migrar base$/i.test(t)) {
+      say('⏳ Migrando datos a Firestore…', 100);
+      const r = await migrateBase();
+      say(`✅ Migración completa.<br>
+        <small style="color:var(--muted)">
+          Insertados: <strong>${r.inserted}</strong> &nbsp;|&nbsp;
+          Ya existían: <strong>${r.skipped}</strong> &nbsp;|&nbsp;
+          Total: <strong>${r.total}</strong>
+        </small>`, 200);
+      return;
+    }
     const results = search(q);
 
     if (results.length === 1) {
@@ -1404,9 +1403,6 @@ const App = (() => {
       plate:     () => { addMsg('Buscar por placa', true);  say('Escribe la placa del vehículo o moto (ej: EMT745, VEL950…)'); },
       name:      () => { addMsg('Buscar por nombre', true); say('Escribe el apellido o nombre del residente'); },
       stats:     () => { addMsg('Estadísticas', true); showStats(); },
-      export:    () => { addMsg('Exportar datos', true); exportData(); },
-      import:    () => { addMsg('Importar datos', true); triggerImport(); },
-      conflicts: () => { addMsg('Ver conflictos', true); showConflicts(); },
       help:      () => { addMsg('Ayuda', true); showHelp(); },
       chpw:      () => { changePassword(); },
     };
@@ -1577,6 +1573,8 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
   }
 
   async function editRemovePhoto(apto, slot, idx) {
+    const ok = await confirmAction('¿Eliminar esta foto?', 'La foto se eliminará de forma permanente.');
+    if (!ok) return;
     const ph = await edb.getPhotos(apto);
     if (idx === -1) { ph[slot] = null; }
     else            { ph[slot].splice(idx, 1); }
@@ -1615,7 +1613,11 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
   }
 
   async function clearEdit(id) {
-    if (!confirm(`¿Vaciar todos los datos del Apto ${id}? Esta acción no elimina el apartamento, solo borra la información registrada.`)) return;
+    const ok = await confirmAction(
+      `¿Vaciar datos del Apto ${id}?`,
+      'Se eliminarán todos los datos registrados de este apartamento. Esta acción no se puede deshacer.'
+    );
+    if (!ok) return;
     await edb.del(id);
     delete _ov[id];
     closeModal('m-edit');
@@ -1628,184 +1630,6 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
 
   function bgClose(event, id) {
     if (event.target === document.getElementById(id)) closeModal(id);
-  }
-
-  // ─ export / import
-  const FIELD_LABELS = {
-    res:'Residentes', hij:'Hijos/adultos', nin:'Niños',
-    car:'Carro', moto:'Moto', parq:'Parqueadero',
-    tipo:'Tipo', tel:'Teléfono', wa:'WhatsApp',
-    dep:'Depósito', obs:'Observaciones'
-  };
-  const DATA_FIELDS = Object.keys(FIELD_LABELS);
-
-  async function exportData() {
-    const overrides  = await edb.getAll();
-    const allPhotos  = await edb.getAllPhotos();
-    // solo incluir aptos que tengan al menos una foto
-    const photos = allPhotos.filter(p =>
-      p.foto1 || p.foto2 || p.fam?.length || p.cars?.length || p.motos?.length
-    );
-    if (!overrides.length && !photos.length) {
-      say('⚠️ No hay datos locales que exportar.', 100);
-      return;
-    }
-    const payload = {
-      meta: { app: 'EntreBot', version: '1.0.0',
-              exported_at: new Date().toISOString(),
-              total: overrides.length, total_photos: photos.length },
-      overrides,
-      photos
-    };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href     = url;
-    a.download = `entrebot-datos-${new Date().toISOString().slice(0,10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    say(`✅ Exportados <strong>${overrides.length}</strong> registros y <strong>${photos.length}</strong> registros con fotos.<br>
-      <small style="color:var(--muted)">Comparte el archivo con tus compañeros por WhatsApp o correo.</small>`, 100);
-  }
-
-  function triggerImport() {
-    document.getElementById('import-file').click();
-  }
-
-  async function importData(file) {
-    let payload;
-    try {
-      payload = JSON.parse(await file.text());
-    } catch {
-      say('⚠️ Archivo inválido. Asegúrate de importar un archivo <code>.json</code> generado por EntreBot.', 100);
-      return;
-    }
-    if (!payload?.overrides?.length && !payload?.photos?.length) {
-      say('⚠️ El archivo no contiene registros válidos.', 100);
-      return;
-    }
-
-    const imported   = payload.overrides || [];
-    const importedAt = payload.meta?.exported_at
-      ? new Date(payload.meta.exported_at).toLocaleString('es-CO')
-      : 'desconocida';
-
-    let countNew = 0, countSkip = 0;
-    const conflicts = [];
-
-    for (const rec of imported) {
-      const local = _ov[rec.apto];
-
-      if (!local) {
-        // No hay versión local → importar directamente
-        const clean = { apto: rec.apto, _updated: rec._updated || null };
-        DATA_FIELDS.forEach(f => clean[f] = rec[f] ?? null);
-        await edb.put(clean);
-        _ov[rec.apto] = clean;
-        countNew++;
-        continue;
-      }
-
-      // Hay versión local → comparar campo por campo
-      const diffs = DATA_FIELDS.filter(f => {
-        const lv = local[f] ?? null;
-        const rv = rec[f]   ?? null;
-        return lv !== rv;
-      });
-
-      if (!diffs.length) { countSkip++; continue; } // idénticos
-
-      // Conflicto: guardar info pero mantener local
-      conflicts.push({
-        apto: rec.apto, importedAt,
-        fields: diffs.map(f => ({
-          field: f, label: FIELD_LABELS[f],
-          local: local[f] ?? null,
-          imported: rec[f] ?? null
-        }))
-      });
-      countSkip++;
-    }
-
-    // Persistir conflictos
-    if (conflicts.length) {
-      const prev = JSON.parse(localStorage.getItem('eb_conflicts') || '[]');
-      const merged = [...prev.filter(c => !conflicts.find(n => n.apto === c.apto)), ...conflicts];
-      localStorage.setItem('eb_conflicts', JSON.stringify(merged));
-    }
-
-    // Restaurar fotos
-    let countPhotos = 0;
-    if (Array.isArray(payload.photos) && payload.photos.length) {
-      for (const ph of payload.photos) {
-        if (!ph?.apto) continue;
-        const existing = await edb.getPhotos(ph.apto);
-        const hasLocal = existing.foto1 || existing.foto2 ||
-                         existing.fam?.length || existing.cars?.length || existing.motos?.length;
-        if (!hasLocal) {
-          await edb.putPhotos(ph);
-          countPhotos++;
-        }
-      }
-    }
-
-    // Mostrar resumen
-    await say(`<strong>📥 Importación completada</strong>
-      <div class="import-summary" style="margin-top:8px">
-        <div class="s-row"><span>Registros nuevos aplicados</span><span class="s-val ok">${countNew}</span></div>
-        <div class="s-row"><span>Sin cambios / ya existían</span><span class="s-val skip">${countSkip - conflicts.length}</span></div>
-        <div class="s-row"><span>Conflictos detectados</span><span class="s-val warn">${conflicts.length}</span></div>
-        ${countPhotos ? `<div class="s-row"><span>Álbumes de fotos restaurados</span><span class="s-val ok">${countPhotos}</span></div>` : ''}
-      </div>
-      ${conflicts.length ? `<br><small style="color:var(--warning)">⚠️ Se mantuvo tu versión local en los conflictos.<br>Usa <strong>"ver conflictos"</strong> para revisar las diferencias.</small>` : ''}
-    `, 100);
-  }
-
-  function showConflicts() {
-    const list = JSON.parse(localStorage.getItem('eb_conflicts') || '[]');
-    if (!list.length) {
-      say('✅ No hay conflictos registrados.', 100);
-      return;
-    }
-    const html = list.map(c => `
-      <div class="conflict-card">
-        <div class="conflict-head">
-          <span class="conflict-apto">⚠️ Apto ${esc(c.apto)}</span>
-          <span class="conflict-date">Importado: ${esc(c.importedAt)}</span>
-        </div>
-        ${c.fields.map(f => `
-          <div class="conflict-field">
-            <div class="conflict-lbl">${esc(f.label)}</div>
-            <div class="conflict-row local">
-              <span class="icon">📱</span>
-              <span class="val">Tu versión: ${f.local ? esc(f.local) : '<em style="opacity:.5">vacío</em>'}</span>
-            </div>
-            <div class="conflict-row imported">
-              <span class="icon">📥</span>
-              <span class="val">Importado: ${f.imported ? esc(f.imported) : '<em style="opacity:.5">vacío</em>'}</span>
-            </div>
-          </div>`).join('')}
-        <div class="conflict-note">✅ Se mantiene tu versión local</div>
-      </div>`).join('');
-
-    const el = document.createElement('div');
-    el.className = 'msg bot';
-    el.innerHTML = `<div class="avatar"><img src="entrebot-mascot-nobg.png" alt="EntreBot"></div>
-      <div class="bubble" style="max-width:95%;padding:0;background:transparent;border:none">
-        <div style="padding:8px 0 6px;font-size:.85rem;color:var(--muted)">
-          <strong style="color:var(--warning)">${list.length} conflicto${list.length>1?'s':''}</strong> pendiente${list.length>1?'s':''}
-        </div>
-        ${html}
-        <button class="cbtn" style="margin-top:8px;width:100%;color:var(--danger);border-color:rgba(239,68,68,.3)"
-          onclick="App.clearConflicts()">🗑️ Limpiar conflictos</button>
-      </div>`;
-    document.getElementById('messages').appendChild(el);
-    el.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }
-
-  function clearConflicts() {
-    localStorage.removeItem('eb_conflicts');
-    say('🗑️ Conflictos eliminados.', 100);
   }
 
   // ─ token modal
@@ -1926,6 +1750,8 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
 
   window.phViewerDelete = async function() {
     if (!_phViewerCtx) return;
+    const ok = await confirmAction('¿Eliminar esta foto?', 'La foto se eliminará de forma permanente.');
+    if (!ok) return;
     const { section, idx } = _phViewerCtx;
     if (idx === null) {
       // single slot (foto1 / foto2)
@@ -2019,7 +1845,6 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
   return { init, send, openDetail, openEdit, saveEdit, clearEdit,
            editCapture, editRemovePhoto,
            closeModal, bgClose, openTokenModal, saveToken, clearToken,
-           exportData, triggerImport, showConflicts, clearConflicts,
            openMenu, closeMenu, menuAction,
            openPhotos, saveChangePassword, changePassword };
 })();

@@ -827,6 +827,13 @@ class EDB {
       tx.oncomplete = res; tx.onerror = rej;
     });
   }
+  getAllPhotos() {
+    return new Promise(res => {
+      const r = this._tx('photos','readonly').getAll();
+      r.onsuccess = () => res(r.result || []);
+      r.onerror   = () => res([]);
+    });
+  }
 }
 
 const edb = new EDB();
@@ -1637,15 +1644,22 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
   const DATA_FIELDS = Object.keys(FIELD_LABELS);
 
   async function exportData() {
-    const overrides = await edb.getAll();
-    if (!overrides.length) {
-      say('⚠️ No hay cambios locales que exportar. Los registros sin editar son datos base del sistema.', 100);
+    const overrides  = await edb.getAll();
+    const allPhotos  = await edb.getAllPhotos();
+    // solo incluir aptos que tengan al menos una foto
+    const photos = allPhotos.filter(p =>
+      p.foto1 || p.foto2 || p.fam?.length || p.cars?.length || p.motos?.length
+    );
+    if (!overrides.length && !photos.length) {
+      say('⚠️ No hay datos locales que exportar.', 100);
       return;
     }
     const payload = {
       meta: { app: 'EntreBot', version: '1.0.0',
-              exported_at: new Date().toISOString(), total: overrides.length },
-      overrides
+              exported_at: new Date().toISOString(),
+              total: overrides.length, total_photos: photos.length },
+      overrides,
+      photos
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url  = URL.createObjectURL(blob);
@@ -1654,7 +1668,7 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
     a.download = `entrebot-datos-${new Date().toISOString().slice(0,10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    say(`✅ Exportados <strong>${overrides.length}</strong> registros.<br>
+    say(`✅ Exportados <strong>${overrides.length}</strong> registros y <strong>${photos.length}</strong> registros con fotos.<br>
       <small style="color:var(--muted)">Comparte el archivo con tus compañeros por WhatsApp o correo.</small>`, 100);
   }
 
@@ -1724,12 +1738,28 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
       localStorage.setItem('eb_conflicts', JSON.stringify(merged));
     }
 
+    // Restaurar fotos
+    let countPhotos = 0;
+    if (Array.isArray(payload.photos) && payload.photos.length) {
+      for (const ph of payload.photos) {
+        if (!ph?.apto) continue;
+        const existing = await edb.getPhotos(ph.apto);
+        const hasLocal = existing.foto1 || existing.foto2 ||
+                         existing.fam?.length || existing.cars?.length || existing.motos?.length;
+        if (!hasLocal) {
+          await edb.putPhotos(ph);
+          countPhotos++;
+        }
+      }
+    }
+
     // Mostrar resumen
     await say(`<strong>📥 Importación completada</strong>
       <div class="import-summary" style="margin-top:8px">
         <div class="s-row"><span>Registros nuevos aplicados</span><span class="s-val ok">${countNew}</span></div>
         <div class="s-row"><span>Sin cambios / ya existían</span><span class="s-val skip">${countSkip - conflicts.length}</span></div>
         <div class="s-row"><span>Conflictos detectados</span><span class="s-val warn">${conflicts.length}</span></div>
+        ${countPhotos ? `<div class="s-row"><span>Álbumes de fotos restaurados</span><span class="s-val ok">${countPhotos}</span></div>` : ''}
       </div>
       ${conflicts.length ? `<br><small style="color:var(--warning)">⚠️ Se mantuvo tu versión local en los conflictos.<br>Usa <strong>"ver conflictos"</strong> para revisar las diferencias.</small>` : ''}
     `, 100);

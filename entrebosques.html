@@ -283,6 +283,26 @@
     .import-summary .s-val.warn{ color: var(--warning); }
     .import-summary .s-val.skip{ color: var(--muted); }
 
+    /* EDIT FORM — FOTOS */
+    .ep-sec-t { font-size:0.68rem; text-transform:uppercase; letter-spacing:.7px;
+      color:var(--dim); margin:10px 0 6px; }
+    .ep-person { display:flex; flex-direction:column; align-items:center; gap:5px; flex:1; }
+    .ep-nom  { font-size:0.72rem; color:var(--muted); text-align:center; }
+    .ep-slot { width:72px; height:72px; border-radius:8px; overflow:hidden;
+      background:var(--card); border:1.5px dashed var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.4rem; cursor:pointer; position:relative; flex-shrink:0; }
+    .ep-slot img { width:100%; height:100%; object-fit:cover; display:block; }
+    .ep-slot .ep-del { position:absolute; top:3px; right:3px; width:18px; height:18px;
+      border-radius:50%; background:rgba(239,68,68,.85); color:#fff;
+      font-size:0.65rem; border:none; cursor:pointer; display:flex;
+      align-items:center; justify-content:center; line-height:1; }
+    .ep-btns { display:flex; gap:4px; }
+    .ep-btn  { font-size:0.68rem; padding:4px 7px; border-radius:6px; border:1px solid var(--border);
+      background:var(--card); color:var(--muted); cursor:pointer; transition:all .15s; }
+    .ep-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .ep-grid { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:4px; }
+
     /* CONTACT GROUP (detail modal) */
     .cgroup { padding: 8px 0; border-bottom: 1px solid var(--border); }
     .cgroup:last-child { border-bottom: none; padding-bottom: 0; }
@@ -296,9 +316,133 @@
       display: flex; align-items: center; justify-content: center; }
     #menu-btn:hover { border-color: var(--accent); color: var(--accent);
       background: var(--accent-glow); }
+
+    /* ── LOGIN OVERLAY ───────────────────────────────────────────── */
+    #login-overlay { position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg); display: flex; align-items: center;
+      justify-content: center; padding: 24px; }
+    #login-overlay.hidden { display: none; }
+    .login-box { background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 32px 26px; width: 100%; max-width: 360px;
+      display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .login-logo { width: 72px; height: 72px; margin-bottom: 18px; }
+    .login-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; text-align: center; }
+    .login-sub   { font-size: 0.78rem; color: var(--muted); margin-bottom: 22px; text-align: center; line-height: 1.5; }
+    .login-fg { width: 100%; margin-bottom: 12px; }
+    .login-fg label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
+    .pw-wrap { position: relative; width: 100%; }
+    .pw-wrap input { width: 100%; background: var(--card); border: 1px solid var(--border);
+      color: var(--text); padding: 10px 40px 10px 12px; border-radius: var(--radius-sm);
+      font-size: 1rem; outline: none; transition: border-color .2s; font-family: inherit; }
+    .pw-wrap input:focus { border-color: var(--accent); }
+    .pw-req { color: var(--dim); transition: color .2s; }
+    .pw-req.ok { color: var(--accent); }
+    .pw-eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      font-size: 1rem; padding: 2px 4px; }
+    .pw-eye:hover { color: var(--text); }
+    .login-err { color: var(--danger); font-size: 0.78rem; min-height: 18px;
+      margin-bottom: 8px; align-self: flex-start; }
+    .login-btn { width: 100%; background: var(--accent); color: #fff; border: none;
+      padding: 11px; border-radius: var(--radius-sm); font-size: 0.92rem;
+      font-weight: 700; cursor: pointer; transition: background .2s; margin-top: 4px; }
+    .login-btn:hover { background: #059669; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60%  { transform: translateX(-6px); }
+      40%,80%  { transform: translateX(6px); }
+    }
+    .shake { animation: shake .35s ease-out; }
+
+    /* ── PHOTOS MODAL ────────────────────────────────────────────── */
+    .ph-section { margin-bottom: 18px; }
+    .ph-sec-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: .7px;
+      color: var(--dim); margin-bottom: 10px; }
+    .ph-res-row { display: flex; gap: 12px; }
+    .ph-res-slot { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+    .ph-res-name { font-size: 0.72rem; color: var(--muted); text-align: center; line-height: 1.3; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ph-thumb-wrap { position: relative; width: 72px; height: 72px; cursor: pointer; }
+    .ph-thumb { width: 72px; height: 72px; border-radius: 8px; object-fit: cover;
+      border: 1px solid var(--border); display: block; }
+    .ph-empty { width: 72px; height: 72px; border-radius: 8px;
+      background: var(--card); border: 2px dashed var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--dim); font-size: 1.4rem; cursor: pointer;
+      transition: border-color .18s; }
+    .ph-empty:hover { border-color: var(--accent); color: var(--accent); }
+    .ph-grid { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+    .ph-add { width: 72px; height: 72px; border-radius: 8px;
+      background: var(--card); border: 2px dashed var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--dim); font-size: 1.5rem; cursor: pointer;
+      transition: border-color .18s; flex-shrink: 0; }
+    .ph-add:hover { border-color: var(--accent); color: var(--accent); }
+    .ph-del { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px;
+      border-radius: 50%; background: var(--danger); border: none; color: #fff;
+      font-size: 0.65rem; cursor: pointer; display: flex; align-items: center;
+      justify-content: center; line-height: 1; }
+
+    /* fullscreen viewer */
+    #ph-viewer { position: fixed; inset: 0; background: #000; z-index: 11000;
+      display: flex; align-items: center; justify-content: center; }
+    #ph-viewer.hidden { display: none; }
+    #ph-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    #ph-viewer-del { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+      background: var(--danger); color: #fff; border: none; padding: 10px 22px;
+      border-radius: 10px; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
+    #ph-viewer-close { position: fixed; top: 16px; right: 16px;
+      background: rgba(0,0,0,.6); color: #fff; border: 1px solid rgba(255,255,255,.2);
+      padding: 7px 13px; border-radius: 8px; font-size: 0.82rem; cursor: pointer; }
   </style>
 </head>
 <body>
+
+<!-- ── LOGIN OVERLAY ──────────────────────────────────────────────── -->
+<div id="login-overlay">
+  <div class="login-box">
+    <img src="entrebot-mascot.png" alt="EntreBot" class="login-logo">
+    <div class="login-title" id="login-title">Bienvenido a EntreBot</div>
+    <div class="login-sub" id="login-sub">Ingresa tu contraseña para acceder.</div>
+
+    <!-- campo contraseña actual (solo en cambio) -->
+    <div class="login-fg" id="lf-current" style="display:none;width:100%">
+      <label>Contraseña actual</label>
+      <div class="pw-wrap">
+        <input type="password" id="l-current" placeholder="••••••••" autocomplete="current-password">
+        <button class="pw-eye" type="button" onclick="togglePw('l-current',this)">👁️</button>
+      </div>
+    </div>
+
+    <!-- campo contraseña principal -->
+    <div class="login-fg" style="width:100%">
+      <label id="l-pw-label">Contraseña</label>
+      <div class="pw-wrap">
+        <input type="password" id="l-pw" placeholder="••••••••" autocomplete="current-password">
+        <button class="pw-eye" type="button" onclick="togglePw('l-pw',this)">👁️</button>
+      </div>
+    </div>
+
+    <!-- campo confirmar (solo en crear / cambiar) -->
+    <div class="login-fg" id="lf-confirm" style="display:none;width:100%">
+      <label>Confirmar contraseña</label>
+      <div class="pw-wrap">
+        <input type="password" id="l-confirm" placeholder="••••••••" autocomplete="new-password">
+        <button class="pw-eye" type="button" onclick="togglePw('l-confirm',this)">👁️</button>
+      </div>
+    </div>
+
+    <div class="login-err" id="login-err"></div>
+    <button class="login-btn" id="login-btn" onclick="loginSubmit()">Ingresar</button>
+  </div>
+</div>
+
+<!-- ── PHOTOS FULLSCREEN VIEWER ───────────────────────────────────── -->
+<div id="ph-viewer" class="hidden" onclick="phViewerClose()">
+  <button id="ph-viewer-close" onclick="phViewerClose();event.stopPropagation()">✕ Cerrar</button>
+  <img id="ph-viewer-img" src="" alt="">
+  <button id="ph-viewer-del" style="display:none" onclick="phViewerDelete();event.stopPropagation()">🗑️ Eliminar foto</button>
+</div>
+
 <div id="app">
   <header class="app-header">
     <div class="header-left">
@@ -355,11 +499,21 @@
     <div class="sheet-item" onclick="App.menuAction('help')">
       <span class="si-icon">❓</span><span class="si-label">Ayuda</span>
     </div>
+    <div class="sheet-item" onclick="App.menuAction('chpw')">
+      <span class="si-icon">🔒</span><span class="si-label">Cambiar contraseña</span>
+    </div>
   </div>
 </div>
 
 <!-- Input oculto para importar -->
 <input type="file" id="import-file" accept=".json" style="display:none">
+
+<!-- Input ocultos para fotos -->
+<input type="file" id="ph-inp-1"   accept="image/*" capture="environment" style="display:none">
+<input type="file" id="ph-inp-2"   accept="image/*" capture="environment" style="display:none">
+<input type="file" id="ph-inp-fam" accept="image/*" capture="environment" style="display:none">
+<input type="file" id="ph-inp-car" accept="image/*" capture="environment" style="display:none">
+<input type="file" id="ph-inp-moto" accept="image/*" capture="environment" style="display:none">
 
 <!-- Modal token -->
 <div id="m-token" class="modal hidden">
@@ -393,6 +547,64 @@
     <div class="mhandle"></div>
     <div class="mtitle" id="edit-title">Editar Apartamento</div>
     <div id="edit-body"></div>
+  </div>
+</div>
+
+<!-- Modal fotos -->
+<div id="m-photos" class="modal hidden" onclick="App.bgClose(event,'m-photos')">
+  <div class="mbox" style="max-width:520px">
+    <div class="mhandle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="mtitle" id="ph-modal-title" style="margin-bottom:0">Fotos · Apto —</div>
+      <button class="btn-s" style="padding:6px 12px;font-size:0.8rem" onclick="App.closeModal('m-photos')">Cerrar</button>
+    </div>
+    <div id="ph-modal-body"></div>
+  </div>
+</div>
+
+<!-- Modal cambiar contraseña -->
+<div id="m-chpw" class="modal hidden" onclick="App.bgClose(event,'m-chpw')">
+  <div class="mbox" style="max-width:380px">
+    <div class="mhandle"></div>
+    <div class="mtitle">🔒 Cambiar contraseña</div>
+    <div id="cp-forced-notice" style="display:none;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:var(--radius-sm);padding:9px 12px;font-size:0.78rem;color:var(--warning);margin-bottom:12px;line-height:1.5">
+      ⚠️ Estás usando la contraseña por defecto.<br>Por seguridad, crea una contraseña personalizada para continuar.
+    </div>
+    <div class="msub">Ingresa tu contraseña actual y elige una nueva.</div>
+    <div class="fg">
+      <label>Contraseña actual</label>
+      <div class="pw-wrap">
+        <input type="password" id="cp-current" placeholder="••••••••" autocomplete="current-password">
+        <button class="pw-eye" type="button" onclick="togglePw('cp-current',this)">👁️</button>
+      </div>
+    </div>
+    <div class="fg">
+      <label>Nueva contraseña</label>
+      <div class="pw-wrap">
+        <input type="password" id="cp-new" placeholder="••••••••" autocomplete="new-password" oninput="checkPwStrength(this.value)">
+        <button class="pw-eye" type="button" onclick="togglePw('cp-new',this)">👁️</button>
+      </div>
+    </div>
+    <div id="pw-reqs" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;font-size:0.75rem;margin-bottom:8px;line-height:1.85">
+      <div style="color:var(--accent2);font-weight:600;margin-bottom:4px">Requisitos</div>
+      <div id="req-len"  class="pw-req">✔ Mínimo 8 caracteres</div>
+      <div id="req-upp"  class="pw-req">✔ Al menos una mayúscula (A–Z)</div>
+      <div id="req-low"  class="pw-req">✔ Al menos una minúscula (a–z)</div>
+      <div id="req-num"  class="pw-req">✔ Al menos un número (0–9)</div>
+      <div id="req-sym"  class="pw-req">✔ Al menos un carácter especial <span style="font-family:monospace">!@#$%^&*-_+=?</span></div>
+    </div>
+    <div class="fg">
+      <label>Confirmar nueva contraseña</label>
+      <div class="pw-wrap">
+        <input type="password" id="cp-confirm" placeholder="••••••••" autocomplete="new-password">
+        <button class="pw-eye" type="button" onclick="togglePw('cp-confirm',this)">👁️</button>
+      </div>
+    </div>
+    <div id="cp-err" style="color:var(--danger);font-size:.78rem;min-height:16px;margin-top:-4px;margin-bottom:6px"></div>
+    <div class="mbtns">
+      <button class="btn-p" onclick="App.saveChangePassword()">Guardar</button>
+      <button id="cp-cancel-btn" class="btn-s" onclick="App.closeModal('m-chpw')">Cancelar</button>
+    </div>
   </div>
 </div>
 
@@ -565,11 +777,13 @@ class EDB {
   constructor() {
     this._db = null;
     this._p = new Promise((res, rej) => {
-      const r = indexedDB.open('entrebosques_v1', 1);
+      const r = indexedDB.open('entrebosques_v1', 2);
       r.onupgradeneeded = e => {
         const db = e.target.result;
         if (!db.objectStoreNames.contains('ov'))
           db.createObjectStore('ov', { keyPath: 'apto' });
+        if (!db.objectStoreNames.contains('photos'))
+          db.createObjectStore('photos', { keyPath: 'apto' });
       };
       r.onsuccess = e => { this._db = e.target.result; res(); };
       r.onerror = rej;
@@ -596,6 +810,21 @@ class EDB {
       const tx = this._db.transaction('ov','readwrite');
       tx.objectStore('ov').delete(id);
       tx.oncomplete = res;
+    });
+  }
+  // ── photos store
+  getPhotos(apto) {
+    return new Promise(res => {
+      const r = this._tx('photos','readonly').get(apto);
+      r.onsuccess = () => res(r.result || { apto, foto1:null, foto2:null, fam:[], cars:[], motos:[] });
+      r.onerror   = () => res({ apto, foto1:null, foto2:null, fam:[], cars:[], motos:[] });
+    });
+  }
+  putPhotos(obj) {
+    return new Promise((res, rej) => {
+      const tx = this._db.transaction('photos','readwrite');
+      tx.objectStore('photos').put(obj);
+      tx.oncomplete = res; tx.onerror = rej;
     });
   }
 }
@@ -705,6 +934,7 @@ function cardHtml(a) {
     ${a.obs ? `<div class="arow"><span class="albl">Nota</span><span class="aval" style="color:var(--warning)">${esc(a.obs)}</span></div>` : ''}
     <div class="acard-btns">
       <button class="cbtn pri" onclick="App.openDetail(${a.apto})">Ver detalle</button>
+      <button class="cbtn" onclick="App.openPhotos(${a.apto})">📷 Fotos</button>
       <button class="cbtn" onclick="App.openEdit(${a.apto})">Editar</button>
     </div>
   </div>`;
@@ -779,6 +1009,7 @@ function detailHtml(a) {
 
   <div class="mbtns">
     <button class="btn-p" onclick="App.closeModal('m-detail');App.openEdit(${a.apto})">Editar</button>
+    <button class="btn-s" onclick="App.closeModal('m-detail');App.openPhotos(${a.apto})">📷 Fotos</button>
     <button class="btn-s" onclick="App.closeModal('m-detail')">Cerrar</button>
   </div>`;
 }
@@ -839,11 +1070,158 @@ function editFormHtml(a) {
     <input id="e-dep" value="${v('dep')}"></div>
   <div class="fg"><label>Observaciones</label>
     <textarea id="e-obs" rows="2">${v('obs')}</textarea></div>
+
+  <!-- ── FOTOS ── -->
+  <div style="border-top:1px solid var(--border);margin:12px 0 8px"></div>
+  <div style="font-size:0.78rem;font-weight:600;color:var(--accent2);margin-bottom:2px">📷 Fotos</div>
+
+  ${(() => {
+    const noms = (a.res||'').split(' - ').map(n=>n.trim());
+    const n1 = noms[0]||'Residente 1', n2 = noms[1]||null;
+    const person = (slot, nom) => `
+      <div class="ep-person">
+        <div class="ep-nom">${esc(nom)}</div>
+        <div class="ep-slot" id="ep-slot-${slot}"><span>📷</span></div>
+        <div class="ep-btns">
+          <button class="ep-btn" onclick="App.editCapture(${a.apto},'${slot}',true)">📷 Cámara</button>
+          <button class="ep-btn" onclick="App.editCapture(${a.apto},'${slot}',false)">🖼️ Galería</button>
+        </div>
+      </div>`;
+    return `
+  <div class="ep-sec-t">Residentes</div>
+  <div style="display:flex;gap:12px;margin-bottom:8px">
+    ${person('foto1', n1)}
+    ${n2 ? person('foto2', n2) : ''}
+  </div>`;
+  })()}
+
+  <div class="ep-sec-t">Familiares autorizados</div>
+  <div class="ep-grid" id="ep-grid-fam"></div>
+  <div class="ep-btns" style="margin-bottom:10px">
+    <button class="ep-btn" onclick="App.editCapture(${a.apto},'fam',true)">📷 Cámara</button>
+    <button class="ep-btn" onclick="App.editCapture(${a.apto},'fam',false)">🖼️ Galería</button>
+  </div>
+
+  <div class="ep-sec-t">Vehículos — Carro</div>
+  <div class="ep-grid" id="ep-grid-cars"></div>
+  <div class="ep-btns" style="margin-bottom:10px">
+    <button class="ep-btn" onclick="App.editCapture(${a.apto},'cars',true)">📷 Cámara</button>
+    <button class="ep-btn" onclick="App.editCapture(${a.apto},'cars',false)">🖼️ Galería</button>
+  </div>
+
+  <div class="ep-sec-t">Vehículos — Moto</div>
+  <div class="ep-grid" id="ep-grid-motos"></div>
+  <div class="ep-btns" style="margin-bottom:10px">
+    <button class="ep-btn" onclick="App.editCapture(${a.apto},'motos',true)">📷 Cámara</button>
+    <button class="ep-btn" onclick="App.editCapture(${a.apto},'motos',false)">🖼️ Galería</button>
+  </div>
+
   <div class="mbtns">
     <button class="btn-p" onclick="App.saveEdit(${a.apto})">Guardar</button>
     <button class="btn-s" onclick="App.closeModal('m-edit')">Cancelar</button>
     <button class="btn-d" onclick="App.clearEdit(${a.apto})">Vaciar datos</button>
   </div>`;
+}
+
+// ── CRYPTO HELPERS ───────────────────────────────────────────────
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256',
+    new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf))
+    .map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── IMAGE COMPRESSION ─────────────────────────────────────────────
+function compressImg(file, maxDim = 500) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width: w, height: h } = img;
+      if (w > maxDim || h > maxDim) {
+        if (w >= h) { h = Math.round(h * maxDim / w); w = maxDim; }
+        else        { w = Math.round(w * maxDim / h); h = maxDim; }
+      }
+      const cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      res(cv.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = rej;
+    img.src = url;
+  });
+}
+
+// ── PASSWORD TOGGLE (global) ──────────────────────────────────────
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else                         { inp.type = 'password'; btn.textContent = '👁️'; }
+}
+
+// ── PASSWORD STRENGTH CHECKER ─────────────────────────────────────
+function checkPwStrength(val) {
+  const set = (id, ok) => document.getElementById(id)?.classList.toggle('ok', ok);
+  set('req-len', val.length >= 8);
+  set('req-upp', /[A-Z]/.test(val));
+  set('req-low', /[a-z]/.test(val));
+  set('req-num', /[0-9]/.test(val));
+  set('req-sym', /[!@#$%^&*\-_+=?]/.test(val));
+}
+
+// ── LOGIN LOGIC ───────────────────────────────────────────────────
+// Contraseña por defecto (SHA-256 de "Port3r!a2026")
+const DEFAULT_PW_HASH = '0e0e4a88923cf49d3cc3ff480a5b2971360a9dccb6025cfa66b1b9d876a5b391';
+
+function getActiveHash() {
+  return localStorage.getItem('eb_pw') || DEFAULT_PW_HASH;
+}
+
+function initLogin() {
+  document.getElementById('app').style.display = 'none';
+  // siempre modo login — la contraseña por defecto ya está definida
+  ['l-pw'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') loginSubmit(); });
+  });
+  document.getElementById('login-overlay').classList.remove('hidden');
+  setTimeout(() => document.getElementById('l-pw').focus(), 100);
+}
+
+async function loginSubmit() {
+  const pwInp = document.getElementById('l-pw');
+  const errEl = document.getElementById('login-err');
+  errEl.textContent = '';
+  const pw = pwInp.value;
+  if (!pw) { loginShake(); errEl.textContent = 'Ingresa tu contraseña.'; return; }
+  const hash = await sha256(pw);
+  if (hash === getActiveHash()) {
+    unlockApp();
+  } else {
+    loginShake();
+    errEl.textContent = 'Contraseña incorrecta.';
+    pwInp.value = '';
+  }
+}
+
+function loginShake() {
+  const pw = document.getElementById('l-pw');
+  pw.classList.remove('shake');
+  void pw.offsetWidth; // reflow
+  pw.classList.add('shake');
+  pw.addEventListener('animationend', () => pw.classList.remove('shake'), { once: true });
+}
+
+async function unlockApp() {
+  document.getElementById('login-overlay').classList.add('hidden');
+  document.getElementById('app').style.display = '';
+  await App.init();
+  // Si aún usa la clave por defecto, forzar el cambio de contraseña
+  if (!localStorage.getItem('eb_pw')) {
+    App.changePassword(true);
+  }
 }
 
 // ── APP ───────────────────────────────────────────────────────────
@@ -872,6 +1250,7 @@ const App = (() => {
       if (f) { importData(f); e.target.value = ''; }
     });
 
+    wirePhotoInputs();
     welcome();
   }
 
@@ -1026,6 +1405,7 @@ const App = (() => {
       import:    () => { addMsg('Importar datos', true); triggerImport(); },
       conflicts: () => { addMsg('Ver conflictos', true); showConflicts(); },
       help:      () => { addMsg('Ayuda', true); showHelp(); },
+      chpw:      () => { changePassword(); },
     };
     actions[action]?.();
   }
@@ -1131,12 +1511,74 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
     document.getElementById('m-detail').classList.remove('hidden');
   }
 
-  function openEdit(id) {
+  async function openEdit(id) {
     const a = resolve(id);
     if (!a) return;
     document.getElementById('edit-title').textContent = `Editar — Apto ${id}`;
     document.getElementById('edit-body').innerHTML = editFormHtml(a);
     document.getElementById('m-edit').classList.remove('hidden');
+    await editLoadPhotos(id);
+  }
+
+  async function editLoadPhotos(apto) {
+    const ph = await edb.getPhotos(apto);
+    // slots individuales (foto1, foto2)
+    ['foto1','foto2'].forEach(slot => {
+      if (ph[slot]) editSetSlotImg(slot, ph[slot], apto);
+    });
+    // grids (fam, cars, motos)
+    ['fam','cars','motos'].forEach(key => {
+      const grid = document.getElementById(`ep-grid-${key}`);
+      if (!grid) return;
+      grid.innerHTML = '';
+      (ph[key]||[]).forEach((b64,i) => grid.appendChild(editThumb(b64, apto, key, i)));
+    });
+  }
+
+  function editSetSlotImg(slot, b64, apto) {
+    const el = document.getElementById(`ep-slot-${slot}`);
+    if (!el) return;
+    el.innerHTML = `<img src="${b64}" alt="">
+      <button class="ep-del" onclick="App.editRemovePhoto(${apto},'${slot}',-1);event.stopPropagation()">✕</button>`;
+  }
+
+  function editThumb(b64, apto, key, idx) {
+    const div = document.createElement('div');
+    div.className = 'ep-slot';
+    div.innerHTML = `<img src="${b64}" alt="">
+      <button class="ep-del" onclick="App.editRemovePhoto(${apto},'${key}',${idx});event.stopPropagation()">✕</button>`;
+    return div;
+  }
+
+  function editCapture(apto, slot, useCamera) {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*';
+    if (useCamera) inp.setAttribute('capture','environment');
+    inp.onchange = async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const b64 = await compressImg(file);
+      const ph  = await edb.getPhotos(apto);
+      if (slot === 'foto1' || slot === 'foto2') {
+        ph[slot] = b64;
+        await edb.putPhotos(ph);
+        editSetSlotImg(slot, b64, apto);
+      } else {
+        ph[slot].push(b64);
+        await edb.putPhotos(ph);
+        const grid = document.getElementById(`ep-grid-${slot}`);
+        if (grid) grid.appendChild(editThumb(b64, apto, slot, ph[slot].length - 1));
+      }
+    };
+    inp.click();
+  }
+
+  async function editRemovePhoto(apto, slot, idx) {
+    const ph = await edb.getPhotos(apto);
+    if (idx === -1) { ph[slot] = null; }
+    else            { ph[slot].splice(idx, 1); }
+    await edb.putPhotos(ph);
+    await editLoadPhotos(apto);
   }
 
   async function saveEdit(id) {
@@ -1366,13 +1808,198 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
     say('Token eliminado. Búsquedas locales activas.', 100);
   }
 
+  // ─ photos ─────────────────────────────────────────────────────
+  let _phApto = null;  // apto number currently open in photos modal
+  let _phData = null;  // photos record for current apto
+  // viewer state
+  let _phViewerCtx = null; // { section: 'fam'|'cars'|'motos', idx: number }
+
+  async function openPhotos(id) {
+    _phApto = id;
+    _phData = await edb.getPhotos(id);
+    const a = resolve(id);
+    document.getElementById('ph-modal-title').textContent = `Fotos · Apto ${id}`;
+    renderPhotosModal(a);
+    document.getElementById('m-photos').classList.remove('hidden');
+  }
+
+  function renderPhotosModal(a) {
+    if (!a) a = resolve(_phApto);
+    const noms = (a?.res || '').split(' - ').map(n => n.trim());
+    const n1 = noms[0] || 'Residente 1';
+    const n2 = noms[1] || 'Residente 2';
+
+    const thumbArr = (arr, section) => {
+      let html = '';
+      (arr || []).forEach((src, i) => {
+        html += `<div class="ph-thumb-wrap">
+          <img class="ph-thumb" src="${src}" alt="" onclick="phViewerOpen('${section}',${i})">
+          <button class="ph-del" onclick="phDeleteArrPhoto('${section}',${i})">✕</button>
+        </div>`;
+      });
+      html += `<div class="ph-add" onclick="phTriggerInput('${section}')">＋</div>`;
+      return html;
+    };
+
+    const resSlot = (key, name) => {
+      const src = _phData[key];
+      const inner = src
+        ? `<img class="ph-thumb" src="${src}" alt="" onclick="phViewerOpenSingle('${key}')">`
+        : `<div class="ph-empty" onclick="phTriggerInput('${key}')">📷</div>`;
+      return `<div class="ph-res-slot">
+        ${inner}
+        <div class="ph-res-name">${esc(name)}</div>
+      </div>`;
+    };
+
+    document.getElementById('ph-modal-body').innerHTML = `
+      <div class="ph-section">
+        <div class="ph-sec-title">Residentes</div>
+        <div class="ph-res-row">
+          ${resSlot('foto1', n1)}
+          ${resSlot('foto2', n2)}
+        </div>
+      </div>
+      <div class="ph-section">
+        <div class="ph-sec-title">Familiares autorizados</div>
+        <div class="ph-grid">${thumbArr(_phData.fam, 'fam')}</div>
+      </div>
+      <div class="ph-section">
+        <div class="ph-sec-title">Vehículos — Carro</div>
+        <div class="ph-grid">${thumbArr(_phData.cars, 'cars')}</div>
+      </div>
+      <div class="ph-section">
+        <div class="ph-sec-title">Vehículos — Moto</div>
+        <div class="ph-grid">${thumbArr(_phData.motos, 'motos')}</div>
+      </div>`;
+  }
+
+  // expose viewer helpers as globals (called from inline HTML)
+  window.phViewerOpen = function(section, idx) {
+    const arr = _phData[section];
+    if (!arr || arr[idx] == null) return;
+    _phViewerCtx = { section, idx };
+    document.getElementById('ph-viewer-img').src = arr[idx];
+    document.getElementById('ph-viewer-del').style.display = 'block';
+    document.getElementById('ph-viewer').classList.remove('hidden');
+  };
+
+  window.phViewerOpenSingle = function(key) {
+    const src = _phData[key];
+    if (!src) return;
+    _phViewerCtx = { section: key, idx: null };
+    document.getElementById('ph-viewer-img').src = src;
+    document.getElementById('ph-viewer-del').style.display = 'block';
+    document.getElementById('ph-viewer').classList.remove('hidden');
+  };
+
+  window.phViewerClose = function() {
+    document.getElementById('ph-viewer').classList.add('hidden');
+    document.getElementById('ph-viewer-img').src = '';
+    _phViewerCtx = null;
+  };
+
+  window.phViewerDelete = async function() {
+    if (!_phViewerCtx) return;
+    const { section, idx } = _phViewerCtx;
+    if (idx === null) {
+      // single slot (foto1 / foto2)
+      _phData[section] = null;
+    } else {
+      _phData[section].splice(idx, 1);
+    }
+    await edb.putPhotos(_phData);
+    phViewerClose();
+    renderPhotosModal(null);
+  };
+
+  window.phDeleteArrPhoto = async function(section, idx) {
+    _phData[section].splice(idx, 1);
+    await edb.putPhotos(_phData);
+    renderPhotosModal(null);
+  };
+
+  window.phTriggerInput = function(section) {
+    const map = { foto1:'ph-inp-1', foto2:'ph-inp-2', fam:'ph-inp-fam', cars:'ph-inp-car', motos:'ph-inp-moto' };
+    const el = document.getElementById(map[section]);
+    if (!el) return;
+    el._section = section;
+    el.click();
+  };
+
+  // wire file inputs (called from init)
+  function wirePhotoInputs() {
+    ['ph-inp-1','ph-inp-2','ph-inp-fam','ph-inp-car','ph-inp-moto'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('change', async function() {
+        const f = this.files[0];
+        if (!f || !_phData) return;
+        const section = this._section;
+        this.value = '';
+        const dataUrl = await compressImg(f);
+        if (section === 'foto1' || section === 'foto2') {
+          _phData[section] = dataUrl;
+        } else {
+          _phData[section].push(dataUrl);
+        }
+        await edb.putPhotos(_phData);
+        renderPhotosModal(null);
+      });
+    });
+  }
+
+  // ─ change password (in-app modal) ─────────────────────────────
+  function changePassword(forced = false) {
+    closeMenu();
+    document.getElementById('cp-current').value = '';
+    document.getElementById('cp-new').value = '';
+    document.getElementById('cp-confirm').value = '';
+    document.getElementById('cp-err').textContent = '';
+    checkPwStrength('');
+    // Aviso y botón cancelar según si es forzado
+    const notice  = document.getElementById('cp-forced-notice');
+    const cancelBtn = document.getElementById('cp-cancel-btn');
+    if (notice)    notice.style.display    = forced ? '' : 'none';
+    if (cancelBtn) cancelBtn.style.display = forced ? 'none' : '';
+    document.getElementById('m-chpw').classList.remove('hidden');
+  }
+
+  async function saveChangePassword() {
+    const cur = document.getElementById('cp-current').value;
+    const nw  = document.getElementById('cp-new').value;
+    const cf  = document.getElementById('cp-confirm').value;
+    const err = document.getElementById('cp-err');
+    err.textContent = '';
+    if (!cur) { err.textContent = 'Ingresa tu contraseña actual.'; return; }
+    if (!nw)  { err.textContent = 'Ingresa la nueva contraseña.'; return; }
+    // verificar contraseña actual contra el hash activo (default o personalizado)
+    const curHash = await sha256(cur);
+    if (curHash !== getActiveHash()) {
+      err.textContent = '❌ La contraseña actual es incorrecta.'; return;
+    }
+    // validar complejidad de la nueva contraseña
+    if (nw.length < 8)            { err.textContent = '❌ Mínimo 8 caracteres.'; return; }
+    if (!/[A-Z]/.test(nw))        { err.textContent = '❌ Debe incluir al menos una mayúscula.'; return; }
+    if (!/[a-z]/.test(nw))        { err.textContent = '❌ Debe incluir al menos una minúscula.'; return; }
+    if (!/[0-9]/.test(nw))        { err.textContent = '❌ Debe incluir al menos un número.'; return; }
+    if (!/[!@#$%^&*\-_+=?]/.test(nw)) { err.textContent = '❌ Debe incluir al menos un carácter especial (!@#$%^&*-_+=?).'; return; }
+    if (nw !== cf) { err.textContent = '❌ Las contraseñas nuevas no coinciden.'; return; }
+    const newHash = await sha256(nw);
+    localStorage.setItem('eb_pw', newHash);
+    closeModal('m-chpw');
+    say('✅ Contraseña cambiada correctamente. Usa la nueva al próximo inicio de sesión.', 100);
+  }
+
   return { init, send, openDetail, openEdit, saveEdit, clearEdit,
+           editCapture, editRemovePhoto,
            closeModal, bgClose, openTokenModal, saveToken, clearToken,
            exportData, triggerImport, showConflicts, clearConflicts,
-           openMenu, closeMenu, menuAction };
+           openMenu, closeMenu, menuAction,
+           openPhotos, saveChangePassword, changePassword };
 })();
 
-document.addEventListener('DOMContentLoaded', App.init);
+document.addEventListener('DOMContentLoaded', initLogin);
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/entrebot-sw.js').catch(() => {});

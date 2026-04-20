@@ -681,6 +681,7 @@ class EDB {
 const edb = new EDB();
 let _ov = {};  // overrides map keyed by apto id
 let _currentUser = null;
+let _appStarted = false;
 
 async function loadOv() {
   const list = await edb.getAll();
@@ -1115,6 +1116,8 @@ function loginShake() {
 }
 
 async function showApp() {
+  if (_appStarted) return;
+  _appStarted = true;
   document.getElementById('app').style.display = '';
   await App.init();
 }

@@ -745,15 +745,29 @@ También puedes usar conectores naturales como:
     await showIAModes();
   }
 
-  function showAPIKeyModal() {
+  function updateDot() {
+    const d = document.getElementById('dot');
+    const l = document.getElementById('dotlbl');
+    if (!d) return;
+    if (getGroqKey()) { d.classList.add('on'); l.textContent = 'IA activa'; }
+    else              { d.classList.remove('on'); l.textContent = 'Sin IA'; }
+  }
+
+  function openTokenModal() {
+    const hasKey = !!getGroqKey();
+    document.getElementById('ia-no-key').classList.toggle('hidden',  hasKey);
+    document.getElementById('ia-has-key').classList.toggle('hidden', !hasKey);
     document.getElementById('ia-key-input').value = '';
     document.getElementById('ia-key-error').textContent = '';
     document.getElementById('ia-modal').classList.remove('hidden');
   }
 
+  // Alias: se llama desde flujos internos cuando no hay clave
+  function showAPIKeyModal() { openTokenModal(); }
+
   function closeIAModal() {
     document.getElementById('ia-modal').classList.add('hidden');
-    showMenuOptions();
+    if (state.mode !== 'ia') showMenuOptions();
   }
 
   function saveAPIKey() {
@@ -762,8 +776,15 @@ También puedes usar conectores naturales como:
     if (!key) { err.textContent = '⚠️ Escribe la clave antes de continuar.'; return; }
     if (!key.startsWith('gsk_')) { err.textContent = '⚠️ La clave debe empezar con gsk_'; return; }
     localStorage.setItem(GROQ_LS_KEY, key);
+    updateDot();
     closeIAModal();
     showIAModes();
+  }
+
+  function removeAPIKey() {
+    clearGroqKey();
+    updateDot();
+    document.getElementById('ia-modal').classList.add('hidden');
   }
 
   function showMenuOptions() {
@@ -985,6 +1006,7 @@ También puedes usar conectores naturales como:
       window.history.replaceState({}, '', window.location.pathname);
     }
 
+    updateDot();
     document.getElementById('text-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') submitTextInput();
     });
@@ -1004,7 +1026,7 @@ También puedes usar conectores naturales como:
     startGenerator, generateGame, closeModal,
     startSurvey,
     showResults,
-    startIA, saveAPIKey, closeIAModal,
+    startIA, saveAPIKey, closeIAModal, openTokenModal, removeAPIKey,
     closeMenuModal, menuAction,
     confirmClear, exportData,
     submitTextInput

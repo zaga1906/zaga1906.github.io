@@ -26,7 +26,10 @@
         <p>Asistente de Juegos Tradicionales</p>
       </div>
     </div>
-    <span class="header-badge">🏆 Feria de Ciencias · Pácora 2026</span>
+    <button class="token-btn" onclick="App.openTokenModal()">
+      <div class="dot" id="dot"></div>
+      <span id="dotlbl">Sin IA</span>
+    </button>
   </header>
 
   <!-- ── Main layout ─────────────────────────────────────────── -->
@@ -49,16 +52,31 @@
 <div id="ia-modal" class="modal hidden">
   <div class="modal-box">
     <h2>🔑 Clave de Groq</h2>
-    <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:14px;line-height:1.5">
-      Ingresa tu clave gratuita de Groq para activar PacoBot IA.<br>
-      Se guarda solo en este dispositivo.
-    </p>
-    <input type="password" id="ia-key-input" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx"
-           style="width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:0.95rem;outline:none">
-    <p id="ia-key-error" style="color:var(--danger);font-size:0.8rem;margin-top:6px;min-height:18px"></p>
-    <div class="modal-btns" style="margin-top:10px">
-      <button class="btn-do"     onclick="App.saveAPIKey()">✅ Guardar y continuar</button>
-      <button class="btn-cancel" onclick="App.closeIAModal()">Cancelar</button>
+
+    <!-- Estado: sin clave -->
+    <div id="ia-no-key">
+      <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:14px;line-height:1.5">
+        Ingresa tu clave gratuita de Groq para activar PacoBot IA.<br>
+        Se guarda solo en este dispositivo.
+      </p>
+      <input type="password" id="ia-key-input" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx"
+             style="width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:0.95rem;outline:none">
+      <p id="ia-key-error" style="color:var(--danger);font-size:0.8rem;margin-top:6px;min-height:18px"></p>
+      <div class="modal-btns" style="margin-top:10px">
+        <button class="btn-do"     onclick="App.saveAPIKey()">✅ Guardar y continuar</button>
+        <button class="btn-cancel" onclick="App.closeIAModal()">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- Estado: con clave activa -->
+    <div id="ia-has-key" class="hidden">
+      <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:14px;line-height:1.5">
+        ✅ IA activa. Tu clave de Groq está guardada en este dispositivo.
+      </p>
+      <div class="modal-btns">
+        <button class="btn-do"     onclick="App.closeIAModal()">Cerrar</button>
+        <button class="btn-cancel" onclick="App.removeAPIKey()">🗑️ Eliminar clave</button>
+      </div>
     </div>
   </div>
 </div>

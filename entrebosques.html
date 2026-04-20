@@ -1684,12 +1684,12 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
       say('⚠️ Archivo inválido. Asegúrate de importar un archivo <code>.json</code> generado por EntreBot.', 100);
       return;
     }
-    if (!payload?.overrides?.length) {
+    if (!payload?.overrides?.length && !payload?.photos?.length) {
       say('⚠️ El archivo no contiene registros válidos.', 100);
       return;
     }
 
-    const imported   = payload.overrides;
+    const imported   = payload.overrides || [];
     const importedAt = payload.meta?.exported_at
       ? new Date(payload.meta.exported_at).toLocaleString('es-CO')
       : 'desconocida';

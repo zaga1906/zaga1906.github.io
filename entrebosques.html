@@ -608,6 +608,11 @@
   </div>
 </div>
 
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
 <script>
 // ── DATA ─────────────────────────────────────────────────────────
 // Campos: apto,bl,car,moto,parq,tipo(pr/ar/null),res,hij,nin,tel,wa,tel2,wa2,dep,obs
@@ -772,67 +777,56 @@ const BASE = [
   {apto:1212,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
 ];
 
-// ── INDEXEDDB ─────────────────────────────────────────────────────
+// ── FIREBASE INIT ─────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyASALO8oY-rqb0DO8kBexY4d9At3-4_bjE",
+  authDomain:        "my-project-1550071128396.firebaseapp.com",
+  projectId:         "my-project-1550071128396",
+  storageBucket:     "my-project-1550071128396.firebasestorage.app",
+  messagingSenderId: "254759690359",
+  appId:             "1:254759690359:web:d4604ef8eb09b25e132672"
+};
+firebase.initializeApp(firebaseConfig);
+const _fdb  = firebase.firestore();
+const _auth = firebase.auth();
+
+// ── EDB — Firestore backend (misma API que antes) ─────────────────
 class EDB {
-  constructor() {
-    this._db = null;
-    this._p = new Promise((res, rej) => {
-      const r = indexedDB.open('entrebosques_v1', 2);
-      r.onupgradeneeded = e => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains('ov'))
-          db.createObjectStore('ov', { keyPath: 'apto' });
-        if (!db.objectStoreNames.contains('photos'))
-          db.createObjectStore('photos', { keyPath: 'apto' });
-      };
-      r.onsuccess = e => { this._db = e.target.result; res(); };
-      r.onerror = rej;
-    });
+  ready() { return Promise.resolve(); }
+
+  // ── apartment overrides
+  async getAll() {
+    try {
+      const snap = await _fdb.collection('apts').get();
+      return snap.docs.map(d => d.data());
+    } catch(e) { console.warn('EDB.getAll', e); return []; }
   }
-  ready() { return this._p; }
-  _tx(store, mode) { return this._db.transaction(store, mode).objectStore(store); }
-  getAll() {
-    return new Promise(res => {
-      const r = this._tx('ov','readonly').getAll();
-      r.onsuccess = () => res(r.result);
-      r.onerror   = () => res([]);
-    });
+  async put(obj) {
+    await _fdb.collection('apts').doc(String(obj.apto)).set(obj);
   }
-  put(obj) {
-    return new Promise((res, rej) => {
-      const tx = this._db.transaction('ov','readwrite');
-      tx.objectStore('ov').put(obj);
-      tx.oncomplete = res; tx.onerror = rej;
-    });
+  async del(id) {
+    await _fdb.collection('apts').doc(String(id)).delete();
   }
-  del(id) {
-    return new Promise(res => {
-      const tx = this._db.transaction('ov','readwrite');
-      tx.objectStore('ov').delete(id);
-      tx.oncomplete = res;
-    });
+
+  // ── photos (un documento por apartamento en colección separada)
+  async getPhotos(apto) {
+    try {
+      const doc = await _fdb.collection('photos').doc(String(apto)).get();
+      const d = doc.exists ? doc.data() : {};
+      return { apto, foto1: d.foto1||null, foto2: d.foto2||null,
+               fam: d.fam||[], cars: d.cars||[], motos: d.motos||[] };
+    } catch(e) {
+      return { apto, foto1:null, foto2:null, fam:[], cars:[], motos:[] };
+    }
   }
-  // ── photos store
-  getPhotos(apto) {
-    return new Promise(res => {
-      const r = this._tx('photos','readonly').get(apto);
-      r.onsuccess = () => res(r.result || { apto, foto1:null, foto2:null, fam:[], cars:[], motos:[] });
-      r.onerror   = () => res({ apto, foto1:null, foto2:null, fam:[], cars:[], motos:[] });
-    });
+  async putPhotos(obj) {
+    await _fdb.collection('photos').doc(String(obj.apto)).set(obj);
   }
-  putPhotos(obj) {
-    return new Promise((res, rej) => {
-      const tx = this._db.transaction('photos','readwrite');
-      tx.objectStore('photos').put(obj);
-      tx.oncomplete = res; tx.onerror = rej;
-    });
-  }
-  getAllPhotos() {
-    return new Promise(res => {
-      const r = this._tx('photos','readonly').getAll();
-      r.onsuccess = () => res(r.result || []);
-      r.onerror   = () => res([]);
-    });
+  async getAllPhotos() {
+    try {
+      const snap = await _fdb.collection('photos').get();
+      return snap.docs.map(d => d.data());
+    } catch(e) { return []; }
   }
 }
 
@@ -1222,6 +1216,8 @@ function loginShake() {
 }
 
 async function unlockApp() {
+  // Login anónimo en Firebase antes de acceder a Firestore
+  try { await _auth.signInAnonymously(); } catch(e) { console.warn('Firebase anon auth:', e); }
   document.getElementById('login-overlay').classList.add('hidden');
   document.getElementById('app').style.display = '';
   await App.init();

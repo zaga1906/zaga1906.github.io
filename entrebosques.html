@@ -639,21 +639,46 @@ const _fdb  = firebase.firestore();
 const _auth = firebase.auth();
 
 // ── EDB — Firestore backend (misma API que antes) ─────────────────
+const APTS_CACHE_KEY = 'eb_apts_cache';
+const APTS_CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+
 class EDB {
   ready() { return Promise.resolve(); }
 
   // ── apartment overrides
   async getAll() {
+    const cached = this._readCache();
+    if (cached) return cached;
     try {
       const snap = await _fdb.collection('apts').get();
-      return snap.docs.map(d => d.data());
+      const data = snap.docs.map(d => d.data());
+      this._writeCache(data);
+      return data;
     } catch(e) { console.warn('EDB.getAll', e); return []; }
   }
   async put(obj) {
     await _fdb.collection('apts').doc(String(obj.apto)).set(obj);
+    this._invalidateCache();
   }
   async del(id) {
     await _fdb.collection('apts').doc(String(id)).delete();
+    this._invalidateCache();
+  }
+
+  _readCache() {
+    try {
+      const raw = sessionStorage.getItem(APTS_CACHE_KEY);
+      if (!raw) return null;
+      const { ts, data } = JSON.parse(raw);
+      if (Date.now() - ts > APTS_CACHE_TTL) { sessionStorage.removeItem(APTS_CACHE_KEY); return null; }
+      return data;
+    } catch { return null; }
+  }
+  _writeCache(data) {
+    try { sessionStorage.setItem(APTS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
+  }
+  _invalidateCache() {
+    sessionStorage.removeItem(APTS_CACHE_KEY);
   }
 
   // ── photos (un documento por apartamento en colección separada)

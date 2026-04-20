@@ -364,6 +364,22 @@
     #ph-viewer-close { position: fixed; top: 16px; right: 16px;
       background: rgba(0,0,0,.6); color: #fff; border: 1px solid rgba(255,255,255,.2);
       padding: 7px 13px; border-radius: 8px; font-size: 0.82rem; cursor: pointer; }
+    /* USER MANAGEMENT */
+    .user-card { background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; }
+    .user-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .user-name { font-weight: 700; font-size: 0.9rem; }
+    .user-role { font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; font-weight: 600;
+      background: rgba(16,185,129,.15); color: var(--accent); }
+    .user-role.guard { background: rgba(14,165,233,.15); color: var(--accent2); }
+    .user-meta { font-size: 0.72rem; color: var(--dim); margin-top: 3px; }
+    .user-actions { display: flex; gap: 6px; margin-top: 10px; }
+    .user-actions button { flex: 1; font-size: 0.75rem; padding: 6px 8px; }
+    .edit-inp { width: 100%; background: var(--card); border: 1px solid var(--border);
+      color: var(--text); padding: 9px 11px; border-radius: var(--radius-sm);
+      font-size: 0.9rem; outline: none; font-family: inherit; transition: border-color .2s; }
+    .edit-inp:focus { border-color: var(--accent); }
+    .edit-inp option { background: var(--card); }
   </style>
 </head>
 <body>
@@ -373,32 +389,21 @@
   <div class="login-box">
     <img src="entrebot-mascot.png" alt="EntreBot" class="login-logo">
     <div class="login-title" id="login-title">Bienvenido a EntreBot</div>
-    <div class="login-sub" id="login-sub">Ingresa tu contraseña para acceder.</div>
+    <div class="login-sub" id="login-sub">Ingresa tu usuario y contraseña.</div>
 
-    <!-- campo contraseña actual (solo en cambio) -->
-    <div class="login-fg" id="lf-current" style="display:none;width:100%">
-      <label>Contraseña actual</label>
-      <div class="pw-wrap">
-        <input type="password" id="l-current" placeholder="••••••••" autocomplete="current-password">
-        <button class="pw-eye" type="button" onclick="togglePw('l-current',this)">👁️</button>
-      </div>
+    <!-- usuario -->
+    <div class="login-fg" style="width:100%">
+      <label>Usuario</label>
+      <input type="text" id="l-user" placeholder="usuario" autocomplete="username"
+             style="width:100%;padding:10px 13px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:1rem;outline:none">
     </div>
 
-    <!-- campo contraseña principal -->
+    <!-- contraseña -->
     <div class="login-fg" style="width:100%">
       <label id="l-pw-label">Contraseña</label>
       <div class="pw-wrap">
         <input type="password" id="l-pw" placeholder="••••••••" autocomplete="current-password">
         <button class="pw-eye" type="button" onclick="togglePw('l-pw',this)">👁️</button>
-      </div>
-    </div>
-
-    <!-- campo confirmar (solo en crear / cambiar) -->
-    <div class="login-fg" id="lf-confirm" style="display:none;width:100%">
-      <label>Confirmar contraseña</label>
-      <div class="pw-wrap">
-        <input type="password" id="l-confirm" placeholder="••••••••" autocomplete="new-password">
-        <button class="pw-eye" type="button" onclick="togglePw('l-confirm',this)">👁️</button>
       </div>
     </div>
 
@@ -464,6 +469,12 @@
     <div class="sheet-item" onclick="App.menuAction('chpw')">
       <span class="si-icon">🔒</span><span class="si-label">Cambiar contraseña</span>
     </div>
+    <div class="sheet-item" id="menu-item-users" style="display:none" onclick="App.menuAction('users')">
+      <span class="si-icon">👥</span><span class="si-label">Gestión de usuarios</span>
+    </div>
+    <div class="sheet-item danger" onclick="App.menuAction('logout')">
+      <span class="si-icon">🚪</span><span class="si-label">Cerrar sesión</span>
+    </div>
   </div>
 </div>
 
@@ -476,6 +487,36 @@
     <div style="display:flex;gap:10px">
       <button id="confirm-yes" class="btn-d" style="flex:1;padding:11px">Sí, confirmar</button>
       <button id="confirm-no"  class="btn-s" style="flex:1;padding:11px">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Gestión de usuarios (solo admin) -->
+<div id="m-users" class="modal hidden" onclick="App.bgClose(event,'m-users')">
+  <div class="mbox" style="max-width:500px">
+    <div class="mhandle"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="mtitle" style="margin-bottom:0">👥 Usuarios</div>
+      <button class="btn-p" style="padding:7px 14px;font-size:0.8rem" onclick="App.openAddUser()">+ Agregar</button>
+    </div>
+    <div id="users-list">
+      <div style="color:var(--muted);font-size:0.84rem">Cargando…</div>
+    </div>
+    <div id="add-user-form" class="hidden" style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
+      <div class="mtitle" style="font-size:.92rem;margin-bottom:12px">Nuevo usuario</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <input id="nu-username" type="text" placeholder="usuario (sin espacios)" class="edit-inp">
+        <input id="nu-display"  type="text" placeholder="Nombre para mostrar" class="edit-inp">
+        <select id="nu-role" class="edit-inp">
+          <option value="guard">Vigilante</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </div>
+      <p id="nu-err" style="color:var(--danger);font-size:0.78rem;min-height:16px;margin-top:6px"></p>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn-p" style="flex:1" onclick="App.saveNewUser()">Crear usuario</button>
+        <button class="btn-s" style="flex:1" onclick="App.cancelAddUser()">Cancelar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -540,7 +581,7 @@
     <div class="mhandle"></div>
     <div class="mtitle">🔒 Cambiar contraseña</div>
     <div id="cp-forced-notice" style="display:none;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:var(--radius-sm);padding:9px 12px;font-size:0.78rem;color:var(--warning);margin-bottom:12px;line-height:1.5">
-      ⚠️ Estás usando la contraseña por defecto.<br>Por seguridad, crea una contraseña personalizada para continuar.
+      ⚠️ Debes cambiar tu contraseña temporal.<br>Por seguridad, crea una contraseña personalizada para continuar.
     </div>
     <div class="msub">Ingresa tu contraseña actual y elige una nueva.</div>
     <div class="fg">
@@ -586,169 +627,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
 <script>
-// ── DATA ─────────────────────────────────────────────────────────
-// Campos: apto,bl,car,moto,parq,tipo(pr/ar/null),res,hij,nin,tel,wa,tel2,wa2,dep,obs
-// tel/wa  = contacto persona 1 (primer nombre en res)
-// tel2/wa2= contacto persona 2 (segundo nombre en res, separado por ' - ')
-const BASE = [
-  // PISO 1
-  {apto:101,bl:'A',car:null,moto:'VUW76F',parq:'3B',tipo:'ar',res:'Gloria Piedad Gonzales Velez',hij:null,nin:'Luciana flores',tel:'300 610 0908',wa:'300 779 2481',tel2:null,wa2:null,dep:'106',obs:null},
-  {apto:102,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:103,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:104,bl:'B',car:'EMT 745',moto:'YHB 44G',parq:'44B',tipo:'pr',res:'José Rubiel Arbelaes - Sandra Murillo',hij:'Juan Camilo Arbelaes',nin:null,tel:'310 387 7289',wa:'310 387 7289',tel2:null,wa2:null,dep:null,obs:null},
-  {apto:105,bl:'B',car:null,moto:null,parq:'43B',tipo:null,res:'Juan Pablo Osorio Arango - Luz Francy Arango',hij:null,nin:null,tel:'318 835 2193',wa:'318 835 2193',tel2:'316 252 2247',wa2:'316 252 2247',dep:'103',obs:null},
-  {apto:106,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:107,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:108,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:109,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:110,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:111,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:112,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  // PISO 2
-  {apto:201,bl:'A',car:'TDN 580 / UET 478 / DCF 171',moto:null,parq:'61B',tipo:'pr',res:'Jina Tatiana - Camilo Orozco',hij:null,nin:'1 niña',tel:'301 244 3802',wa:'301 244 3802',tel2:'317 112 6418',wa2:'317 112 6418',dep:null,obs:null},
-  {apto:202,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:203,bl:'B',car:'EHM 340',moto:null,parq:'30A',tipo:'pr',res:'Alejandro Orozco - Mateo Valencia',hij:null,nin:'1 niña',tel:null,wa:null,tel2:null,wa2:null,dep:'608',obs:null},
-  {apto:204,bl:'B',car:null,moto:null,parq:'39A',tipo:'ar',res:'Daniel Eduardo Aristizabal - Natalia',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'No',obs:null},
-  {apto:205,bl:'B',car:'VEL 950',moto:null,parq:'65A',tipo:'ar',res:'Carlos Eduardo Cabrera Palacio - Sandra Manuela Cardona',hij:null,nin:null,tel:'321 607 8962',wa:'321 607 8962',tel2:'310 385 7404',wa2:'310 385 7404',dep:'No',obs:null},
-  {apto:206,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:207,bl:'B',car:'UEU 465',moto:null,parq:'29B',tipo:null,res:'Cristian David - Paula Andrea Aguirre',hij:null,nin:null,tel:'310 538 0860',wa:'310 538 0860',tel2:'310 448 9812',wa2:'310 448 9812',dep:'No',obs:null},
-  {apto:208,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:209,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:210,bl:'A',car:'NXP 057',moto:null,parq:'4B',tipo:null,res:'Sergio Molina - Carol Fernandez',hij:null,nin:'2 niños',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:211,bl:'A',car:'PQV 626',moto:null,parq:'38B',tipo:'ar',res:'Ignacio Chavez - Catherine Velez',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'207',obs:null},
-  {apto:212,bl:'A',car:'CCR 949',moto:null,parq:'40A',tipo:'pr',res:'Johan Mateo - Maria Camila Arenas',hij:null,nin:'1 bebé',tel:'301 229 1268',wa:'301 229 1268',tel2:'313 512 2769',wa2:'313 512 2769',dep:'208',obs:null},
-  // PISO 3
-  {apto:301,bl:'A',car:null,moto:null,parq:'57A',tipo:'pr',res:'Luis Lopez Calderón',hij:null,nin:null,tel:'310 451 7386',wa:'310 451 7386',tel2:null,wa2:null,dep:'306',obs:null},
-  {apto:302,bl:'A',car:'MPM 044 / LPU 936',moto:null,parq:'67A',tipo:null,res:'Alba Valencia - Laura Valencia',hij:null,nin:'1 bebé',tel:'310 546 5623',wa:'310 546 5623',tel2:'320 626 3559',wa2:'320 626 3559',dep:'301',obs:null},
-  {apto:303,bl:'B',car:'EOY 570',moto:null,parq:'45A',tipo:'pr',res:'Luz Ofelia Agudelo - José Calderón Patiño',hij:null,nin:'2 niños',tel:'310 524 9689',wa:'310 524 9689',tel2:'312 226 0994',wa2:'312 226 0994',dep:'301',obs:null},
-  {apto:304,bl:'B',car:'IER 980',moto:null,parq:'72A',tipo:'ar',res:'Ana María Morales',hij:null,nin:null,tel:'300 553 7573',wa:'300 553 7573',tel2:null,wa2:null,dep:'72A',obs:null},
-  {apto:305,bl:'B',car:null,moto:null,parq:'27B',tipo:'pr',res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'27B',obs:null},
-  {apto:306,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:307,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:308,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:309,bl:'A',car:'FYX 590',moto:null,parq:'74A',tipo:'ar',res:'Juan Agudelo',hij:null,nin:'1 niño',tel:'321 206 2701',wa:'321 206 2701',tel2:null,wa2:null,dep:null,obs:'2 parqueaderos: 17A - 16B'},
-  {apto:310,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:311,bl:'A',car:'GKK 938',moto:'YCD 65F',parq:'67B',tipo:'ar',res:'Lina Maria Osorio - Jhon Jamilton',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'308',obs:null},
-  {apto:312,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  // PISO 4
-  {apto:401,bl:'A',car:'LPW 612 / NWZ 463',moto:null,parq:'4A',tipo:'ar',res:'Yessica Velez - Andrea Valencia',hij:null,nin:null,tel:'320 769 4760',wa:'320 769 4760',tel2:'316 696 5461',wa2:'316 696 5461',dep:'408',obs:null},
-  {apto:402,bl:'A',car:null,moto:null,parq:'29A',tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'No',obs:null},
-  {apto:403,bl:'B',car:'HHS 894',moto:null,parq:'32A',tipo:'pr',res:'Luz Mila Rodas',hij:null,nin:null,tel:'315 451 8097',wa:'315 451 8097',tel2:null,wa2:null,dep:'100',obs:null},
-  {apto:404,bl:'B',car:'KJQ 498',moto:'AHU 36E',parq:'68A',tipo:'ar',res:'Alejandro Vedoya Ocampo - Natalia Salazar',hij:null,nin:null,tel:'310 603 2707',wa:'310 603 2707',tel2:'320 659 9949',wa2:'320 659 9949',dep:null,obs:null},
-  {apto:405,bl:'B',car:null,moto:'BQF 38C',parq:'50A',tipo:'pr',res:'Octavio Luna',hij:'Valeria y Santiago Luna',nin:null,tel:'314 583 9503',wa:'314 583 9503',tel2:null,wa2:null,dep:'No',obs:null},
-  {apto:406,bl:'B',car:'JMV 311',moto:null,parq:'19B',tipo:'pr',res:'Mira Alejandra Mejía (visita: Will Ar Sepulveda)',hij:null,nin:null,tel:'313 516 0777',wa:'311 371 6605',tel2:null,wa2:null,dep:'407',obs:null},
-  {apto:407,bl:'B',car:'GQL 151 / NNZ 016',moto:null,parq:'12B',tipo:'ar',res:'Jhoana Salazar',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'403',obs:null},
-  {apto:408,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:409,bl:'A',car:null,moto:null,parq:'11A',tipo:'pr',res:'Valentina Betancur',hij:null,nin:'1 niño',tel:'310 501 3521',wa:'310 501 3521',tel2:null,wa2:null,dep:'405',obs:null},
-  {apto:410,bl:'A',car:'NPR 184',moto:null,parq:'9B',tipo:'pr',res:'Alejandro Varón - Milena Bautista',hij:null,nin:'1 niño',tel:'311 626 6630',wa:'311 626 6630',tel2:'311 248 9807',wa2:'311 248 9807',dep:null,obs:null},
-  {apto:411,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:412,bl:'A',car:'XNN 958',moto:null,parq:'47A',tipo:'ar',res:'Natalia Ramirez - Stiven Gonzales',hij:null,nin:'2 niños',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  // PISO 5
-  {apto:501,bl:'A',car:null,moto:null,parq:'7B',tipo:'ar',res:'Alexandra Delgado',hij:null,nin:null,tel:'304 588 9987',wa:'304 588 9987',tel2:null,wa2:null,dep:'507',obs:null},
-  {apto:502,bl:'A',car:null,moto:'COI 29E',parq:'10A',tipo:'ar',res:'Maicol Steve Botero Delgado - Carlos Hernan Gutiérrez',hij:null,nin:null,tel:'322 678 7998',wa:'322 678 7998',tel2:'310 390 2079',wa2:'310 390 2079',dep:'508',obs:null},
-  {apto:503,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:504,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:505,bl:'B',car:'APV 56H / HSX 10H',moto:'(motos)',parq:'27A',tipo:'ar',res:'Mauricio Rivas - Sebastián Franco',hij:null,nin:null,tel:'322 363 8494',wa:'322 363 8494',tel2:null,wa2:null,dep:'502/503',obs:null},
-  {apto:506,bl:'B',car:'DQW 329',moto:'HSX 10',parq:'6B',tipo:'pr',res:'Leandro Tejada - Carolina Castro',hij:null,nin:'2 niños',tel:'317 765 4737',wa:'317 765 4737',tel2:'317 363 7142',wa2:'317 363 7142',dep:'401',obs:null},
-  {apto:507,bl:'B',car:'VEV 321 / ZLV 221',moto:null,parq:'25B',tipo:'pr',res:'Blanca Viviana Zapata - Vianor y Dora Nancy Arboleda Valencia',hij:null,nin:null,tel:'313 786 2035',wa:'313 786 2035',tel2:'310 472 6737',wa2:'310 472 6737',dep:'501',obs:null},
-  {apto:508,bl:'B',car:'VCM 795',moto:null,parq:'21B',tipo:'ar',res:'Paula Andrea Rincón',hij:null,nin:'1 niño',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:509,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:510,bl:'A',car:'QLI 108',moto:null,parq:'44A',tipo:'pr',res:'Daniela Guerrero',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'506',obs:null},
-  {apto:511,bl:'A',car:'KSN 327',moto:null,parq:'36B',tipo:'pr',res:'Jhon y Alejandro',hij:null,nin:null,tel:'321 574 1585',wa:'321 574 1585',tel2:null,wa2:null,dep:null,obs:null},
-  {apto:512,bl:'A',car:'JKQ 998 / FRU 654',moto:null,parq:'23B',tipo:'pr',res:'Diana Estrada Velez (Roberto Estrada - papá, no reside)',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  // PISO 6
-  {apto:601,bl:'A',car:'FBQ 497',moto:'HUT 68H',parq:'62B',tipo:'ar',res:'Daniel Fernando Chalarca - Ginna Paola Serna',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:602,bl:'A',car:'NLV 58D / HAS 51F',moto:'JJV 501',parq:'59A',tipo:'ar',res:'Angela Marcela Serna Zuluaga - Edwar Francisco Ramos',hij:null,nin:null,tel:'301 471 4950',wa:'301 471 4950',tel2:'321 762 6873',wa2:'321 762 6873',dep:'605',obs:null},
-  {apto:603,bl:'B',car:null,moto:'XZZ 67C',parq:'51A',tipo:'pr',res:'Marcela Giraldo',hij:null,nin:'1 niña',tel:'321 556 3241',wa:'321 556 3241',tel2:null,wa2:null,dep:null,obs:null},
-  {apto:604,bl:'B',car:'UEU 901 / KFM 073 / LPW 638',moto:null,parq:'23A',tipo:'ar',res:'Diana Cristina Serna - Ivan David Trujillo',hij:null,nin:'1 niño',tel:'304 527 7123',wa:'304 527 7123',tel2:'312 822 8641',wa2:'312 822 8641',dep:null,obs:null},
-  {apto:605,bl:'B',car:'DAB 191',moto:null,parq:'22A',tipo:'pr',res:'Valentina Aguirre Muñoz - Amparo Muñoz - Daniel Aguirre',hij:null,nin:null,tel:'313 736 6236',wa:'313 736 6236',tel2:'320 504 0373',wa2:'320 504 0373',dep:'601/603',obs:null},
-  {apto:606,bl:'B',car:null,moto:null,parq:'74A',tipo:'pr',res:'Gloria Ines Herrera',hij:null,nin:null,tel:'320 677 6269',wa:'320 677 6269',tel2:null,wa2:null,dep:'602',obs:null},
-  {apto:607,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:608,bl:'B',car:null,moto:null,parq:'31A',tipo:'pr',res:'Oscar Julián Duque - Juliana Gomez',hij:null,nin:null,tel:'312 698 3584',wa:'312 698 3584',tel2:'322 660 5081',wa2:'322 660 5081',dep:null,obs:null},
-  {apto:609,bl:'A',car:'KNR 778',moto:null,parq:'61A',tipo:'ar',res:'Diana Patricia Ríos Ocampo - Alejandro Arias',hij:null,nin:null,tel:'310 456 7474',wa:'310 456 7474',tel2:'300 357 0001',wa2:'300 357 0001',dep:null,obs:null},
-  {apto:610,bl:'A',car:null,moto:null,parq:'51B',tipo:'ar',res:'Melisa Ocampo Cañon',hij:null,nin:'1 niño',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:611,bl:'A',car:null,moto:'RDR 09C',parq:'65B',tipo:'ar',res:'Alexis Cuevo Muñoz - Milena Londoño',hij:null,nin:'2 niños',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:612,bl:'A',car:'HUT 98H / OTQ 98G',moto:null,parq:'6B',tipo:'pr',res:'Santiago Hernández - Andrea Orozco',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  // PISO 7
-  {apto:701,bl:'A',car:'GTN 832',moto:null,parq:'46A',tipo:'pr',res:'Sebastián Murillo - Alba Piedrahita - Conrado Murillo',hij:null,nin:null,tel:'310 377 6937',wa:'310 377 6937',tel2:'313 654 8544',wa2:'313 654 8544',dep:'706',obs:null},
-  {apto:702,bl:'A',car:'KNR 543',moto:'XTZ AZUL',parq:'73A',tipo:'ar',res:'David Zuluaga - Amanda Isaza',hij:null,nin:null,tel:'301 486 2363',wa:'301 486 2363',tel2:null,wa2:null,dep:null,obs:null},
-  {apto:703,bl:'B',car:null,moto:null,parq:'41A',tipo:'ar',res:'Nury Luz Ledezma - Richard Suarez',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:704,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:705,bl:'B',car:'LPR 927',moto:null,parq:'49A',tipo:'ar',res:'Martha Lucía Hincapié - Ruben Dario Gutiérrez',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:706,bl:'B',car:'KNP 443',moto:'YGD 836',parq:'42A',tipo:'pr',res:'Santiago Restrepo Lopez',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:707,bl:'B',car:'KNR 015 / NRL 587',moto:'PSF 23B',parq:'64A',tipo:'pr',res:'Jessica Rendon - Jhon Jairo Valencia',hij:null,nin:null,tel:'314 871 3227',wa:'314 871 3227',tel2:'310 392 1000',wa2:'310 392 1000',dep:'701',obs:null},
-  {apto:708,bl:'B',car:null,moto:'VM70F',parq:'48B',tipo:'pr',res:'Frankil Dussan Rodriguez',hij:null,nin:null,tel:'313 751 2114',wa:'313 751 2114',tel2:null,wa2:null,dep:null,obs:null},
-  {apto:709,bl:'A',car:'HZS 341',moto:null,parq:'42B',tipo:'pr',res:'Juan Camilo Muñoz - Hugo Muñoz Hurtado',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'707',obs:null},
-  {apto:710,bl:'A',car:'GTQ 854',moto:'HUN 45H',parq:'34A',tipo:null,res:'Maria Juliana Aguirre - Erika Hernández - Mauricio Aguirre',hij:null,nin:'1 niña',tel:null,wa:null,tel2:null,wa2:null,dep:'710',obs:'Parquea en visitantes S1 y plataforma'},
-  {apto:711,bl:'A',car:'KIH 472',moto:null,parq:'35A',tipo:'pr',res:'Carlos Castaño - Ana Arango',hij:null,nin:null,tel:'300 640 7411',wa:'300 640 7411',tel2:'322 576 8527',wa2:'322 576 8527',dep:'708',obs:null},
-  {apto:712,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  // PISO 8
-  {apto:801,bl:'A',car:'LNG 786 (hijo visita)',moto:null,parq:'9A',tipo:'pr',res:'Luz Amparo Marin',hij:null,nin:null,tel:'313 700 6160',wa:'313 700 6160',tel2:null,wa2:null,dep:null,obs:'Vive sola'},
-  {apto:802,bl:'A',car:'DKW 474',moto:null,parq:'38A',tipo:'ar',res:'Manuela Muñoz Garcia',hij:null,nin:'1 bebé',tel:'321 753 6963',wa:'321 753 6963',tel2:null,wa2:null,dep:null,obs:null},
-  {apto:803,bl:'B',car:null,moto:null,parq:'48A',tipo:'pr',res:'Jeisson Avelino Moreno',hij:null,nin:null,tel:'313 649 5994',wa:'313 649 5994',tel2:null,wa2:null,dep:'804',obs:null},
-  {apto:804,bl:'B',car:'GOZ 746 / GPM 712 / KNR 596',moto:null,parq:'63A',tipo:'pr',res:'David Hernández - Mariana Marin',hij:null,nin:null,tel:'320 767 3761',wa:'320 767 3761',tel2:'311 435 2740',wa2:'311 435 2740',dep:'802',obs:null},
-  {apto:805,bl:'B',car:'JJY 869',moto:null,parq:'56A',tipo:'ar',res:'Juanita Duque - Daniel Gaviria',hij:null,nin:'1 bebé',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:806,bl:'B',car:null,moto:null,parq:'53A',tipo:'ar',res:'Daniel Fernando Gaviria',hij:null,nin:null,tel:'321 666 9877',wa:'315 439 2129',tel2:null,wa2:null,dep:null,obs:null},
-  {apto:807,bl:'B',car:null,moto:null,parq:'55B',tipo:'pr',res:'Juan Stevan Giraldo - Laura Valencia',hij:null,nin:'1 bebé',tel:'311 352 8013',wa:'311 352 8013',tel2:'321 309 6257',wa2:'321 309 6257',dep:'801',obs:null},
-  {apto:808,bl:'B',car:'DKR 320',moto:null,parq:'37A',tipo:'pr',res:'Jennifer Lopez Arias',hij:null,nin:null,tel:'316 284 2945',wa:'316 284 2945',tel2:null,wa2:null,dep:'805',obs:null},
-  {apto:809,bl:'A',car:'JJU 885',moto:null,parq:'60B',tipo:'pr',res:'Raul Carmona - Laura Stefani Polo',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:810,bl:'A',car:'KIH 036',moto:'EYD 47F',parq:'56B',tipo:'pr',res:'Juan David Candamil - Jimena Valencia',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:811,bl:'A',car:'BVH 720',moto:null,parq:'64B',tipo:'ar',res:'Natalia Apolinar Agudelo - Alexander Tobón',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:812,bl:'A',car:'GVR 229',moto:null,parq:'3A',tipo:'pr',res:'Gloria Isabel Orozco Murillo',hij:null,nin:null,tel:'311 700 1758',wa:'311 700 1758',tel2:null,wa2:null,dep:'807',obs:null},
-  // PISO 9
-  {apto:901,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:902,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:903,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:904,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:905,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:906,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:907,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:908,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:909,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:910,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:911,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:912,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  // PISO 10
-  {apto:1001,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1002,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1003,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1004,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:'Pasean perro - Guardería'},
-  {apto:1005,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1006,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1007,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1008,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1009,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1010,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1011,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1012,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  // PISO 11
-  {apto:1101,bl:'A',car:null,moto:null,parq:'58B',tipo:'pr',res:'José Aparicio Sarmiento - Dora Marcela Torres',hij:'Maria Aparicio Torres',nin:null,tel:'313 612 1045',wa:'313 612 1045',tel2:'320 493 4519',wa2:'320 493 4519',dep:'1108-808',obs:null},
-  {apto:1102,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1103,bl:'B',car:'HA33 BOXET',moto:'(moto)',parq:'52A',tipo:'pr',res:'Leidy Jhoana León Pineda - Jhoana Alejandro Taborda',hij:null,nin:null,tel:'322 621 2524',wa:'322 621 2524',tel2:'310 396 0221',wa2:'310 396 0221',dep:null,obs:null},
-  {apto:1104,bl:'B',car:'CQH 285 / DHS 314',moto:null,parq:'50B',tipo:'pr',res:'Laura Silva - David Aristizabal',hij:null,nin:null,tel:'310 833 2343',wa:'310 833 2343',tel2:'310 832 2660',wa2:'310 832 2660',dep:null,obs:null},
-  {apto:1105,bl:'B',car:'GJX 978',moto:'OMT 15E',parq:'58A',tipo:'pr',res:'Lina Paola Ocampo - Edward Ospina Ramos',hij:null,nin:'1 niña',tel:'314 869 9204',wa:'314 869 9204',tel2:'313 753 6245',wa2:'313 753 6245',dep:'1102',obs:null},
-  {apto:1106,bl:'B',car:'KFM 678 / MHO 802',moto:'OMS 63E',parq:'14B',tipo:'pr',res:'Jennifer Perez - Santiago Quintero',hij:null,nin:null,tel:'311 711 9058',wa:'311 711 9058',tel2:'311 628 8864',wa2:'311 628 8864',dep:null,obs:null},
-  {apto:1107,bl:'B',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1108,bl:'B',car:'LPW 109',moto:null,parq:'14A',tipo:'pr',res:'Adriana Murillo Leal - Jairo Alonso Cierra',hij:null,nin:null,tel:'310 840 5939',wa:'310 840 5939',tel2:'318 518 3631',wa2:'318 518 3631',dep:null,obs:null},
-  {apto:1109,bl:'A',car:null,moto:'VOU 42F',parq:'15A',tipo:'pr',res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1110,bl:'A',car:null,moto:null,parq:'32B',tipo:'ar',res:'Monica Yanet Garcia - Wilmer Javier Lopez',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1111,bl:'A',car:'ZNR 534',moto:'AX38G',parq:'12A',tipo:'pr',res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1112,bl:'A',car:null,moto:null,parq:null,tipo:null,res:'Sindy Gonzales Arias - Jose Rosio Arias',hij:null,nin:null,tel:'314 505 7398',wa:'314 505 7398',tel2:'314 637 1755',wa2:'314 637 1755',dep:'1107-1101',obs:null},
-  // PISO 12
-  {apto:1201,bl:'A',car:null,moto:null,parq:'19A',tipo:null,res:'Ana Matilde Ordoñez',hij:'Santiago Melano',nin:null,tel:'312 777 3493',wa:'312 777 3493',tel2:null,wa2:null,dep:'1207',obs:null},
-  {apto:1202,bl:'A',car:'KOV 527',moto:'XBF 98G',parq:'62A',tipo:'pr',res:'Jessica Gallo',hij:null,nin:null,tel:'315 653 1213',wa:'315 653 1213',tel2:null,wa2:null,dep:'1206',obs:null},
-  {apto:1203,bl:'B',car:'WNY 877 / HMR 068',moto:null,parq:'71A',tipo:'ar',res:'Estefania Sanchez Morales - Stevan Naranjo',hij:null,nin:null,tel:'310 876 7753',wa:'310 876 7753',tel2:'321 750 5225',wa2:'321 750 5225',dep:null,obs:null},
-  {apto:1204,bl:'B',car:null,moto:null,parq:'20A',tipo:null,res:'Juan Sebastián Piñero - Victoria Escobar',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:'1202',obs:null},
-  {apto:1205,bl:'B',car:'IXL 904',moto:null,parq:'26A',tipo:'pr',res:'Diego Fernando Ruje - Paula Andrea Alvarez',hij:'Valentina Ruje',nin:null,tel:'304 343 3306',wa:'304 343 3306',tel2:'320 663 9409',wa2:'320 663 9409',dep:'1201',obs:null},
-  {apto:1206,bl:'B',car:'FPN 546',moto:null,parq:'17B',tipo:'ar',res:'Victor Giraldo Arenas',hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1207,bl:'B',car:'KNP 003',moto:null,parq:'13A',tipo:'pr',res:'Yuli Viviana Marin - Mariana Marin',hij:null,nin:'Mariana Marin',tel:'301 446 0024',wa:'301 446 0024',tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1208,bl:'B',car:null,moto:null,parq:'22B',tipo:'ar',res:'Valentina Ortiz - Mateo Garcia',hij:null,nin:'Manuel y Juan Jose (2 niños)',tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1209,bl:'A',car:null,moto:null,parq:'47B',tipo:'pr',res:'Katherine Grajales - Sol Angel Gonzales',hij:null,nin:'Nícol Ayala Grajales',tel:'300 746 1047',wa:'300 746 1047',tel2:'311 654 7873',wa2:'311 654 7873',dep:null,obs:null},
-  {apto:1210,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1211,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-  {apto:1212,bl:'A',car:null,moto:null,parq:null,tipo:null,res:null,hij:null,nin:null,tel:null,wa:null,tel2:null,wa2:null,dep:null,obs:null},
-];
-
 // ── FIREBASE INIT ─────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey:            "AIzaSyASALO8oY-rqb0DO8kBexY4d9At3-4_bjE",
@@ -804,21 +682,11 @@ class EDB {
 
 const edb = new EDB();
 let _ov = {};  // overrides map keyed by apto id
+let _currentUser = null;
 
 async function loadOv() {
   const list = await edb.getAll();
   list.forEach(o => _ov[o.apto] = o);
-}
-
-async function migrateBase() {
-  let inserted = 0, skipped = 0;
-  for (const apt of BASE) {
-    if (_ov[apt.apto]) { skipped++; continue; }
-    await edb.put(apt);
-    _ov[apt.apto] = apt;
-    inserted++;
-  }
-  return { inserted, skipped, total: BASE.length };
 }
 
 function resolve(id) {
@@ -1155,59 +1023,101 @@ function checkPwStrength(val) {
   set('req-sym', /[!@#$%^&*\-_+=?]/.test(val));
 }
 
-// ── LOGIN LOGIC ───────────────────────────────────────────────────
-// Contraseña por defecto (SHA-256 de "Port3r!a2026")
-const DEFAULT_PW_HASH = '0e0e4a88923cf49d3cc3ff480a5b2971360a9dccb6025cfa66b1b9d876a5b391';
-
-function getActiveHash() {
-  return localStorage.getItem('eb_pw') || DEFAULT_PW_HASH;
+// ── SESSION MANAGEMENT ────────────────────────────────────────────
+function saveSession(user) {
+  const sess = { username: user.username, role: user.role, displayName: user.displayName,
+                 expiry: user.role === 'admin' ? Date.now() + 7*24*60*60*1000 : null };
+  if (user.role === 'admin') localStorage.setItem('eb_sess', JSON.stringify(sess));
+  else sessionStorage.setItem('eb_sess', JSON.stringify(sess));
+}
+function loadSession() {
+  const ls = localStorage.getItem('eb_sess');
+  if (ls) { const s = JSON.parse(ls); if (!s.expiry || Date.now() < s.expiry) return s; localStorage.removeItem('eb_sess'); }
+  const ss = sessionStorage.getItem('eb_sess');
+  if (ss) return JSON.parse(ss);
+  return null;
+}
+function clearSession() {
+  localStorage.removeItem('eb_sess');
+  sessionStorage.removeItem('eb_sess');
 }
 
-function initLogin() {
+// ── LOGIN LOGIC ───────────────────────────────────────────────────
+async function initLogin() {
   document.getElementById('app').style.display = 'none';
-  // siempre modo login — la contraseña por defecto ya está definida
-  ['l-pw'].forEach(id => {
+  // Firebase anon auth early so Firestore is accessible for login check
+  try { await _auth.signInAnonymously(); } catch(e) {}
+
+  // First run: migrate admin user from old password system
+  const usersSnap = await _fdb.collection('users').limit(1).get();
+  if (usersSnap.empty) {
+    const oldHash = localStorage.getItem('eb_pw') || '0e0e4a88923cf49d3cc3ff480a5b2971360a9dccb6025cfa66b1b9d876a5b391';
+    await _fdb.collection('users').doc('admin').set({
+      username: 'admin', displayName: 'Administrador', role: 'admin',
+      passwordHash: oldHash, mustChangePassword: false,
+      createdAt: new Date().toISOString(), lastLogin: null
+    });
+  }
+
+  // Check existing session
+  const sess = loadSession();
+  if (sess) {
+    _currentUser = { username: sess.username, role: sess.role, displayName: sess.displayName };
+    await showApp();
+    return;
+  }
+
+  // Show login
+  document.getElementById('login-overlay').classList.remove('hidden');
+  ['l-user','l-pw'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') loginSubmit(); });
   });
-  document.getElementById('login-overlay').classList.remove('hidden');
-  setTimeout(() => document.getElementById('l-pw').focus(), 100);
+  setTimeout(() => document.getElementById('l-user').focus(), 100);
 }
 
 async function loginSubmit() {
-  const pwInp = document.getElementById('l-pw');
-  const errEl = document.getElementById('login-err');
+  const userInp = document.getElementById('l-user');
+  const pwInp   = document.getElementById('l-pw');
+  const errEl   = document.getElementById('login-err');
   errEl.textContent = '';
+  const username = userInp.value.trim().toLowerCase();
   const pw = pwInp.value;
-  if (!pw) { loginShake(); errEl.textContent = 'Ingresa tu contraseña.'; return; }
-  const hash = await sha256(pw);
-  if (hash === getActiveHash()) {
-    unlockApp();
-  } else {
-    loginShake();
-    errEl.textContent = 'Contraseña incorrecta.';
-    pwInp.value = '';
+  if (!username) { loginShake(); errEl.textContent = 'Ingresa tu usuario.'; return; }
+  if (!pw)       { loginShake(); errEl.textContent = 'Ingresa tu contraseña.'; return; }
+
+  try {
+    const doc = await _fdb.collection('users').doc(username).get();
+    if (!doc.exists) { loginShake(); errEl.textContent = 'Usuario no encontrado.'; pwInp.value=''; return; }
+    const user = doc.data();
+    const hash = await sha256(pw);
+    if (hash !== user.passwordHash) { loginShake(); errEl.textContent = 'Contraseña incorrecta.'; pwInp.value=''; return; }
+
+    // Update lastLogin
+    await _fdb.collection('users').doc(username).update({ lastLogin: new Date().toISOString() });
+
+    _currentUser = { username: user.username, role: user.role, displayName: user.displayName };
+    saveSession(_currentUser);
+    document.getElementById('login-overlay').classList.add('hidden');
+    await showApp();
+    if (user.mustChangePassword) App.changePassword(true);
+  } catch(e) {
+    errEl.textContent = 'Error de conexión. Intenta de nuevo.';
+    console.error('Login error:', e);
   }
 }
 
 function loginShake() {
-  const pw = document.getElementById('l-pw');
-  pw.classList.remove('shake');
-  void pw.offsetWidth; // reflow
-  pw.classList.add('shake');
-  pw.addEventListener('animationend', () => pw.classList.remove('shake'), { once: true });
+  const box = document.querySelector('.login-box');
+  box.classList.remove('shake');
+  void box.offsetWidth; // reflow
+  box.classList.add('shake');
+  box.addEventListener('animationend', () => box.classList.remove('shake'), { once: true });
 }
 
-async function unlockApp() {
-  // Login anónimo en Firebase antes de acceder a Firestore
-  try { await _auth.signInAnonymously(); } catch(e) { console.warn('Firebase anon auth:', e); }
-  document.getElementById('login-overlay').classList.add('hidden');
+async function showApp() {
   document.getElementById('app').style.display = '';
   await App.init();
-  // Si aún usa la clave por defecto, forzar el cambio de contraseña
-  if (!localStorage.getItem('eb_pw')) {
-    App.changePassword(true);
-  }
 }
 
 // ── CONFIRM DIALOG ───────────────────────────────────────────────
@@ -1240,6 +1150,12 @@ const App = (() => {
     else token = localStorage.getItem('eb_tok') || null;
 
     updateDot();
+
+    // Show admin-only menu items
+    if (_currentUser?.role === 'admin') {
+      const el = document.getElementById('menu-item-users');
+      if (el) el.style.display = '';
+    }
 
     document.getElementById('send').addEventListener('click', send);
     document.getElementById('txt').addEventListener('keydown', e => {
@@ -1328,17 +1244,6 @@ const App = (() => {
     if (/^(ayuda|help|\?|\/ayuda)$/i.test(t)) { showHelp(); return; }
     if (/estadís|estadis|cuántos|cuantos|stats/i.test(t)) { showStats(); return; }
     if (/^(hola|buenas|hey|hi)$/i.test(t)) { welcome(); return; }
-    if (/^migrar base$/i.test(t)) {
-      say('⏳ Migrando datos a Firestore…', 100);
-      const r = await migrateBase();
-      say(`✅ Migración completa.<br>
-        <small style="color:var(--muted)">
-          Insertados: <strong>${r.inserted}</strong> &nbsp;|&nbsp;
-          Ya existían: <strong>${r.skipped}</strong> &nbsp;|&nbsp;
-          Total: <strong>${r.total}</strong>
-        </small>`, 200);
-      return;
-    }
     const results = search(q);
 
     if (results.length === 1) {
@@ -1405,6 +1310,8 @@ const App = (() => {
       stats:     () => { addMsg('Estadísticas', true); showStats(); },
       help:      () => { addMsg('Ayuda', true); showHelp(); },
       chpw:      () => { changePassword(); },
+      users:     () => { openUsersModal(); },
+      logout:    () => { logout(); },
     };
     actions[action]?.();
   }
@@ -1824,29 +1731,150 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
     err.textContent = '';
     if (!cur) { err.textContent = 'Ingresa tu contraseña actual.'; return; }
     if (!nw)  { err.textContent = 'Ingresa la nueva contraseña.'; return; }
-    // verificar contraseña actual contra el hash activo (default o personalizado)
     const curHash = await sha256(cur);
-    if (curHash !== getActiveHash()) {
+    // Verify against Firestore
+    const doc = await _fdb.collection('users').doc(_currentUser.username).get();
+    if (!doc.exists || curHash !== doc.data().passwordHash) {
       err.textContent = '❌ La contraseña actual es incorrecta.'; return;
     }
-    // validar complejidad de la nueva contraseña
-    if (nw.length < 8)            { err.textContent = '❌ Mínimo 8 caracteres.'; return; }
-    if (!/[A-Z]/.test(nw))        { err.textContent = '❌ Debe incluir al menos una mayúscula.'; return; }
-    if (!/[a-z]/.test(nw))        { err.textContent = '❌ Debe incluir al menos una minúscula.'; return; }
-    if (!/[0-9]/.test(nw))        { err.textContent = '❌ Debe incluir al menos un número.'; return; }
-    if (!/[!@#$%^&*\-_+=?]/.test(nw)) { err.textContent = '❌ Debe incluir al menos un carácter especial (!@#$%^&*-_+=?).'; return; }
-    if (nw !== cf) { err.textContent = '❌ Las contraseñas nuevas no coinciden.'; return; }
+    if (nw.length < 8)                   { err.textContent = '❌ Mínimo 8 caracteres.'; return; }
+    if (!/[A-Z]/.test(nw))               { err.textContent = '❌ Debe incluir al menos una mayúscula.'; return; }
+    if (!/[a-z]/.test(nw))               { err.textContent = '❌ Debe incluir al menos una minúscula.'; return; }
+    if (!/[0-9]/.test(nw))               { err.textContent = '❌ Debe incluir al menos un número.'; return; }
+    if (!/[!@#$%^&*\-_+=?]/.test(nw))   { err.textContent = '❌ Debe incluir al menos un carácter especial (!@#$%^&*-_+=?).'; return; }
+    if (nw !== cf) { err.textContent = '❌ Las contraseñas no coinciden.'; return; }
     const newHash = await sha256(nw);
-    localStorage.setItem('eb_pw', newHash);
+    await _fdb.collection('users').doc(_currentUser.username).update({
+      passwordHash: newHash, mustChangePassword: false
+    });
+    localStorage.removeItem('eb_pw'); // clean up old system
     closeModal('m-chpw');
-    say('✅ Contraseña cambiada correctamente. Usa la nueva al próximo inicio de sesión.', 100);
+    say('✅ Contraseña cambiada correctamente.', 100);
+  }
+
+  // ─ user management (admin only) ─────────────────────────────────
+  function openUsersModal() {
+    closeMenu();
+    loadUsersList();
+    document.getElementById('m-users').classList.remove('hidden');
+  }
+
+  async function loadUsersList() {
+    const container = document.getElementById('users-list');
+    container.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">Cargando…</div>';
+    const snap = await _fdb.collection('users').orderBy('createdAt').get();
+    if (snap.empty) { container.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">No hay usuarios.</div>'; return; }
+    container.innerHTML = snap.docs.map(d => {
+      const u = d.data();
+      const isMe = u.username === _currentUser.username;
+      const lastLogin = u.lastLogin ? new Date(u.lastLogin).toLocaleString('es-CO') : 'Nunca';
+      return `<div class="user-card">
+        <div class="user-card-top">
+          <div>
+            <div class="user-name">${esc(u.displayName)} <span style="color:var(--dim);font-weight:400;font-size:0.8rem">@${esc(u.username)}</span>${isMe ? ' <span style="color:var(--accent);font-size:0.7rem">(tú)</span>' : ''}</div>
+            <div class="user-meta">Último acceso: ${lastLogin}${u.mustChangePassword ? ' · <span style="color:var(--warning)">⚠️ Debe cambiar contraseña</span>' : ''}</div>
+          </div>
+          <span class="user-role ${u.role === 'guard' ? 'guard' : ''}">${u.role === 'admin' ? 'Admin' : 'Vigilante'}</span>
+        </div>
+        <div class="user-actions">
+          <button class="btn-s" onclick="App.resetUserPwd('${esc(u.username)}','${esc(u.displayName)}')">🔑 Resetear clave</button>
+          ${!isMe ? `<button class="btn-d" onclick="App.deleteUser('${esc(u.username)}','${esc(u.displayName)}')">🗑️ Eliminar</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function openAddUser() {
+    document.getElementById('add-user-form').classList.remove('hidden');
+    document.getElementById('nu-username').focus();
+  }
+
+  function cancelAddUser() {
+    document.getElementById('add-user-form').classList.add('hidden');
+    ['nu-username','nu-display'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('nu-err').textContent = '';
+  }
+
+  async function saveNewUser() {
+    const username = document.getElementById('nu-username').value.trim().toLowerCase().replace(/\s+/g,'');
+    const display  = document.getElementById('nu-display').value.trim();
+    const role     = document.getElementById('nu-role').value;
+    const errEl    = document.getElementById('nu-err');
+    errEl.textContent = '';
+    if (!username) { errEl.textContent = 'Ingresa un nombre de usuario.'; return; }
+    if (!display)  { errEl.textContent = 'Ingresa el nombre para mostrar.'; return; }
+    if (!/^[a-z0-9_]+$/.test(username)) { errEl.textContent = 'Solo letras, números y _'; return; }
+
+    const existing = await _fdb.collection('users').doc(username).get();
+    if (existing.exists) { errEl.textContent = 'Ese usuario ya existe.'; return; }
+
+    // Generate temporary password
+    const tempPw = genTempPw();
+    const hash = await sha256(tempPw);
+    await _fdb.collection('users').doc(username).set({
+      username, displayName: display, role,
+      passwordHash: hash, mustChangePassword: true,
+      createdAt: new Date().toISOString(), lastLogin: null
+    });
+
+    cancelAddUser();
+    loadUsersList();
+    say(`✅ Usuario <strong>${esc(display)}</strong> creado.<br>
+      <div style="margin-top:8px;padding:10px;background:var(--card2);border-radius:8px;font-size:0.85rem">
+        👤 Usuario: <strong>${esc(username)}</strong><br>
+        🔑 Contraseña temporal: <strong style="color:var(--warning);font-family:monospace">${tempPw}</strong><br>
+        <small style="color:var(--muted)">Comparte esto con el vigilante. Deberá cambiarla al ingresar.</small>
+      </div>`, 100);
+  }
+
+  async function resetUserPwd(username, displayName) {
+    const ok = await confirmAction(`¿Resetear contraseña de ${displayName}?`, 'Se generará una contraseña temporal que deberás compartir con el usuario.');
+    if (!ok) return;
+    const tempPw = genTempPw();
+    const hash = await sha256(tempPw);
+    await _fdb.collection('users').doc(username).update({
+      passwordHash: hash, mustChangePassword: true
+    });
+    say(`🔑 Contraseña de <strong>${esc(displayName)}</strong> reseteada.<br>
+      <div style="margin-top:8px;padding:10px;background:var(--card2);border-radius:8px;font-size:0.85rem">
+        🔑 Nueva contraseña temporal: <strong style="color:var(--warning);font-family:monospace">${tempPw}</strong><br>
+        <small style="color:var(--muted)">El usuario deberá cambiarla al ingresar.</small>
+      </div>`, 100);
+  }
+
+  async function deleteUser(username, displayName) {
+    const ok = await confirmAction(`¿Eliminar usuario ${displayName}?`, 'Esta acción no se puede deshacer. El usuario no podrá acceder a la app.');
+    if (!ok) return;
+    await _fdb.collection('users').doc(username).delete();
+    loadUsersList();
+    say(`🗑️ Usuario <strong>${esc(displayName)}</strong> eliminado.`, 100);
+  }
+
+  function genTempPw() {
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#';
+    let pw = '';
+    // Ensure at least one of each required type
+    pw += 'ABCDEFGHJKMNPQRSTUVWXYZ'[Math.floor(Math.random()*22)];
+    pw += 'abcdefghjkmnpqrstuvwxyz'[Math.floor(Math.random()*22)];
+    pw += '23456789'[Math.floor(Math.random()*8)];
+    pw += '!@#'[Math.floor(Math.random()*3)];
+    for (let i = 4; i < 9; i++) pw += chars[Math.floor(Math.random()*chars.length)];
+    return pw.split('').sort(() => Math.random()-.5).join('');
+  }
+
+  function logout() {
+    clearSession();
+    _currentUser = null;
+    window.location.reload();
   }
 
   return { init, send, openDetail, openEdit, saveEdit, clearEdit,
            editCapture, editRemovePhoto,
            closeModal, bgClose, openTokenModal, saveToken, clearToken,
            openMenu, closeMenu, menuAction,
-           openPhotos, saveChangePassword, changePassword };
+           openPhotos, saveChangePassword, changePassword,
+           openUsersModal, openAddUser, cancelAddUser, saveNewUser,
+           resetUserPwd, deleteUser, logout };
 })();
 
 document.addEventListener('DOMContentLoaded', initLogin);

@@ -1834,10 +1834,9 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
       (arr || []).forEach((src, i) => {
         html += `<div class="ph-thumb-wrap">
           <img class="ph-thumb" src="${src}" alt="" onclick="phViewerOpen('${section}',${i})">
-          <button class="ph-del" onclick="phDeleteArrPhoto('${section}',${i})">✕</button>
         </div>`;
       });
-      html += `<div class="ph-add" onclick="phTriggerInput('${section}')">＋</div>`;
+      if (!html) html = `<span style="font-size:0.78rem;color:var(--dim)">Sin fotos</span>`;
       return html;
     };
 
@@ -1845,7 +1844,7 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
       const src = _phData[key];
       const inner = src
         ? `<img class="ph-thumb" src="${src}" alt="" onclick="phViewerOpenSingle('${key}')">`
-        : `<div class="ph-empty" onclick="phTriggerInput('${key}')">📷</div>`;
+        : `<div class="ph-empty" style="cursor:default">—</div>`;
       return `<div class="ph-res-slot">
         ${inner}
         <div class="ph-res-name">${esc(name)}</div>
@@ -1880,7 +1879,7 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
     if (!arr || arr[idx] == null) return;
     _phViewerCtx = { section, idx };
     document.getElementById('ph-viewer-img').src = arr[idx];
-    document.getElementById('ph-viewer-del').style.display = 'block';
+    document.getElementById('ph-viewer-del').style.display = 'none';
     document.getElementById('ph-viewer').classList.remove('hidden');
   };
 
@@ -1889,7 +1888,7 @@ Responde en español, de forma concisa y profesional. Máximo 3 oraciones.`;
     if (!src) return;
     _phViewerCtx = { section: key, idx: null };
     document.getElementById('ph-viewer-img').src = src;
-    document.getElementById('ph-viewer-del').style.display = 'block';
+    document.getElementById('ph-viewer-del').style.display = 'none';
     document.getElementById('ph-viewer').classList.remove('hidden');
   };
 

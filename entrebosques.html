@@ -1061,6 +1061,7 @@ async function initLogin() {
   const sess = loadSession();
   if (sess) {
     _currentUser = { username: sess.username, role: sess.role, displayName: sess.displayName };
+    document.getElementById('login-overlay').classList.add('hidden');
     await showApp();
     return;
   }
